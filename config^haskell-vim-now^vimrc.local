@@ -1,0 +1,111 @@
+"------------------------- 
+" .vimrc
+"------------------------- 
+
+syntax on
+filetype plugin indent on
+
+" Can be typed even faster than jj.
+imap df <esc>l
+
+" Remap front of the line
+nmap 0 ^
+
+" Map Ctrl-s to write the file
+" nmap <C-w> :w<cr> " does not seem to work
+
+" Leader key to access my own settings
+" ... the preferred way to customize vim
+" with a wide range of key mappings
+let mapleader = "\<SPACE>"
+
+" Split edit your vimrc. Type space, v, r in sequence to trigger
+" This creates a new window for the vimrc
+nmap <leader>forc :sp $MYVIMRC<CR>
+
+" Leader key bindings
+" Source (reload) your vimrc. Type space, s, o in sequence to trigger
+nmap <leader>fsrc :source $MYVIMRC<CR>
+
+" Navigating between buffers
+nmap <leader>bn :bn<CR>
+nmap <leader>bp :bp<CR>
+nmap <leader>bd :bd<CR>
+
+" Split window
+nnoremap <leader>- :sp<CR>
+nnoremap <leader>\ :vsp<CR>
+" Change the size: height
+call submode#enter_with('grow/shrink', 'n', '', '<leader>j', '<C-w>+')
+call submode#enter_with('grow/shrink', 'n', '', '<leader>k', '<C-w>-')
+call submode#map('grow/shrink', 'n', '', 'j', '<C-w>+')
+call submode#map('grow/shrink', 'n', '', 'k', '<C-w>-')
+" Change the size: width
+call submode#enter_with('grow/shrink', 'n', '', '<leader>h', '<C-w><')
+call submode#enter_with('grow/shrink', 'n', '', '<leader>l', '<C-w>>')
+call submode#map('grow/shrink', 'n', '', 'h', '<C-w><')
+call submode#map('grow/shrink', 'n', '', 'l', '<C-w>>')
+"disable submode timeouts:
+let g:submode_timeout = 800
+" don't consume submode-leaving key
+let g:submode_keep_leaving_key = 1
+
+" Rebalance Tmux when call a split
+autocmd VimResized * :wincmd =
+" zoom a vim pane, <C-w>= to re-balance
+nnoremap <leader>z :wincmd _<cr>:wincmd \|<cr>
+nnoremap <leader>Z :wincmd =<cr><Paste>
+
+" Sending commands to Tmux
+nnoremap <leader>ro :VtrOpenRunner {'orientation': 'h', 'percentage': 50}<cr>
+nnoremap <leader>rg :VtrOpenRunner {'orientation': 'h', 'percentage': 50, 'cmd': 'stack\ ghci'}<cr>
+let g:rspec_command = "call VtrSendCommand('rspec {spec}')"
+
+" Working with Sessions vim-sessions
+nnoremap <leader>so :OpenSession 
+nnoremap <leader>ss :SaveSession 
+nnoremap <leader>sd :DeleteSession<CR>
+nnoremap <leader>sc :CloseSession<CR>
+
+set number                      " Display line numbers beside buffer
+set nocompatible                " Don't maintain compatibilty with Vi
+set hidden                      " Allow buffer change w/o saving
+set lazyredraw                  " Don't update while executing macros
+set backspace=indent,eol,start  " Sane backspace behavior
+set history=1000                " Remember last 1000 commands
+set scrolloff=4                 " Keep at least 4 lines below cursor
+set autowrite                   " Write for me when I take any action
+set nowrap
+set showmode
+set tw=80
+set smartcase
+set smarttab
+set smartindent
+set autoindent
+set softtabstop=2
+set shiftwidth=2
+set expandtab
+set incsearch
+set mouse=a
+set completeopt=menuone,menu,longest
+set wildignore+=*\\tmp\\*,*.swp,*.swo,*.zip,.git,.cabal-sandbox
+set wildmode=longest,list,full
+set wildmenu
+set completeopt+=longest
+set t_Co=256
+set cmdheight=1
+
+" Quick escape q to exit a help file
+" <buffer> means applies to current buffer only
+autocmd Filetype help nmap <buffer> q :q<CR>
+
+" Display NerdTree
+map <C-n> :NERDTreeToggle<CR>
+
+" Quit vim when NerdTree is the only tab open
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif 
+" Complement use of search file CtrIP
+" Make CtrlP use ag for listing the files. Way faster and no useless files.
+let g:ctrlp_user_command = 'ag %s -l --hidden --nocolor -g ""'
+let g:ctrlp_use_caching = 0
+let g:ackprg = 'ag --nogroup --nocolor --column'   "silver_search
