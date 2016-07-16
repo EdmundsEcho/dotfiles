@@ -1,6 +1,6 @@
-"------------------------- 
+"-------------------------
 " .vimrc
-"------------------------- 
+"-------------------------
 
 syntax on
 filetype plugin indent on
@@ -62,8 +62,8 @@ nnoremap <leader>rg :VtrOpenRunner {'orientation': 'h', 'percentage': 50, 'cmd':
 let g:rspec_command = "call VtrSendCommand('rspec {spec}')"
 
 " Working with Sessions vim-sessions
-nnoremap <leader>so :OpenSession 
-nnoremap <leader>ss :SaveSession 
+nnoremap <leader>so :OpenSession
+nnoremap <leader>ss :SaveSession
 nnoremap <leader>sd :DeleteSession<CR>
 nnoremap <leader>sc :CloseSession<CR>
 
@@ -99,11 +99,22 @@ set cmdheight=1
 " <buffer> means applies to current buffer only
 autocmd Filetype help nmap <buffer> q :q<CR>
 
+" Whitespace removal and application with :W
+fun! TrimWhitespace()
+    let l:save_cursor = getpos('.')
+    %s/\s\+$//e
+    call setpos('.', l:save_cursor)
+endfun
+" The command to access it :TrimWhitespace
+command! -bar TrimWhitespace call TrimWhitespace()
+" :W to execute the TrimWhitespace when saving the file
+command! W TrimWhitespace | w
+
 " Display NerdTree
 map <C-n> :NERDTreeToggle<CR>
 
 " Quit vim when NerdTree is the only tab open
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif 
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 " Complement use of search file CtrIP
 " Make CtrlP use ag for listing the files. Way faster and no useless files.
 let g:ctrlp_user_command = 'ag %s -l --hidden --nocolor -g ""'
