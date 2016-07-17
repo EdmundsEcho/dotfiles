@@ -5,14 +5,17 @@
 syntax on
 filetype plugin indent on
 
-" Can be typed even faster than jj.
+" ------------------
+" Tweaks to defaults
+" ------------------
+" esc key with cursor moved forward
 imap df <esc>l
-
 " Remap front of the line
 nmap 0 ^
-
-" Map Ctrl-s to write the file
-" nmap <C-w> :w<cr> " does not seem to work
+" G that goes to the end of the line
+nmap G G$
+" save and send :r to ghci
+command! Wr w | :VtrSendCommandToRunner :r
 
 " Leader key to access my own settings
 " ... the preferred way to customize vim
@@ -21,7 +24,7 @@ let mapleader = "\<SPACE>"
 
 " Split edit your vimrc. Type space, v, r in sequence to trigger
 " This creates a new window for the vimrc
-nmap <leader>forc :sp $MYVIMRC<CR>
+nmap <leader>forc :sp ${HOME}/.config/haskell-vim-now/vimrc.local<CR>
 
 " Leader key bindings
 " Source (reload) your vimrc. Type space, s, o in sequence to trigger
@@ -75,6 +78,8 @@ set backspace=indent,eol,start  " Sane backspace behavior
 set history=1000                " Remember last 1000 commands
 set scrolloff=4                 " Keep at least 4 lines below cursor
 set autowrite                   " Write for me when I take any action
+set relativenumber              " Combined with number; line number preference 
+set number
 set nowrap
 set showmode
 set tw=80
@@ -110,11 +115,11 @@ command! -bar TrimWhitespace call TrimWhitespace()
 " :W to execute the TrimWhitespace when saving the file
 command! W TrimWhitespace | w
 
-" Display NerdTree
+" Display and quit with  NerdTree
 map <C-n> :NERDTreeToggle<CR>
-
 " Quit vim when NerdTree is the only tab open
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+
 " Complement use of search file CtrIP
 " Make CtrlP use ag for listing the files. Way faster and no useless files.
 let g:ctrlp_user_command = 'ag %s -l --hidden --nocolor -g ""'
