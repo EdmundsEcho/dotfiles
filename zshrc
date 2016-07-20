@@ -1,5 +1,5 @@
 # Path to your oh-my-zsh installation.
-export ZSH=/Users/edmundcape/.oh-my-zsh
+export ZSH=${HOME}/.oh-my-zsh
 
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
@@ -89,6 +89,7 @@ alias vim='nvim'
 alias vi='nvim'
 alias ghc='stack exec -- ghc'
 alias ghci='stack exec -- ghci'
+alias reload=". ~/.zshrc && echo 'ZSH .zshrc reloaded from ~/.zshrc"
 
 # Jul 12th, 2016
 bat() {
