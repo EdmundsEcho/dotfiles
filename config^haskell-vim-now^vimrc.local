@@ -35,8 +35,7 @@ nmap <leader>bn :bn<CR>
 nmap <leader>bp :bp<CR>
 nmap <leader>bd :bd<CR>
 
-" Split window
-nnoremap <leader>- :sp<CR>
+" Split window nnoremap <leader>- :sp<CR>
 nnoremap <leader>\ :vsp<CR>
 " Change the size: height
 call submode#enter_with('grow/shrink', 'n', '', '<leader>j', '<C-w>+')
@@ -79,6 +78,7 @@ set history=1000                " Remember last 1000 commands
 set scrolloff=4                 " Keep at least 4 lines below cursor
 set autowrite                   " Write for me when I take any action
 set relativenumber              " Combined with number; line number preference 
+set clipboard=unnamed           " Copy/paste in vi with Sierra OS
 set number
 set nowrap
 set showmode
