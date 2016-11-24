@@ -37,6 +37,7 @@ nmap <leader>bd :bd<CR>
 
 " Split window nnoremap <leader>- :sp<CR>
 nnoremap <leader>\ :vsp<CR>
+
 " Change the size: height
 call submode#enter_with('grow/shrink', 'n', '', '<leader>j', '<C-w>+')
 call submode#enter_with('grow/shrink', 'n', '', '<leader>k', '<C-w>-')
@@ -68,6 +69,8 @@ nnoremap <leader>so :OpenSession
 nnoremap <leader>ss :SaveSession
 nnoremap <leader>sd :DeleteSession<CR>
 nnoremap <leader>sc :CloseSession<CR>
+" Default saving of sessions
+let g:session_autosave = 'no'
 
 set number                      " Display line numbers beside buffer
 set nocompatible                " Don't maintain compatibilty with Vi
@@ -125,3 +128,9 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isT
 let g:ctrlp_user_command = 'ag %s -l --hidden --nocolor -g ""'
 let g:ctrlp_use_caching = 0
 let g:ackprg = 'ag --nogroup --nocolor --column'   "silver_search
+
+" Color coding line numbers
+highlight LineNr ctermfg=248
+highlight Comment ctermfg=117
+highlight Function ctermfg=57
+" alternative ctermbg=157

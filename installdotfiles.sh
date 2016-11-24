@@ -1,3 +1,6 @@
+## TODO: bug such that original .zhrc was not deleted
+##       the symlink was not created
+
 ########## Variables
 
 symlinks="${HOME}/.zshrc
@@ -8,10 +11,10 @@ symlinks="${HOME}/.zshrc
 
 sourcedir="${HOME}/dotfiles"                          # dotfiles directory
 sourcefiles="zshrc
-          bash_profile
-          config^haskell-vim-now^plugins.vim
-          config^haskell-vim-now^vimrc.local
-          tmux.conf"                                  # source files^folders
+            bash_profile
+            config^haskell-vim-now^plugins.vim
+            config^haskell-vim-now^vimrc.local
+            tmux.conf"                                # source files^folders
 
 backupdir="${HOME}/dotfiles_old"                      # old dotfiles backup directory
 
