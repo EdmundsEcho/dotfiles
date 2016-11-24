@@ -9,3 +9,8 @@ $ git add .
 $ git commit -m 'Initial commit of my dotfiles'
 $ git remote add origin git@github.com:yourgithubusername/dotfiles.git
 $ git push origin master
+
+$ get pull origin master
+
+
+Straightforward git howto: http://rogerdudler.github.io/git-guide/
