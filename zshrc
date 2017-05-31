@@ -50,13 +50,13 @@ ZSH_THEME="robbyrussell"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 
-plugins=(git history history-substring-search textmate osx cabal brew nanoc)
+plugins=(git history history-substring-search osx cabal brew nanoc)
 
+# ---------------------------------------------------------
 # User configuration
+# ---------------------------------------------------------
 
-export PATH="/opt/local/bin:/usr/local/bin:/Users/edmundcape/Library/Haskell/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 # export MANPATH="/usr/local/man:$MANPATH"
-
 source $ZSH/oh-my-zsh.sh
 
 # You may need to manually set your language environment
@@ -80,24 +80,58 @@ source $ZSH/oh-my-zsh.sh
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
 #
-# Example aliases
-alias zshconfig="mate ~/.zshrc"
-alias ohmyzsh="mate ~/.oh-my-zsh"
+# ---------------------------------------------------------
+# Aliases
+# ---------------------------------------------------------
+alias zshconfig="vim ~/.zshrc"
+alias ohmyzsh="vim ~/.oh-my-zsh"
 
 # May 25, 2016
+alias vi='vim'
 alias vim='nvim'
-alias vi='nvim'
+alias nvim="stty stop '' -ixoff; nvim"
 alias ghc='stack exec -- ghc'
 alias ghci='stack exec -- ghci'
-alias reload=". ~/.zshrc && echo 'ZSH .zshrc reloaded from ~/.zshrc"
+alias reload='. ~/.zshrc;echo "Executed: . ~/.zshrc" '
+
+# Jan 14, 2017
+alias code="cd ~/Dropbox/Programming/Haskell.drop"
+
+# Variables for editing brew formula
+export HOMEBREW_EDITOR=vim
+export VISUAL=vim
 
 # Jul 12th, 2016
 bat() {
  ioreg -l |awk 'BEGIN{FS="=";max=0;cur=0;}
- $1~/CurrentCapacity/{cur=$2} 
+ $1~/CurrentCapacity/{cur=$2}
  $1~/MaxCapacity/{max=$2}
  END{if (max>0) {printf "%.0f%%\n",cur/max*100} else {print "?"}}'
 }
 
-# May 1, 2016 to get \n to work as expected
-NEWLINE=$'\n'
+# ---------------------------------------------------------
+# PATH
+# ---------------------------------------------------------
+# Addition Feb 8, 2016 (system upgrade)
+PATH="/usr/bin:/bin:${PATH}"
+PATH="/sbin:/usr/sbin:${PATH}"
+
+# Addition for Haskell (July 12, 2015)
+PATH="/Users/edmundcape/Library/Haskell/bin:${PATH}"
+PATH="/Users/edmundcape/.local/bin:${PATH}"
+
+# Setting PATH for Hugs
+PATH="/opt/local/bin:/opt/local/sbin:${PATH}"
+
+# Feb 8, 2017: PATH to MacTex apps
+PATH="/Library/TeX/texbin:${PATH}"
+
+# Feb 9, 2017: PATH to pdf compilers
+PATH="/usr/local/opt/texinfo/bin:$PATH"
+
+# ---------------------------------------------------------
+# Homebrew doctor: make sure /usr/local/bin appears first.
+export PATH="/usr/local/bin:$PATH"
+export PATH="/usr/local/opt/sqlite/bin:$PATH"
+export PATH="/usr/local/opt/qt/bin:$PATH"
+export PATH="/usr/local/opt/qt/bin:$PATH"

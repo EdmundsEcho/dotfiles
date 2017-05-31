@@ -1,5 +1,9 @@
 "-------------------------
 " .vimrc
+" ~/.config/haskell-vim-now/vimrc.local
+" This file extends the configuration provided by
+" the haskell config file (a package that I enjoy
+" immensely)
 "-------------------------
 
 syntax on
@@ -16,24 +20,35 @@ nmap 0 ^
 nmap G G$
 " save and send :r to ghci
 command! Wr w | :VtrSendCommandToRunner :r
+" save file from normal, insert and visual using <ctr-a>
+nnoremap <c-a> :W<CR>
+inoremap <c-a> <Esc>:w<CR>l
+vnoremap <c-a> <Esc>:W<CR>
 
 " Leader key to access my own settings
 " ... the preferred way to customize vim
 " with a wide range of key mappings
 let mapleader = "\<SPACE>"
 
-" Split edit your vimrc. Type space, v, r in sequence to trigger
+" Split edit your vimrc. Type space forc in sequence to trigger
 " This creates a new window for the vimrc
 nmap <leader>forc :sp ${HOME}/.config/haskell-vim-now/vimrc.local<CR>
 
 " Leader key bindings
-" Source (reload) your vimrc. Type space, s, o in sequence to trigger
+" Source (reload) your vimrc. Type space fsrc in sequence to trigger
 nmap <leader>fsrc :source $MYVIMRC<CR>
+
+" Map esc to remove highlighting of previous search
+nnoremap <esc> :noh<return><esc>
 
 " Navigating between buffers
 nmap <leader>bn :bn<CR>
 nmap <leader>bp :bp<CR>
 nmap <leader>bd :bd<CR>
+" alternative to moving through buffers
+" does not seem to work...
+"nmap <S-Right> :bn<CR>
+"nmap <S-Left> :bp<CR>
 
 " Split window nnoremap <leader>- :sp<CR>
 nnoremap <leader>\ :vsp<CR>
@@ -69,6 +84,10 @@ nnoremap <leader>so :OpenSession
 nnoremap <leader>ss :SaveSession
 nnoremap <leader>sd :DeleteSession<CR>
 nnoremap <leader>sc :CloseSession<CR>
+
+" Using vim-slime for sending text to tmux (like vim-sessions)
+let g:slime_target = "tmux"
+
 " Default saving of sessions
 let g:session_autosave = 'no'
 
@@ -80,7 +99,7 @@ set backspace=indent,eol,start  " Sane backspace behavior
 set history=1000                " Remember last 1000 commands
 set scrolloff=4                 " Keep at least 4 lines below cursor
 set autowrite                   " Write for me when I take any action
-set relativenumber              " Combined with number; line number preference 
+set relativenumber              " Combined with number; line number preference
 set clipboard=unnamed           " Copy/paste in vi with Sierra OS
 set number
 set nowrap
@@ -118,6 +137,19 @@ command! -bar TrimWhitespace call TrimWhitespace()
 " :W to execute the TrimWhitespace when saving the file
 command! W TrimWhitespace | w
 
+" Lift the active window when I scroll to the bottom of the file
+function! NoScrollAtEOF()
+  let curpos = getpos('.')
+  let lnum = get(curpos, 1, -1)
+  let len = line('$')
+  if lnum + winheight(0) >= len
+    normal! zb
+  endif
+endfunction
+" the key binding to call the function
+nnoremap <c-f> <c-f>:call NoScrollAtEOF()<cr>
+
+
 " Display and quit with  NerdTree
 map <C-n> :NERDTreeToggle<CR>
 " Quit vim when NerdTree is the only tab open
@@ -130,7 +162,10 @@ let g:ctrlp_use_caching = 0
 let g:ackprg = 'ag --nogroup --nocolor --column'   "silver_search
 
 " Color coding line numbers
-highlight LineNr ctermfg=248
-highlight Comment ctermfg=117
-highlight Function ctermfg=57
-" alternative ctermbg=157
+" NOTE: this is configured by haskell-vim-now
+"       It's unclear if the full rc file is reloaded
+"       without restarting vim...
+highlight LineNr ctermfg=250
+highlight Comment ctermfg=122
+highlight Function ctermfg=133
+" clternative ctermbg=157
