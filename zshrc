@@ -4,7 +4,7 @@ export ZSH=${HOME}/.oh-my-zsh
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
-# time that oh-my-zsh is loaded.
+#time that oh-my-zsh is loaded.
 ZSH_THEME="robbyrussell"
 
 # Uncomment the following line to use case-sensitive completion.
@@ -117,8 +117,8 @@ PATH="/usr/bin:/bin:${PATH}"
 PATH="/sbin:/usr/sbin:${PATH}"
 
 # Addition for Haskell (July 12, 2015)
-PATH="/Users/edmundcape/Library/Haskell/bin:${PATH}"
-PATH="/Users/edmundcape/.local/bin:${PATH}"
+PATH="/Users/${USER}/Library/Haskell/bin:${PATH}"
+PATH="/Users/${USER}/.local/bin:${PATH}"
 
 # Setting PATH for Hugs
 PATH="/opt/local/bin:/opt/local/sbin:${PATH}"
@@ -128,6 +128,9 @@ PATH="/Library/TeX/texbin:${PATH}"
 
 # Feb 9, 2017: PATH to pdf compilers
 PATH="/usr/local/opt/texinfo/bin:$PATH"
+
+# Jun 7, 2017: PATH to python Jupyter notebook
+PATH="/Users/${USER}/anaconda3/bin:$PATH"
 
 # ---------------------------------------------------------
 # Homebrew doctor: make sure /usr/local/bin appears first.
