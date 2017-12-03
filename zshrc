@@ -95,10 +95,7 @@ export NODE_ENV='development'
 export LANG=en_US.UTF-8
 
 # Preferred editor for local and remote sessions
-<<<<<<< HEAD
 export EDITOR='nvim'
-=======
->>>>>> origin/master
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
@@ -162,15 +159,11 @@ PATH+="/usr/sbin:/sbin:"
 # Other path settings
 # ---------------------------------------------------------
 # Addition for Haskell (July 12, 2015)
-<<<<<<< HEAD
 PATH+="/Users/${USER}/Library/Haskell/bin:"
 PATH+="/Users/${USER}/.local/bin:"
-=======
 PATH="/Users/${USER}/Library/Haskell/bin:${PATH}"
 PATH="/Users/${USER}/.local/bin:${PATH}"
 
->>>>>>> origin/master
-<<<<<< HEAD
 PATH+="/usr/local/opt/texinfo/bin:"
 # Jun 7, 2017: PATH to python Jupyter notebook
 #PATH="/Users/${USER}/anaconda3/bin:$PATH"
@@ -180,6 +173,7 @@ PATH+="/Users/${USER}/Code/bin:"
 PATH+="/usr/local/opt/sqlite/bin:"
 PATH+="/usr/local/opt/qt/bin:"
 PATH+="/usr/local/opt/qt/bin:"
+PATH+="/usr/local/opt/texinfo/bin:"
 
 export PATH
 
@@ -194,16 +188,3 @@ bindkey -M viins 'df' vi-cmd-mode
 bindkey '^R' history-incremental-search-backward
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
-=======
-PATH="/usr/local/opt/texinfo/bin:$PATH"
-
-# Jun 7, 2017: PATH to python Jupyter notebook
-PATH="/Users/${USER}/anaconda3/bin:$PATH"
-
-# ---------------------------------------------------------
-# Homebrew doctor: make sure /usr/local/bin appears first.
-export PATH="/usr/local/bin:$PATH"
-export PATH="/usr/local/opt/sqlite/bin:$PATH"
-export PATH="/usr/local/opt/qt/bin:$PATH"
-export PATH="/usr/local/opt/qt/bin:$PATH"
->>>>>>> origin/master
