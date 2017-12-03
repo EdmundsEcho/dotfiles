@@ -10,6 +10,7 @@ Plug 'tpope/vim-repeat'                  " Dot . to repeat command
 Plug 'tpope/vim-dispatch'                " Manages compiler
 Plug 'kana/vim-submode'                  " Enables repeated use of key after leader
 Plug 'xu-cheng/brew.vim'                 " Highlighting for Brew Formula editing
+<<<<<<< HEAD
 Plug 'godlygeek/tabular'                 " aligns text into table format
 Plug 'Yggdroot/indentLine'               " visual tab guides
 
@@ -122,6 +123,8 @@ Plug 'ludovicchabant/vim-gutentags'       " Definition lookup. It will generate 
 "hvn Plug 'eagletmt/neco-ghc'
 "hvn Plug 'ctrlpvim/ctrlp.vim'                " Fuzzy file finder C-p
 "hvn Plug 'tpope/vim-commentary'              " Comment in/out with gc
+=======
+>>>>>> origin/master
 
 " Add plugins to &runtimepath
 " call plug#end()
