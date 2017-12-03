@@ -5,167 +5,828 @@
 " the haskell config file (a package that I enjoy
 " immensely)
 "-------------------------
+set nocompatible " No VI compatibility
+set autoread     " Detect file changes outside vim
+au FocusGained * :checktime
 
-syntax on
-filetype plugin indent on
+" disable Python 2 support (presence of entry -> disable)
+let g:loaded_python_provider = 1
+"  disable Python 3 support:
+let g:python3_host_prog = "/usr/local/bin/python3.6"
 
-" ------------------
-" Tweaks to defaults
-" ------------------
 " esc key with cursor moved forward
 imap df <esc>l
-" Remap front of the line
-nmap 0 ^
-" G that goes to the end of the line
-nmap G G$
-" save and send :r to ghci
-command! Wr w | :VtrSendCommandToRunner :r
-" save file from normal, insert and visual using <ctr-a>
-nnoremap <c-a> :W<CR>
-inoremap <c-a> <Esc>:w<CR>l
-vnoremap <c-a> <Esc>:W<CR>
 
 " Leader key to access my own settings
-" ... the preferred way to customize vim
-" with a wide range of key mappings
 let mapleader = "\<SPACE>"
 
-" Split edit your vimrc. Type space forc in sequence to trigger
-" This creates a new window for the vimrc
-nmap <leader>forc :sp ${HOME}/.config/haskell-vim-now/vimrc.local<CR>
+" Cursor setting
+:set guicursor=n-v-c:block-Cursor/lCursor-blinkon0,i-ci:ver25-Cursor/lCursor,r-cr:hor20-Cursor/lCursor
 
-" Leader key bindings
-" Source (reload) your vimrc. Type space fsrc in sequence to trigger
-nmap <leader>fsrc :source $MYVIMRC<CR>
+" TESTING
+" Make Vim recognize XTerm escape sequences for Page and Arrow
+" keys combined with modifiers such as Shift, Control, and Alt.
+" See http://www.reddit.com/r/vim/comments/1a29vk/_/c8tze8p
+if &term =~ '^screen'
+   " Page keys http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/FAQ
+   execute "set t_kP=\e[5;*~"
+   execute "set t_kN=\e[6;*~"
 
-" Map esc to remove highlighting of previous search
-nnoremap <esc> :noh<return><esc>
+   " Arrow keys http://unix.stackexchange.com/a/34723
+   execute "set <xUp>=\e[1;*A"
+   execute "set <xDown>=\e[1;*B"
+   execute "set <xRight>=\e[1;*C"
+   execute "set <xLeft>=\e[1;*D"
+endif
 
-" Navigating between buffers
-nmap <leader>bn :bn<CR>
-nmap <leader>bp :bp<CR>
-nmap <leader>bd :bd<CR>
-" alternative to moving through buffers
-" does not seem to work...
-"nmap <S-Right> :bn<CR>
-"nmap <S-Left> :bp<CR>
+" ---------------------------
+" Tweaks to default mappings
+" ---------------------------
+" Remap start of the line; end of the file
+nmap 0 ^
+nmap gg :0<CR>
+nmap G G$
 
-" Split window nnoremap <leader>- :sp<CR>
-nnoremap <leader>\ :vsp<CR>
+nmap <M-:> :
+imap <M-:> :
 
-" Change the size: height
-call submode#enter_with('grow/shrink', 'n', '', '<leader>j', '<C-w>+')
-call submode#enter_with('grow/shrink', 'n', '', '<leader>k', '<C-w>-')
-call submode#map('grow/shrink', 'n', '', 'j', '<C-w>+')
-call submode#map('grow/shrink', 'n', '', 'k', '<C-w>-')
-" Change the size: width
-call submode#enter_with('grow/shrink', 'n', '', '<leader>h', '<C-w><')
-call submode#enter_with('grow/shrink', 'n', '', '<leader>l', '<C-w>>')
-call submode#map('grow/shrink', 'n', '', 'h', '<C-w><')
-call submode#map('grow/shrink', 'n', '', 'l', '<C-w>>')
-"disable submode timeouts:
-let g:submode_timeout = 800
-" don't consume submode-leaving key
-let g:submode_keep_leaving_key = 1
+" save file from normal, insert and visual using <ctr-a>
+nnoremap <C-a> :W<CR>
+inoremap <C-a> <Esc>:W<CR>l
+vnoremap <C-a> <Esc>:w<CR>
 
-" Rebalance Tmux when call a split
-autocmd VimResized * :wincmd =
-" zoom a vim pane, <C-w>= to re-balance
-nnoremap <leader>z :wincmd _<cr>:wincmd \|<cr>
-nnoremap <leader>Z :wincmd =<cr><Paste>
+" Select all text in current buffer
+nmap <Leader>a ggVG
 
-" Sending commands to Tmux
-nnoremap <leader>ro :VtrOpenRunner {'orientation': 'h', 'percentage': 50}<cr>
-nnoremap <leader>rg :VtrOpenRunner {'orientation': 'h', 'percentage': 50, 'cmd': 'stack\ ghci'}<cr>
-let g:rspec_command = "call VtrSendCommand('rspec {spec}')"
-
-" Working with Sessions vim-sessions
-nnoremap <leader>so :OpenSession
-nnoremap <leader>ss :SaveSession
-nnoremap <leader>sd :DeleteSession<CR>
-nnoremap <leader>sc :CloseSession<CR>
-
-" Using vim-slime for sending text to tmux (like vim-sessions)
-let g:slime_target = "tmux"
-
-" Default saving of sessions
-let g:session_autosave = 'no'
-
-set number                      " Display line numbers beside buffer
-set nocompatible                " Don't maintain compatibilty with Vi
-set hidden                      " Allow buffer change w/o saving
-set lazyredraw                  " Don't update while executing macros
-set backspace=indent,eol,start  " Sane backspace behavior
-set history=1000                " Remember last 1000 commands
-set scrolloff=4                 " Keep at least 4 lines below cursor
-set autowrite                   " Write for me when I take any action
-set relativenumber              " Combined with number; line number preference
-set clipboard=unnamed           " Copy/paste in vi with Sierra OS
-set number
-set nowrap
-set showmode
-set tw=80
-set smartcase
-set smarttab
-set smartindent
-set autoindent
-set softtabstop=2
-set shiftwidth=2
-set expandtab
-set incsearch
-set mouse=a
-set completeopt=menuone,menu,longest
-set wildignore+=*\\tmp\\*,*.swp,*.swo,*.zip,.git,.cabal-sandbox
-set wildmode=longest,list,full
-set wildmenu
-set completeopt+=longest
-set t_Co=256
-set cmdheight=1
+" Copy filename
+nmap <Leader>cf :let @+=expand("%")<CR>
 
 " Quick escape q to exit a help file
 " <buffer> means applies to current buffer only
 autocmd Filetype help nmap <buffer> q :q<CR>
 
+" Display .vimrc in a new window
+nmap <leader>forc :sp ${HOME}/.config/haskell-vim-now/vimrc.local<CR>
+nmap <leader>forp :sp ${HOME}/.config/haskell-vim-now/plugins.vim<CR>
+
+" Map esc to remove highlighting of previous search
+nnoremap <esc> :noh<return><esc>
+
+" Navigating between buffers
+" Configured in .vimrc by haskell-vim-now
+nmap <leader>bb :buffers<CR>:buffer<Space>
+nmap <leader>bn :bn<CR>
+nmap <leader>bp :bp<CR>
+" close a buffer without losing my window split
+nmap <leader>bd :bp<bar>sp<bar>bn<bar>bd<CR>
+" switch to the open window with the buffer if exists
+" Note: for quickfix buffers only
+set switchbuf=useopen
+" close every buffer except the current (o = other)
+nmap <leader>bo <c-w>o
+
+" Split window nnoremap <leader>- :sp<CR>
+nnoremap <leader>\ :vsp<CR>
+
+" hlint-refactor-vim keybindings
+map <silent> <leader>hr :call ApplyOneSuggestion()<CR>
+map <silent> <leader>hR :call ApplyOneSuggestion()<CR>
+
+" ghc-mod - type checker
+nmap <silent> <leader>ht :GhcModType<CR>
+nmap <silent> <leader>hT :GhcModTypeInsert<CR>
+nmap <silent> <leader>hs :GhcModSplitFunCase<CR>
+nmap <silent> <leader>he :GhcModTypeClear<CR>
+" other redundant maps
+map <silent> tw :GhcModTypeInsert<CR>
+map <silent> ts :GhcModSplitFunCase<CR>
+map <silent> tq :GhcModType<CR>
+map <silent> te :GhcModTypeClear<CR>
+
+" Display GHC errors and warnings
+nmap <silent> <leader>hc :Neomake ghcmod<CR>
+nmap <silent> <leader>hl :w<CR>:GhcModLint<CR>
+nmap <silent> <leader>hc :w<CR>:GhcModCheck<CR>:GhcModLint<CR>
+
+" DashSearch
+" ===========
+" Send a search term to Dash (documentation viewer)
+nmap <silent> <leader>d <Plug>DashSearch
+let g:dash_activate = 0
+
+" HTML and other tags
+"inoremap <buffer> > ></<C-x><C-o><C-y><C-o>%<CR><C-o>O
+inoremap ><Tab> ><Esc>F<lyt>o</<C-r>"><Esc>O<Space>
+" vim-closetag
+let g:closetag_filenames = '*.html, *,xhtml, *.phtml'
+let g:closetag_xhtml_filenames = '*.xhtml, *.js, *,jsx'
+let g:closetag_emptyTags_caseSensitive = 1
+
+" Hoogle
+nnoremap <silent> <leader>hh :Hoogle<CR>
+" prompt for input
+nnoremap <leader>hH :Hoogle
+" detailed documentation (e.g. "Functor")
+nnoremap <silent> <leader>hi :HoogleInfo<CR>
+" detailed documentation and prompt for input
+nnoremap <leader>hI :HoogleInfo
+" close the Hoogle window
+nnoremap <silent> <leader>hz :HoogleClose<CR>
+
+" vim-airline banners
+" ====================
+let g:airline#extensions#tabline#enabled = 1
+let g:airline_powerline_fonts = 1
+let g:airline_theme='badwolf'
+" integration with neomake
+let g:airline#extensions#neomake#enabled = 1
+let airline#extensions#neomake#error_symbol = 'E:'
+let airline#extensions#neomake#warning_symbol = 'W:'
+
+" haskell uses neco-ghc
+let g:necoghc_enable_detailed_browse = 1
+let g:haskellmode_completion_ghc = 0
+"autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
+"
+" Enable vim's built-in omni-complete feature
+" Note: this is likely set by haskell-vim-now also
+set omnifunc=syntaxcomplete#Complete
+
+" deoplete - gregJS
+let g:deoplete#enable_at_startup = 1
+let g:deoplete#enable_smart_case = 1
+let g:deoplete#enable_camel_case = 1
+let g:deoplete#enable_refresh_always = 1
+let g:deoplete#max_abbr_width = 0
+let g:deoplete#max_menu_width = 0
+let g:deoplete#omni#input_patterns = get(g:,'deoplete#omni#input_patterns',{})
+
+let g:tern_request_timeout = 1
+let g:tern_request_timeout = 6000
+let g:tern#command = ["tern"]
+let g:tern#arguments = ["--persistent"]
+
+let g:used_javascript_libs = 'jquery,underscore,react,redux,chai'
+" Whether to include the types of the completions in the result data. Default: 0
+let g:deoplete#sources#ternjs#types = 1
+" Whether to include documentation strings (if found) in the result data.
+" Default: 0
+let g:deoplete#sources#ternjs#docs = 0
+
+" When on, only completions that match the current word at the given point will
+" be returned. Turn this off to get all results, so that you can filter on the
+" client side. Default: 1
+let g:deoplete#sources#ternjs#filter = 0
+
+" Whether to use a case-insensitive compare between the current word and
+" potential completions. Default 0
+let g:deoplete#sources#ternjs#case_insensitive = 1
+let g:deoplete#enable_ignore_case = 0
+
+" When completing a property and no completions are found, Tern will use some
+" heuristics to try and return some properties anyway. Set this to 0 to
+" turn that off. Default: 1
+let g:deoplete#sources#ternjs#guess = 1
+
+" Determines whether the result set will be sorted. Default: 1
+let g:deoplete#sources#ternjs#sort = 1
+
+" When disabled, only the text before the given position is considered part of
+" the word. When enabled (the default), the whole variable name that the cursor
+" is on will be included. Default: 1
+let g:deoplete#sources#ternjs#expand_word_forward = 1
+
+" Whether to ignore the properties of Object.prototype unless they have been
+" spelled out by at least to characters. Default: 1
+let g:deoplete#sources#ternjs#omit_object_prototype = 1
+
+" Whether to include JavaScript keywords when completing something that is not
+" a property. Default: 0
+let g:deoplete#sources#ternjs#include_keywords = 0
+
+" If completions should be returned when inside a literal. Default: 1
+let g:deoplete#sources#ternjs#in_literal = 1
+
+"Add extra filetypes
+let g:deoplete#sources#ternjs#filetypes = [
+         \ 'jsx',
+         \ 'javascript.jsx',
+         \ 'vue',
+         \ '...'
+         \ ]
+
+if !exists('g:deoplete#omni#input_patterns')
+   let g:deoplete#omni#input_patterns = {}
+endif
+let g:deoplete#disable_auto_complete = 0
+" trigger auto-complete after typing 1 letter (more often set to 2)
+let g:deoplete#auto_complete_start_length = 1
+autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
+
+" tern_for_vim - works in conjunction with deopletejs
+" additional configuration files rely on tern server
+" --> /usr/local/lib/node_modules/tern/defs and plugins
+let g:tern#command = ["tern"]
+let g:tern#arguments = ["--persistent"]
+let g:tern_request_timeout = 1
+" the next setting depends on vim's updatetime
+let g:tern_show_argument_hints = 'on_hold'
+let g:tern_show_signature_in_pum = 1
+let g:tern_map_keys = 1
+
+let g:deoplete#omni#functions = {}
+let g:deoplete#omni#functions.haskell = 'necoghc#omnifunc'
+let g:deoplete#omni#functions.javascript = [
+         \ 'tern#Complete',
+         \ 'jspc#omni'
+         \]
+let g:deoplete#sources = {}
+let g:deoplete#sources._ = ['buffer']
+let g:deoplete#sources['javascript.jsx'] = ['file', 'ultisnips', 'ternjs']
+
+" omnifuncs
+" About: this is a vim setting.  The functionality analyzes the text before the
+" cursor to provide options for future input.  SQL, HTML, CSS, JS and PHP, omni
+" completion operates `out of the box`.  Augmenting the functionality requires
+" the use of `tag files`.  Exuberant Ctags is the prefered plugin.
+" Use <C-X><C-O> while in insert mode to use omni completion.
+augroup omnifuncs
+   autocmd!
+   autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+   autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+   autocmd FileType javascript setlocal omnifunc=tern#Complete
+   "autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+   "autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+   "autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+augroup end
+
+" tern - tern_for_vim
+" enable full signature type on autocomplete
+
+"Add extra filetypes
+let g:tern#filetypes = [
+         \ 'js',
+         \ 'jsx',
+         \ 'javascript.jsx',
+         \ 'html',
+         \ 'css',
+         \ 'vue',
+         \ ]
+"                \ '...'
+
+" set by hvn
+" set completeopt=menuone,menu,longest
+set completeopt+=preview
+
+" neosnippet
+" ===========
+" Note: set iTerm2 to output <M-?> with <Shift><Enter>
+" to enable the imap setting (recall M for meta).
+let g:my_snippet_manager = "neosnippet"
+let g:neosnippet#enable_snipmate_compatibility = 1
+let g:neosnippet#snippets_directory='${HOME}/.config/nvim/snippets'
+let g:neosnippet#disable_runtime_snippets = { '_' : 1, }
+
+" Tweaks to how the IDE like pop-up behaves.
+" neco - autocomplete. Note: may slow the startup
+inoremap <expr> <C-n> pumvisible() ? '<C-n>' :
+  \ '<C-n><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
+
+" Plugin key-mappings.
+" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
+" Jump within a snippet with <C-k> (tab does not work with SuperTab)
+imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+xmap <C-k>     <Plug>(neosnippet_expand_target)
+
+" SuperTab
+" ========
+" supertab - configured by hvn
+let g:SuperTabDefaultCompletionType = "<C-x><C-o>"
+imap <silent> <tab> <C-x><C-o>
+imap <silent> <C-space> <C-x><C-o>
+" close the preview window when you're not using it
+let g:SuperTabClosePreviewOnPopupClose = 1
+
+" vim-javascript
+let g:javascript_plugin_jsdoc = 1
+
+" nerd-tree - configured by hvn
+
+" tabularize - formats text to align in a table format
+" Usage:   :Tab /:\zs   |     :Tab /:
+let g:haskell_tabular = 1
+vmap a= :Tabularize /=<CR>
+vmap a; :Tabularize /::<CR>
+vmap a- :Tabularize /-><CR>
+vmap a{ :Tabularize /{><CR>
+
+" ctrl-p
+" =======
+" Silver search - faster and  hides unwanted
+" settings in neovim .config/nvim/init.vim
+"let g:ctrlp_use_caching = 0
+" Open file menu
+nnoremap <Leader>po :CtrlP<CR>
+" Open buffer menu
+nnoremap <Leader>pb :CtrlPBuffer<CR>
+" Open most recently used files
+nnoremap <Leader>pf :CtrlPMRUFiles<CR>
+
+"END Stephen Diehl changes
+
+" ctags gutentags
+" ===============
+" DEBUG set to 1
+let g:gutentags_trace = 0
+
+" vim-jsx-improve
+" ================
+" Enable jsx for *.js files
+let g:jsx_ext_required = 0
+
+" Neomake (a syntastic replacement)
+" =================================
+" Lint when writing a buffer, and on normal mode changes (after 750ms).
+call neomake#configure#automake('nw', 750)
+let g:neomake_javascript_enabled_makers = ['eslint']
+let g:neomake_open_list = 1
+let g:neomake_verbose = 0   " (0:errors only 1:quiet 2:loud 3:debug)
+
+autocmd FileType javascript :call NeomakeESlintChecker()
+function! NeomakeESlintChecker()
+   let l:npm_bin = ''
+   let l:eslint = 'eslint'
+
+   if executable('npm-which')
+      let l:eslint = split(system('npm-which eslint'))[0]
+      return 0
+   endif
+
+   if executable('npm')
+      let l:npm_bin = split(system('npm bin'), '\n')[0]
+   endif
+
+   if strlen(l:npm_bin) && executable(l:npm_bin . '/eslint')
+      let l:eslint = l:npm_bin . '/eslint'
+   endif
+
+   let b:neomake_javascript_eslint_exe = l:eslint
+endfunction
+
+" DEBUGGING extra messaging - call with :messages
+" let makers = neomake#GetEnabledMakers('javascript')
+" echom string(map(makers, 'v:val.exe'))
+
+" V - deprecated - V
+" hi SignColumn guibg=#83A8C1
+" hi SignColumn ctermbg=black guibg=black
+" hi NeomakeErrorSign ctermfg=red guifg=red
+" hi NeomakeWarningSign ctermfg=yellow guifg=yellow
+" let b:neomake_javascript_eslint_maker = {
+"     \ 'args': ['--no-color', '--format', 'compact', '--config', '~/.eslintrc.json'],
+"     \ 'errorformat': '%f: line %l\, col %c\, %m'
+"     \ }
+" let g:neomake_highlight_columns = 0
+" let b:neomake_place_signs = 1
+" let b:neomake_javascript_eslint_exe = system('PATH=$(npm bin):$PATH && which eslint | tr -d "\n"')
+" END
+
+" neomake keybindings
+nmap <Leader><Space>o :lopen<CR>      " open location window
+nmap <Leader><Space>c :lclose<CR>     " close location window
+nmap <Leader><Space>, :ll<CR>         " go to current error/warning
+nmap <Leader><Space>n :lnext<CR>      " next error/warning
+nmap <Leader><Space>p :lprev<CR>      " previous error/warning
+
+" markdown-preview - STILL looking for a good plugin: just use chrome with
+" a chrome plugin enabled for md files
+
+" Tmux
+" Change the size: height
+call submode#enter_with('grow/shrink', 'n', '', '<leader>j', '<C-w>+')
+call submode#enter_with('grow/shrink', 'n', '', '<leader>k', '<C-w>-')
+call submode#map('grow/shrink', 'n', '', 'j', '<C-w>+')
+call submode#map('grow/shrink', 'n', '', 'k', '<C-w>-')
+
+" Change the size: width
+call submode#enter_with('grow/shrink', 'n', '', '<leader>h', '<C-w><')
+call submode#enter_with('grow/shrink', 'n', '', '<leader>l', '<C-w>>')
+call submode#map('grow/shrink', 'n', '', 'h', '<C-w><')
+call submode#map('grow/shrink', 'n', '', 'l', '<C-w>>')
+
+"disable submode timeouts:
+let g:submode_timeout = 800
+" don't consume submode-leaving key
+let g:submode_keep_leaving_key = 1
+
+" zoom a vim pane, <C-w>= to re-balance
+nnoremap <leader>z :wincmd _<cr>:wincmd \|<cr>
+nnoremap <leader>Z :wincmd =<cr><Paste>
+
+" Working with Sessions vim-sessions
+" default: <CR-S><CR-S> to save
+" default: <CR-S><CR-R> to restore
+nnoremap <leader>so :OpenSession
+nnoremap <leader>ss :SaveSession
+nnoremap <leader>sd :DeleteSession<CR>
+nnoremap <leader>sc :CloseSession<CR>
+" Note: <leader>sh  :leftabove vnew<CR>
+" and others are used to create windows
+
+" Using vim-slime for sending text to tmux (like Runner)
+"let g:slime_target = "tmux"
+
+" Default saving of sessions
+let g:session_autosave = 'no'
+
+" " Save folds etc..
+" set foldnestmax=2
+" set foldmethod=syntax
+" " ... if using manual
+" augroup AutoSaveFolds
+"    autocmd!
+"    if &foldmethod ==# "manual"
+"       autocmd BufWinLeave * silent! mkview
+"       autocmd BufWinEnter * silent! loadview
+"    endif
+" augroup END
+
+
+" autocomplete
+augroup autocmds
+   autocmd!
+
+   " Change pwd to current buffer (required for MkDir)
+   " autocmd BufWinEnter * silent! :lcd%:p:h
+
+   " Miscellaneous file types.
+   autocmd BufNewFile,BufRead .babelrc set filetype=javascript
+   autocmd BufNewFile,BufRead .eslintrc, .reduxrc set filetype=json
+   autocmd BufNewFile,BufRead gitconfig set filetype=gitconfig
+   autocmd BufNewFile,BufRead .jsx set filetype=javascript
+
+   " oh-my-zsh file types
+   autocmd BufNewFile,BufRead *.zsh-theme set filetype=sh
+   autocmd BufNewFile,BufRead *.zsh set filetype=sh
+
+   " Always want spellcheck for text files.
+   autocmd BufNewFile,BufRead *.txt,*.md,*.mkd,*.markdown,*.rst setlocal spell
+   autocmd FileType gitcommit setlocal spell
+
+   " Open quickfix window after any grep.
+   autocmd QuickFixCmdPost *grep* cwindow
+
+   " Resize panes whenever containing window resized.
+   autocmd VimResized * wincmd =
+
+   " Set neomake to trigger on save
+   " Note: This is also set to trigger in normal mode
+   "       after 75 ms
+   autocmd BufWritePost * Neomake
+
+augroup END
+
+" set word wrap for the quickfix window
+augroup quickfix
+   autocmd!
+   autocmd FileType qf setlocal wrap
+augroup END
+
+" Low vim-plug timeout to get around issue where installing fails sometimes
+" and have to wait 60 seconds for timeout.
+let g:plug_timeout = 5
+
+let g:vim_json_syntax_conceal = 0 " Don't hide Json syntax.
+
+set hidden                      " Allow buffer change w/o saving
+set history=1000                " Remember last 1000 commands
+set viminfo='100,f1             " save marks and jumps for 100 files
+set ignorecase                  " Make searching case insensitive
+set smartcase                   " ... unless the query has capital letters.
+set gdefault                    " Use 'g' flag by default with :s/foo/bar/.
+set magic                       " Use 'magic' patterns (extended regular expressions).
+
+set undofile
+set undolevels=1000
+set splitbelow                  " Horizontal splits - below
+set splitright                  " Vertical splits - right
+set scrolloff=10                " Keep at least X lines below cursor
+set autowrite                   " Write for me when I take any action
+set relativenumber              " Combined with number; line number preference
+set clipboard=unnamed           " Copy/paste in vi with Sierra OS
+set encoding=UTF-8
+set showmode
+set wildignore+=*\\tmp\\*,*.swp,*.swo,*.zip,.git,.cabal-sandbox
+set ut=1000                    " Change updatetime to faster than default 4 sec
+
+" (beware: faster than 1 sec -> prone to more bugs)
+"set listchars=tab:▸\ ,eol:¬,extends:❯,precedes:❮,space:·
+"set showbreak=↪
+"set visualbell " No noise just flash
+
+" Options configured by haskell-vim-now
+"set number                      " Display line numbers beside buffer
+"set nocompatible                " Don't maintain compatibilty with Vi
+"set lazyredraw                  " Don't update while executing macros
+"set backspace=indent,eol,start  " Sane backspace behavior
+"set smartcase
+"set smarttab
+"set smartindent
+"set autoindent
+"set softtabstop=2
+"set shiftwidth=2
+"set expandtab
+"set incsearch
+"set mouse=a
+"set completeopt=menuone,menu,longest
+"set wildmode=longest,list,full
+"set wildmenu
+"set t_Co=256
+"set cmdheight=1
+
+" indentLine
+" ===================
+let g:indentLine_char = '┊'
+let g:indentLine_fileTypeExclude = ['text','sh']
+"set conceallevel=1
+let g:indentLine_faster=1
+let g:indentLine_conceallevel=1
+let g:indentLine_setConceal=1
+" color scheme
+let g:indentLine_color_term=236
+let g:indentLine_bgcolor_term='NONE'
+" required if termguicolors is set
+let g:indentLine_color_gui='#1E1E1E'  " #303030
+let g:indentLine_bgcolor_gui='NONE'
+autocmd Filetype json let g:indentLine_setConceal=0
+
+" Syntax highlighting
+" ===================
+syntax on
+filetype on
+filetype plugin on
+filetype plugin indent on
+filetype indent on
+if !exists("g:syntax_on")
+   syntax enable
+endif
+
+" Command completion
+" ==================
+set wildmenu
+set wildmode=longest,list,full
+set wildignore+=build,cache,dist,coverage,node_modules
+
+" Autoscroll
+" ==========
+set scrolloff=10
+set sidescrolloff=15
+set sidescroll=1
+
+" Status Line
+" ===========
+set laststatus=2
+
+" Visual tweaks
+" =============
+"set cursorcolumn " Highlight the column of the cursor
+"set number " Display number on the sidebar
+"set relativenumber
+set textwidth=120
+set colorcolumn=+1
+set nowrap
+set linebreak
+
+" Folding
+" =======
+set foldmethod=syntax
+" Note: nofolenable gets toggled with the first use of zc
+"       setting the value here now as `no` prevents folds
+"       being closed upon opening the buffer.
+set foldnestmax=10
+set nofoldenable
+
+" Change directory automatically for C-x C-f
+" ==========================================
+set autochdir  " change working dir to current buffer
+
+" Real programmers don't use TABs but spaces
+" ==========================================
+set tabstop=3
+set softtabstop=3
+set shiftwidth=3
+set expandtab
+set autoindent
+set smartindent
+set smarttab
+
+" Colorscheme
+" ===========
+"set t_Co=256 " set by hvn, ignored by nvim anyway
+"TESTING - seems to be ok without this line
+"tmux configures this setting
+set termguicolors    " Enable true color support in terminal
+set background=dark  " best for my transparent term configuration
+colorscheme wombat256mod
+
+" Deprecated; generates error in :CheckHealth
+"let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1
+let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+
+" vim-jsx-pretty
+" ==============
+let g:vim_jsx_pretty_colorful_config = 1
+
+" Remove whitespace with :W
+" ==========================
 " Whitespace removal and application with :W
 fun! TrimWhitespace()
-    let l:save_cursor = getpos('.')
-    %s/\s\+$//e
-    call setpos('.', l:save_cursor)
+   let l:save_cursor = getpos('.')
+   %s/\s\+$//e
+   call setpos('.', l:save_cursor)
 endfun
 " The command to access it :TrimWhitespace
 command! -bar TrimWhitespace call TrimWhitespace()
 " :W to execute the TrimWhitespace when saving the file
 command! W TrimWhitespace | w
 
-" Lift the active window when I scroll to the bottom of the file
-function! NoScrollAtEOF()
-  let curpos = getpos('.')
-  let lnum = get(curpos, 1, -1)
-  let len = line('$')
-  if lnum + winheight(0) >= len
-    normal! zb
-  endif
+" Auto magically Mkdir
+" ====================
+" Conditionaly create the parent directory when writing to disk
+" <afile> refers to the file we are saving
+" :p is a modifier that expands to full filename
+" :h is a modifier that removes the file from full filename
+" :t is a modifier that generates the filename with extension
+" "p" is the flag that will create all the parent directories
+autocmd BufWritePre * call MkDir()
+function! MkDir()
+   if !isdirectory(expand("<afile>:p:h"))
+      let confirmation=confirm("Create a new directory?", "&Yes\n&No")
+      if confirmation == 1
+         call mkdir(expand("<afile>:p:h"), "p")
+         lcd %:p:h
+         saveas %:t
+         echom "Created a new directory:" expand("<afile>:p:h")
+         let buf_del = bufnr("$")
+         exe "bd" . buf_del
+      endif
+      redraw
+   endif
+endfunction
+
+" Logging
+function! ToggleVerbose()
+   if !&verbose
+      set verbosefile=~/.log/vim/verbose.log
+      set verbose=15
+   else
+      set verbose=0
+      set verbosefile=
+   endif
+endfunction
+
+" Text file settings
+fun! ToggleText()
+   if !&wrap
+      set wrap linebreak nolist
+      set textwidth=0
+      set wrapmargin=0
+   else
+      set nowrap
+      set nolinebreak
+      set list
+   endif
 endfunction
 " the key binding to call the function
-nnoremap <c-f> <c-f>:call NoScrollAtEOF()<cr>
+nnoremap <leader>t :call ToggleText()<CR>
 
+" Active Directory functions
+autocmd BufRead *
+         \ call SetProjectRoot()
+" netrw: follow symlink and set working directory
+autocmd CursorMoved silent *
+" short circuit for non-netrw files
+         \ if &filetype == 'netrw' |
+         \   call FollowSymlink() |
+         \   call SetProjectRoot() |
+         \ endif
+" symlinked...
+" function! FollowSymlink()
+"    let current_file = expand('%:p')
+"    " check if file type is a symlink
+"    if getftype(current_file) == 'link'
+"       " if it is a symlink resolve to the actual file path
+"       "   and open the actual file
+"       let actual_file = resolve(current_file)
+"       silent! execute 'file ' . actual_file
+"    end
+" endfunction
+" set working directory to git project root if exists
+function! SetProjectRoot()
+   " default to the current file's directory
+   lcd %:p:h
+   let git_dir = system("git rev-parse --show-toplevel")
+   " See if the command output starts with 'fatal' (if it does, not in a git repo)
+   let is_not_git_dir = matchstr(git_dir, '^fatal:.*')
+   " if git project, change local directory to git project root
+   if empty(is_not_git_dir)
+      lcd `=git_dir`
+   endif
+endfunction
 
-" Display and quit with  NerdTree
-map <C-n> :NERDTreeToggle<CR>
-" Quit vim when NerdTree is the only tab open
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+" Color management
+" ================
+" Note:
+" 1. Setting termguicolors will alter behavior
+" 2. :help colorscheme for more information
+"
+" Utility fn to reveal current color scheme
+" Usage: :call ShowColorSchemeName()
+function! ShowColorSchemeName()
+   try
+      echo g:colors_name
+   catch /^Vim:E121/
+      echo "default
+   endtry
+endfunction
+" Otherwise: hi: Normal
 
-" Complement use of search file CtrIP
-" Make CtrlP use ag for listing the files. Way faster and no useless files.
-let g:ctrlp_user_command = 'ag %s -l --hidden --nocolor -g ""'
-let g:ctrlp_use_caching = 0
-let g:ackprg = 'ag --nogroup --nocolor --column'   "silver_search
+" Utility fn to reveal highlight group of word below the cursor
+" set statusline+=%{HiGroup()}
+function! HiGroup()
+   return synIDattr(synID(line("."),col("."),1),"name")
+endfunction
 
-" Color coding line numbers
-" NOTE: this is configured by haskell-vim-now
-"       It's unclear if the full rc file is reloaded
-"       without restarting vim...
-highlight LineNr ctermfg=250
-highlight Comment ctermfg=122
-highlight Function ctermfg=133
-" clternative ctermbg=157
+" Color scheme
+" First configured in .config/haskell-vim-now/.vmrc (symlink: ~/.vimrc):
+" 1. Plug 'vim-scripts/wombat256'
+" 2. Color display color scheme section of .vimrc (wombat256mod)
+" 3. Over-written here
+"colorscheme wombat256mod
+"colorscheme monokai
+"
+" TESTING
+" " Possible improved coordination of transparent effect
+" if &term =~ '256color'
+"   " disable Background Color Erase (BCE) so that color schemes
+"   " render properly when inside 256-color tmux and GNU screen.
+"   " see also http://snk.tuxfamily.org/log/vim-256color-bce.html
+"   set t_ut=
+" endif
+
+" Custom colors
+" NOTE: using iTerm2 v3 the colors below are now active
+"       Call :hi to see a full list of syntax objects
+"       and rules.
+"unlet g:colors_name
+
+" Code groups
+hi Normal        ctermbg=NONE guibg=NONE gui=NONE
+hi String        gui=NONE
+hi Comment       ctermfg=72   guifg=#83A8C1 ctermbg=NONE guibg=NONE gui=NONE "#539976 #478365  #5FAF87
+hi Todo          ctermfg=234  guifg=#1C1C1C ctermbg=227 guibg=#FFFF5F gui=NONE
+
+" this is a problem with the haskell setup
+hi! link hsLRArrowTail haskellOperators
+
+" Window and folds
+hi LineNr       ctermfg=244  guifg=#808080
+hi CursorLineNR ctermfg=227  guifg=#FFFF5F
+hi VertSplit    ctermfg=51   guifg=#00FFFF "turquoise
+hi StatusLine   ctermfg=51   guifg=#00FFFF "turquoise
+hi StatusLineNC ctermfg=51   guifg=#00FFFF "turquoise
+hi Folded       ctermfg=250  ctermbg=235 guifg=#A8A8A8 guibg=#262626
+hi FoldedColumn ctermfg=250  ctermbg=235 guifg=#A8A8A8 guibg=#262626
+
+" vim-airline customization
+" =========================
+" colors[guifg, guibg, ctermfg, ctermbg]
+let g:airline_theme_patch_func = 'AirlineThemePatch'
+function! AirlineThemePatch(palette)
+   if g:airline_theme == 'badwolf'
+      "let s:N1 = [ '#141413' , '#aeee00' , 232 , 154 ] " blackestgravel & lime
+      "let s:N2 = [ '#f4cf86' , '#45413b' , 222 , 238 ] " dirtyblonde    & deepgravel
+      "let s:N3 = [ '#8cffba' , '#404040' , 121 , 235 ] " saltwatertaffy & darkgravel 242321
+      "let s:N4 = [ '#666462' , 241 ]                   " mediumgravel
+      "let s:I1 = [ '#141413' , '#0a9dff' , 232 , 39  ] " blackestgravel & tardis
+      "let s:I2 = [ '#f4cf86' , '#005fff' , 222 , 27  ] " dirtyblonde    & facebook
+      "let s:I3 = [ '#0a9dff' , '#404040' , 39  , 235 ] " tardis         & darkgravel
+      ""let s:IA = [ s:N3[1] , s:N2[1] , s:N3[3] , s:N2[3] , '' ]
+      "let s:IA = [ '#9E9E9E' , '#141414' , 248 , 235 , '' ]
+
+      " NOTES: I changed: N3[1], I3[1] to #404040
+      "                   IA[1]        to "141414
+      " let g:airline#themes#badwolf#palette.normal = airline#themes#generate_color_map(s:N1, s:N2, s:N3)
+      " let g:airline#themes#badwolf#palette.insert = airline#themes#generate_color_map(s:I1, s:I2, s:I3)
+      " let g:airline#themes#badwolf#palette.inactive = airline#themes#generate_color_map(s:IA, s:IA, s:IA)
+
+      " an alternative/official way to generate the patch
+      for colors in values(a:palette.inactive)
+         let colors[0] = '#9E9E9E'
+         let colors[1] = '#141414'
+         let colors[2] = 248
+         let colors[3] = 235
+      endfor
+   endif
+endfunction
