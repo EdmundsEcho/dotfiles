@@ -7,7 +7,7 @@
 "-------------------------
 set nocompatible " No VI compatibility
 set autoread     " Detect file changes outside vim
-au FocusGained * :checktime
+" au FocusGained * :checktime
 
 " disable Python 2 support (presence of entry -> disable)
 let g:loaded_python_provider = 1
@@ -16,6 +16,22 @@ let g:python3_host_prog = "/usr/local/bin/python3.6"
 
 " esc key with cursor moved forward
 imap df <esc>l
+
+" Tweaks to how the IDE like pop-up behaves.
+" remap enter when the completion menu is open (now selects the item)
+inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+
+" keep searching while typing <C-n> behaves like a down arrow
+inoremap <expr> <C-n> pumvisible() ? '<C-n>' :
+  \ '<C-n><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
+
+" trigger auto-complete after typing 1 letter (buffer)
+let g:deoplete#auto_complete_start_length = 99
+"autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
+
+
+inoremap <expr> <M-,> pumvisible() ? '<C-n>' :
+  \ '<C-x><C-o><C-n><C-p><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
 
 " Leader key to access my own settings
 let mapleader = "\<SPACE>"
@@ -82,7 +98,7 @@ nmap <leader>bd :bp<bar>sp<bar>bn<bar>bd<CR>
 " switch to the open window with the buffer if exists
 " Note: for quickfix buffers only
 set switchbuf=useopen
-" close every buffer except the current (o = other)
+" close every window except the current (o = other)
 nmap <leader>bo <c-w>o
 
 " Split window nnoremap <leader>- :sp<CR>
@@ -103,10 +119,10 @@ map <silent> ts :GhcModSplitFunCase<CR>
 map <silent> tq :GhcModType<CR>
 map <silent> te :GhcModTypeClear<CR>
 
-" Display GHC errors and warnings
-nmap <silent> <leader>hc :Neomake ghcmod<CR>
-nmap <silent> <leader>hl :w<CR>:GhcModLint<CR>
-nmap <silent> <leader>hc :w<CR>:GhcModCheck<CR>:GhcModLint<CR>
+" " Display GHC errors and warnings
+" nmap <silent> <leader>hc :Neomake ghcmod<CR>
+" nmap <silent> <leader>hl :w<CR>:GhcModLint<CR>
+" nmap <silent> <leader>hc :w<CR>:GhcModCheck<CR>:GhcModLint<CR>
 
 " DashSearch
 " ===========
@@ -138,10 +154,10 @@ nnoremap <silent> <leader>hz :HoogleClose<CR>
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 1
 let g:airline_theme='badwolf'
-" integration with neomake
-let g:airline#extensions#neomake#enabled = 1
-let airline#extensions#neomake#error_symbol = 'E:'
-let airline#extensions#neomake#warning_symbol = 'W:'
+" " integration with neomake
+" let g:airline#extensions#neomake#enabled = 1
+" let airline#extensions#neomake#error_symbol = 'E:'
+" let airline#extensions#neomake#warning_symbol = 'W:'
 
 " haskell uses neco-ghc
 let g:necoghc_enable_detailed_browse = 1
@@ -150,16 +166,21 @@ let g:haskellmode_completion_ghc = 0
 "
 " Enable vim's built-in omni-complete feature
 " Note: this is likely set by haskell-vim-now also
-set omnifunc=syntaxcomplete#Complete
+" TESTING
+"set omnifunc=syntaxcomplete#Complete
 
 " deoplete - gregJS
+let g:deoplete#complete_method = 'complete'
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#enable_smart_case = 1
 let g:deoplete#enable_camel_case = 1
 let g:deoplete#enable_refresh_always = 1
 let g:deoplete#max_abbr_width = 0
 let g:deoplete#max_menu_width = 0
+let g:deoplete#omni#input_patterns = {}
 let g:deoplete#omni#input_patterns = get(g:,'deoplete#omni#input_patterns',{})
+let g:deoplete#omni#input_patterns.javascript = '[^. \t]\.\w*'
+"call deoplete#custom#set('_', 'matchers', ['matcher_full_fuzzy'])
 
 let g:tern_request_timeout = 1
 let g:tern_request_timeout = 6000
@@ -171,12 +192,12 @@ let g:used_javascript_libs = 'jquery,underscore,react,redux,chai'
 let g:deoplete#sources#ternjs#types = 1
 " Whether to include documentation strings (if found) in the result data.
 " Default: 0
-let g:deoplete#sources#ternjs#docs = 0
+let g:deoplete#sources#ternjs#docs = 1
 
 " When on, only completions that match the current word at the given point will
 " be returned. Turn this off to get all results, so that you can filter on the
 " client side. Default: 1
-let g:deoplete#sources#ternjs#filter = 0
+let g:deoplete#sources#ternjs#filter = 1
 
 " Whether to use a case-insensitive compare between the current word and
 " potential completions. Default 0
@@ -209,8 +230,19 @@ let g:deoplete#sources#ternjs#in_literal = 1
 
 "Add extra filetypes
 let g:deoplete#sources#ternjs#filetypes = [
+         \ 'js',
          \ 'jsx',
          \ 'javascript.jsx',
+         \ 'vue',
+         \ '...'
+         \ ]
+"Add extra filetypes
+let g:tern#filetypes = [
+         \ 'js',
+         \ 'jsx',
+         \ 'javascript.jsx',
+         \ 'html',
+         \ 'css',
          \ 'vue',
          \ '...'
          \ ]
@@ -218,17 +250,14 @@ let g:deoplete#sources#ternjs#filetypes = [
 if !exists('g:deoplete#omni#input_patterns')
    let g:deoplete#omni#input_patterns = {}
 endif
-let g:deoplete#disable_auto_complete = 0
-" trigger auto-complete after typing 1 letter (more often set to 2)
-let g:deoplete#auto_complete_start_length = 1
-autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
-
+" TESTING: maybe  just eliminate the entry to allow it to be part of auto popup
+"let g:deoplete#disable_auto_complete = 0
+"
 " tern_for_vim - works in conjunction with deopletejs
 " additional configuration files rely on tern server
 " --> /usr/local/lib/node_modules/tern/defs and plugins
 let g:tern#command = ["tern"]
 let g:tern#arguments = ["--persistent"]
-let g:tern_request_timeout = 1
 " the next setting depends on vim's updatetime
 let g:tern_show_argument_hints = 'on_hold'
 let g:tern_show_signature_in_pum = 1
@@ -238,11 +267,16 @@ let g:deoplete#omni#functions = {}
 let g:deoplete#omni#functions.haskell = 'necoghc#omnifunc'
 let g:deoplete#omni#functions.javascript = [
          \ 'tern#Complete',
-         \ 'jspc#omni'
          \]
 let g:deoplete#sources = {}
+"let g:deoplete#sources['javascript.jsx'] = ['file', 'ultisnips', 'ternjs']
+let g:deoplete#sources['javascript.jsx'] = ['file', 'neosnippet', 'ternjs']
 let g:deoplete#sources._ = ['buffer']
-let g:deoplete#sources['javascript.jsx'] = ['file', 'ultisnips', 'ternjs']
+call deoplete#custom#set('_', 'sorters', ['sorter_word'])
+call deoplete#custom#set('ternjs', 'rank', 9000)
+call deoplete#custom#set('neosnippet', 'rank', 8000)
+call deoplete#custom#set('buffer', 'rank', 5000)
+call deoplete#custom#set('file', 'rank', 2000)
 
 " omnifuncs
 " About: this is a vim setting.  The functionality analyzes the text before the
@@ -252,9 +286,9 @@ let g:deoplete#sources['javascript.jsx'] = ['file', 'ultisnips', 'ternjs']
 " Use <C-X><C-O> while in insert mode to use omni completion.
 augroup omnifuncs
    autocmd!
+   autocmd FileType javascript,jsx,javascript.jsx setlocal omnifunc=tern#Complete
    autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
    autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-   autocmd FileType javascript setlocal omnifunc=tern#Complete
    "autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
    "autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
    "autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
@@ -263,16 +297,6 @@ augroup end
 " tern - tern_for_vim
 " enable full signature type on autocomplete
 
-"Add extra filetypes
-let g:tern#filetypes = [
-         \ 'js',
-         \ 'jsx',
-         \ 'javascript.jsx',
-         \ 'html',
-         \ 'css',
-         \ 'vue',
-         \ ]
-"                \ '...'
 
 " set by hvn
 " set completeopt=menuone,menu,longest
@@ -287,10 +311,6 @@ let g:neosnippet#enable_snipmate_compatibility = 1
 let g:neosnippet#snippets_directory='${HOME}/.config/nvim/snippets'
 let g:neosnippet#disable_runtime_snippets = { '_' : 1, }
 
-" Tweaks to how the IDE like pop-up behaves.
-" neco - autocomplete. Note: may slow the startup
-inoremap <expr> <C-n> pumvisible() ? '<C-n>' :
-  \ '<C-n><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
 
 " Plugin key-mappings.
 " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
@@ -307,8 +327,31 @@ imap <silent> <tab> <C-x><C-o>
 imap <silent> <C-space> <C-x><C-o>
 " close the preview window when you're not using it
 let g:SuperTabClosePreviewOnPopupClose = 1
+"TESTING - try to prevent buffer-based suggestions take over
+let g:SuperTabDefaultCompletionType = "context"
+
+" ALE - live linting
+" ==================
+let g:ale_set_quickfix = 1
+let g:ale_sign_column_always = 1
+let g:airline#extensions#ale#enabled = 1
+"let g:ale_linters = {'jsx': ['eslint']}
+let b:ale_linters = {
+      \'jsx': ['eslint','jscs'],
+      \'javascript': ['eslint','jscs'],
+      \'html': ['tidy']
+      \}
+
+let g:ale_fixers = {
+      \'jsx': ['eslint'],
+      \'javascript': ['eslint'],
+      \'html': ['tidy'],
+      \}
+
+let g:ale_linter_aliases = {'jsx': 'css'}
 
 " vim-javascript
+" ==============
 let g:javascript_plugin_jsdoc = 1
 
 " nerd-tree - configured by hvn
@@ -335,8 +378,8 @@ nnoremap <Leader>pf :CtrlPMRUFiles<CR>
 
 "END Stephen Diehl changes
 
-" ctags gutentags
-" ===============
+" ctags gutentags -- <C-[>
+" ========================
 " DEBUG set to 1
 let g:gutentags_trace = 0
 
@@ -345,59 +388,76 @@ let g:gutentags_trace = 0
 " Enable jsx for *.js files
 let g:jsx_ext_required = 0
 
-" Neomake (a syntastic replacement)
-" =================================
-" Lint when writing a buffer, and on normal mode changes (after 750ms).
-call neomake#configure#automake('nw', 750)
-let g:neomake_javascript_enabled_makers = ['eslint']
-let g:neomake_open_list = 1
-let g:neomake_verbose = 0   " (0:errors only 1:quiet 2:loud 3:debug)
+"" Neomake (a syntastic replacement)
+"" =================================
+"" Manual usage: Open a JS file, then run  :Neomake eslint
+"" Lint when writing a buffer, and on normal mode changes (after 750ms).
+"" TODO: Make sure it does not parse the quickfix window
+""       It uses several parsers by default. It seems it does not know
+""       where the plugins are for all of them (e.g., flowtype).
+""call neomake#configure#automake('nw', 750)
+"" Neomake has default values; for JS it includes 3 makers
+"" Here setting to only eslint
+"let g:neomake_javascript_enabled_makers = ['eslint']
+"let g:neomake_jsx_enable_makers = ['eslint']
+"let g:neomake_json_enable_makers = ['jsonlint']
+"let g:neomake_css_enable_makers = ['csslint', 'stylelint']
+"let g:neomake_html_enable_makers = ['tidy', 'htmlhint']
+"let g:neomake_sql_enable_makers = ['sqllint']
 
-autocmd FileType javascript :call NeomakeESlintChecker()
-function! NeomakeESlintChecker()
-   let l:npm_bin = ''
-   let l:eslint = 'eslint'
+"let g:neomake_open_list = 2
+"" DEBUGGING
+"" Log-level in the vim messages
+"let g:neomake_verbose = 0   " (0:errors only 1:quiet 2:loud 3:debug)
+"" Logging in a separate terminal
+"" Usage: tail -f /tmp/neomake.log in a separate terminal
+"let g:neomake_logfile = '/tmp/neomake.log'
 
-   if executable('npm-which')
-      let l:eslint = split(system('npm-which eslint'))[0]
-      return 0
-   endif
+"autocmd FileType javascript :call NeomakeESlintChecker()
+"function! NeomakeESlintChecker()
+"   let l:npm_bin = ''
+"   let l:eslint = 'eslint'
 
-   if executable('npm')
-      let l:npm_bin = split(system('npm bin'), '\n')[0]
-   endif
+"   if executable('npm-which')
+"      let l:eslint = split(system('npm-which eslint'))[0]
+"      return 0
+"   endif
 
-   if strlen(l:npm_bin) && executable(l:npm_bin . '/eslint')
-      let l:eslint = l:npm_bin . '/eslint'
-   endif
+"   if executable('npm')
+"      let l:npm_bin = split(system('npm bin'), '\n')[0]
+"   endif
 
-   let b:neomake_javascript_eslint_exe = l:eslint
-endfunction
+"   if strlen(l:npm_bin) && executable(l:npm_bin . '/eslint')
+"      let l:eslint = l:npm_bin . '/eslint'
+"   endif
 
-" DEBUGGING extra messaging - call with :messages
-" let makers = neomake#GetEnabledMakers('javascript')
-" echom string(map(makers, 'v:val.exe'))
+"   let b:neomake_javascript_eslint_exe = l:eslint
+"endfunction
 
-" V - deprecated - V
-" hi SignColumn guibg=#83A8C1
-" hi SignColumn ctermbg=black guibg=black
-" hi NeomakeErrorSign ctermfg=red guifg=red
-" hi NeomakeWarningSign ctermfg=yellow guifg=yellow
-" let b:neomake_javascript_eslint_maker = {
-"     \ 'args': ['--no-color', '--format', 'compact', '--config', '~/.eslintrc.json'],
-"     \ 'errorformat': '%f: line %l\, col %c\, %m'
-"     \ }
-" let g:neomake_highlight_columns = 0
-" let b:neomake_place_signs = 1
-" let b:neomake_javascript_eslint_exe = system('PATH=$(npm bin):$PATH && which eslint | tr -d "\n"')
-" END
+"" DEBUGGING extra messaging - call with :messages
+" " let makers = neomake#GetEnabledMakers('javascript')
+" " echom string(map(makers, 'v:val.exe'))
 
-" neomake keybindings
-nmap <Leader><Space>o :lopen<CR>      " open location window
-nmap <Leader><Space>c :lclose<CR>     " close location window
-nmap <Leader><Space>, :ll<CR>         " go to current error/warning
-nmap <Leader><Space>n :lnext<CR>      " next error/warning
-nmap <Leader><Space>p :lprev<CR>      " previous error/warning
+" " V - deprecated - V
+" " hi SignColumn guibg=#83A8C1
+" " hi SignColumn ctermbg=black guibg=black
+" " hi NeomakeErrorSign ctermfg=red guifg=red
+" " hi NeomakeWarningSign ctermfg=yellow guifg=yellow
+" " let b:neomake_javascript_eslint_maker = {
+" "     \ 'args': ['--no-color', '--format', 'compact', '--config', '~/.eslintrc.json'],
+" "     \ 'errorformat': '%f: line %l\, col %c\, %m'
+" "     \ }
+" " let g:neomake_highlight_columns = 0
+" " let b:neomake_place_signs = 1
+" " let b:neomake_javascript_eslint_exe = system('PATH=$(npm bin):$PATH && which eslint | tr -d "\n"')
+" " END
+
+" " neomake keybindings
+" nmap <Leader><Space>o :lopen<CR>      " open location window
+" nmap <Leader><Space>c :lclose<CR>     " close location window
+" nmap <Leader><Space>, :ll<CR>         " go to current error/warning
+" nmap <Leader><Space>n :lnext<CR>      " next error/warning
+" nmap <Leader><Space>p :lprev<CR>      " previous error/warning
 
 " markdown-preview - STILL looking for a good plugin: just use chrome with
 " a chrome plugin enabled for md files
@@ -455,42 +515,42 @@ let g:session_autosave = 'no'
 
 " autocomplete
 augroup autocmds
-   autocmd!
+  autocmd!
 
-   " Change pwd to current buffer (required for MkDir)
-   " autocmd BufWinEnter * silent! :lcd%:p:h
+  " Change pwd to current buffer (required for MkDir)
+  " autocmd BufWinEnter * silent! :lcd%:p:h
 
-   " Miscellaneous file types.
-   autocmd BufNewFile,BufRead .babelrc set filetype=javascript
-   autocmd BufNewFile,BufRead .eslintrc, .reduxrc set filetype=json
-   autocmd BufNewFile,BufRead gitconfig set filetype=gitconfig
-   autocmd BufNewFile,BufRead .jsx set filetype=javascript
+  " Miscellaneous file types.
+  autocmd BufNewFile,BufRead .babelrc set filetype=javascript
+  autocmd BufNewFile,BufRead .eslintrc, .reduxrc set filetype=json
+  autocmd BufNewFile,BufRead gitconfig set filetype=gitconfig
+  autocmd BufNewFile,BufRead .jsx set filetype=javascript
 
-   " oh-my-zsh file types
-   autocmd BufNewFile,BufRead *.zsh-theme set filetype=sh
-   autocmd BufNewFile,BufRead *.zsh set filetype=sh
+  " oh-my-zsh file types
+  autocmd BufNewFile,BufRead *.zsh-theme set filetype=sh
+  autocmd BufNewFile,BufRead *.zsh set filetype=sh
 
-   " Always want spellcheck for text files.
-   autocmd BufNewFile,BufRead *.txt,*.md,*.mkd,*.markdown,*.rst setlocal spell
-   autocmd FileType gitcommit setlocal spell
+  " Always want spellcheck for text files.
+  autocmd BufNewFile,BufRead *.txt,*.md,*.mkd,*.markdown,*.rst setlocal spell
+  autocmd FileType gitcommit setlocal spell
 
-   " Open quickfix window after any grep.
-   autocmd QuickFixCmdPost *grep* cwindow
+  " Open quickfix window after any grep.
+  autocmd QuickFixCmdPost *grep* cwindow
 
-   " Resize panes whenever containing window resized.
-   autocmd VimResized * wincmd =
+  " Resize panes whenever containing window resized.
+  autocmd VimResized * wincmd =
 
-   " Set neomake to trigger on save
-   " Note: This is also set to trigger in normal mode
-   "       after 75 ms
-   autocmd BufWritePost * Neomake
+  " Set neomake to trigger on save
+  " Note: This is also set to trigger in normal mode
+  "       after 75 ms
+  "" autocmd BufWritePost * Neomake
 
 augroup END
 
 " set word wrap for the quickfix window
 augroup quickfix
-   autocmd!
-   autocmd FileType qf setlocal wrap
+  autocmd!
+  autocmd FileType qf setlocal wrap
 augroup END
 
 " Low vim-plug timeout to get around issue where installing fails sometimes
@@ -569,7 +629,7 @@ filetype plugin on
 filetype plugin indent on
 filetype indent on
 if !exists("g:syntax_on")
-   syntax enable
+  syntax enable
 endif
 
 " Command completion
@@ -613,9 +673,9 @@ set autochdir  " change working dir to current buffer
 
 " Real programmers don't use TABs but spaces
 " ==========================================
-set tabstop=3
-set softtabstop=3
-set shiftwidth=3
+set tabstop=2
+set softtabstop=2
+set shiftwidth=2
 set expandtab
 set autoindent
 set smartindent
@@ -640,9 +700,9 @@ let g:vim_jsx_pretty_colorful_config = 1
 " ==========================
 " Whitespace removal and application with :W
 fun! TrimWhitespace()
-   let l:save_cursor = getpos('.')
-   %s/\s\+$//e
-   call setpos('.', l:save_cursor)
+  let l:save_cursor = getpos('.')
+  %s/\s\+$//e
+  call setpos('.', l:save_cursor)
 endfun
 " The command to access it :TrimWhitespace
 command! -bar TrimWhitespace call TrimWhitespace()
@@ -659,56 +719,56 @@ command! W TrimWhitespace | w
 " "p" is the flag that will create all the parent directories
 autocmd BufWritePre * call MkDir()
 function! MkDir()
-   if !isdirectory(expand("<afile>:p:h"))
-      let confirmation=confirm("Create a new directory?", "&Yes\n&No")
-      if confirmation == 1
-         call mkdir(expand("<afile>:p:h"), "p")
-         lcd %:p:h
-         saveas %:t
-         echom "Created a new directory:" expand("<afile>:p:h")
-         let buf_del = bufnr("$")
-         exe "bd" . buf_del
-      endif
-      redraw
-   endif
+  if !isdirectory(expand("<afile>:p:h"))
+    let confirmation=confirm("Create a new directory?", "&Yes\n&No")
+    if confirmation == 1
+      call mkdir(expand("<afile>:p:h"), "p")
+      lcd %:p:h
+      saveas %:t
+      echom "Created a new directory:" expand("<afile>:p:h")
+      let buf_del = bufnr("$")
+      exe "bd" . buf_del
+    endif
+    redraw
+  endif
 endfunction
 
 " Logging
 function! ToggleVerbose()
-   if !&verbose
-      set verbosefile=~/.log/vim/verbose.log
-      set verbose=15
-   else
-      set verbose=0
-      set verbosefile=
-   endif
+  if !&verbose
+    set verbosefile=~/.log/vim/verbose.log
+    set verbose=15
+  else
+    set verbose=0
+    set verbosefile=
+  endif
 endfunction
 
 " Text file settings
 fun! ToggleText()
-   if !&wrap
-      set wrap linebreak nolist
-      set textwidth=0
-      set wrapmargin=0
-   else
-      set nowrap
-      set nolinebreak
-      set list
-   endif
+  if !&wrap
+    set wrap linebreak nolist
+    set textwidth=0
+    set wrapmargin=0
+  else
+    set nowrap
+    set nolinebreak
+    set list
+  endif
 endfunction
 " the key binding to call the function
 nnoremap <leader>t :call ToggleText()<CR>
 
 " Active Directory functions
-autocmd BufRead *
-         \ call SetProjectRoot()
-" netrw: follow symlink and set working directory
-autocmd CursorMoved silent *
-" short circuit for non-netrw files
-         \ if &filetype == 'netrw' |
-         \   call FollowSymlink() |
-         \   call SetProjectRoot() |
-         \ endif
+" autocmd BufRead *
+"          \ call SetProjectRoot()
+" " netrw: follow symlink and set working directory
+" autocmd CursorMoved silent *
+" " short circuit for non-netrw files
+" \ if &filetype == 'netrw' |
+" \   call FollowSymlink() |
+" \   call SetProjectRoot() |
+" \ endif
 " symlinked...
 " function! FollowSymlink()
 "    let current_file = expand('%:p')
@@ -722,15 +782,15 @@ autocmd CursorMoved silent *
 " endfunction
 " set working directory to git project root if exists
 function! SetProjectRoot()
-   " default to the current file's directory
-   lcd %:p:h
-   let git_dir = system("git rev-parse --show-toplevel")
-   " See if the command output starts with 'fatal' (if it does, not in a git repo)
-   let is_not_git_dir = matchstr(git_dir, '^fatal:.*')
-   " if git project, change local directory to git project root
-   if empty(is_not_git_dir)
-      lcd `=git_dir`
-   endif
+  " default to the current file's directory
+  lcd %:p:h
+  let git_dir = system("git rev-parse --show-toplevel")
+  " See if the command output starts with 'fatal' (if it does, not in a git repo)
+  let is_not_git_dir = matchstr(git_dir, '^fatal:.*')
+  " if git project, change local directory to git project root
+  if empty(is_not_git_dir)
+    lcd `=git_dir`
+  endif
 endfunction
 
 " Color management
@@ -742,18 +802,18 @@ endfunction
 " Utility fn to reveal current color scheme
 " Usage: :call ShowColorSchemeName()
 function! ShowColorSchemeName()
-   try
-      echo g:colors_name
-   catch /^Vim:E121/
-      echo "default
-   endtry
+  try
+    echo g:colors_name
+  catch /^Vim:E121/
+    echo "default
+  endtry
 endfunction
 " Otherwise: hi: Normal
 
 " Utility fn to reveal highlight group of word below the cursor
 " set statusline+=%{HiGroup()}
 function! HiGroup()
-   return synIDattr(synID(line("."),col("."),1),"name")
+  return synIDattr(synID(line("."),col("."),1),"name")
 endfunction
 
 " Color scheme
@@ -802,29 +862,29 @@ hi FoldedColumn ctermfg=250  ctermbg=235 guifg=#A8A8A8 guibg=#262626
 " colors[guifg, guibg, ctermfg, ctermbg]
 let g:airline_theme_patch_func = 'AirlineThemePatch'
 function! AirlineThemePatch(palette)
-   if g:airline_theme == 'badwolf'
-      "let s:N1 = [ '#141413' , '#aeee00' , 232 , 154 ] " blackestgravel & lime
-      "let s:N2 = [ '#f4cf86' , '#45413b' , 222 , 238 ] " dirtyblonde    & deepgravel
-      "let s:N3 = [ '#8cffba' , '#404040' , 121 , 235 ] " saltwatertaffy & darkgravel 242321
-      "let s:N4 = [ '#666462' , 241 ]                   " mediumgravel
-      "let s:I1 = [ '#141413' , '#0a9dff' , 232 , 39  ] " blackestgravel & tardis
-      "let s:I2 = [ '#f4cf86' , '#005fff' , 222 , 27  ] " dirtyblonde    & facebook
-      "let s:I3 = [ '#0a9dff' , '#404040' , 39  , 235 ] " tardis         & darkgravel
-      ""let s:IA = [ s:N3[1] , s:N2[1] , s:N3[3] , s:N2[3] , '' ]
-      "let s:IA = [ '#9E9E9E' , '#141414' , 248 , 235 , '' ]
+  if g:airline_theme == 'badwolf'
+    "let s:N1 = [ '#141413' , '#aeee00' , 232 , 154 ] " blackestgravel & lime
+    "let s:N2 = [ '#f4cf86' , '#45413b' , 222 , 238 ] " dirtyblonde    & deepgravel
+    "let s:N3 = [ '#8cffba' , '#404040' , 121 , 235 ] " saltwatertaffy & darkgravel 242321
+    "let s:N4 = [ '#666462' , 241 ]                   " mediumgravel
+    "let s:I1 = [ '#141413' , '#0a9dff' , 232 , 39  ] " blackestgravel & tardis
+    "let s:I2 = [ '#f4cf86' , '#005fff' , 222 , 27  ] " dirtyblonde    & facebook
+    "let s:I3 = [ '#0a9dff' , '#404040' , 39  , 235 ] " tardis         & darkgravel
+    ""let s:IA = [ s:N3[1] , s:N2[1] , s:N3[3] , s:N2[3] , '' ]
+    "let s:IA = [ '#9E9E9E' , '#141414' , 248 , 235 , '' ]
 
-      " NOTES: I changed: N3[1], I3[1] to #404040
-      "                   IA[1]        to "141414
-      " let g:airline#themes#badwolf#palette.normal = airline#themes#generate_color_map(s:N1, s:N2, s:N3)
-      " let g:airline#themes#badwolf#palette.insert = airline#themes#generate_color_map(s:I1, s:I2, s:I3)
-      " let g:airline#themes#badwolf#palette.inactive = airline#themes#generate_color_map(s:IA, s:IA, s:IA)
+    " NOTES: I changed: N3[1], I3[1] to #404040
+    "                   IA[1]        to "141414
+    " let g:airline#themes#badwolf#palette.normal = airline#themes#generate_color_map(s:N1, s:N2, s:N3)
+    " let g:airline#themes#badwolf#palette.insert = airline#themes#generate_color_map(s:I1, s:I2, s:I3)
+    " let g:airline#themes#badwolf#palette.inactive = airline#themes#generate_color_map(s:IA, s:IA, s:IA)
 
-      " an alternative/official way to generate the patch
-      for colors in values(a:palette.inactive)
-         let colors[0] = '#9E9E9E'
-         let colors[1] = '#141414'
-         let colors[2] = 248
-         let colors[3] = 235
-      endfor
-   endif
+    " an alternative/official way to generate the patch
+    for colors in values(a:palette.inactive)
+      let colors[0] = '#9E9E9E'
+      let colors[1] = '#141414'
+      let colors[2] = 248
+      let colors[3] = 235
+    endfor
+  endif
 endfunction

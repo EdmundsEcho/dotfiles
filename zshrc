@@ -135,6 +135,9 @@ alias mongod="mongod --config /usr/local/etc/mongod.conf"
 # Nov 13, 2017
 alias client-app="cd ~/Dropbox/Programming/TnC/ui/client-app/"
 
+# Dec 5, 2017 node.js REPL with es6 compilation support
+alias node-es6="NODE_NO_READLINE=1 npx rlwrap --always-readline babel-node"
+
 # Variables for editing brew formula
 export HOMEBREW_EDITOR=nvim
 export VISUAL=nvim

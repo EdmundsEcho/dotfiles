@@ -3,26 +3,26 @@
 "   call plug#begin('~/.vim/bundle')
 "   --> both are symlinks to ~/.config/haskell-vim-now/.vimr
 "
-Plug 'rizzatti/dash.vim'                 " Documentation viewer (activate with: :Dash)
 Plug 'Raimondi/delimitMate'              " auto complete the second bracket
 Plug 'tpope/vim-surround'                " visual mode S to surround text with ()
 Plug 'tpope/vim-repeat'                  " Dot . to repeat command
 Plug 'tpope/vim-dispatch'                " Manages compiler
 Plug 'kana/vim-submode'                  " Enables repeated use of key after leader
-Plug 'xu-cheng/brew.vim'                 " Highlighting for Brew Formula editing
+Plug 'junegunn/vader.vim'                " Vimscript debugger/test engine
 Plug 'godlygeek/tabular'                 " aligns text into table format
 Plug 'Yggdroot/indentLine'               " visual tab guides
+Plug 'rizzatti/dash.vim'                 " Documentation viewer (activate with: :Dash)
 
-Plug 'Shougo/deoplete.nvim',         { 'do': ':UpdateRemotePlugins' } " neocomplete for neovim
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' } " neocomplete for neovim
 
-Plug 'shmup/vim-sql-syntax',         { 'for': [ 'sql' ] }           " Highlighting for sql
-Plug 'jalvesaq/nvim-r',              { 'for': [ 'r', 'rscript' ] }  " Highlighting for R
+" Highlighting
+Plug 'shmup/vim-sql-syntax', { 'for': [ 'sql' ] }           " Highlighting for sql
+Plug 'jalvesaq/nvim-r',      { 'for': [ 'r', 'rscript' ] }  " Highlighting for R
+Plug 'xu-cheng/brew.vim'                 " Highlighting for Brew Formula editing
 
 " Color schemes
 "Plug 'flazz/vim-colorschemes'
 Plug 'sickill/vim-monokai'               " js friendly color scheme
-
-"Plug 'altercation/vim-colors-solarized'
 
 " vim-airline-themes
 Plug 'vim-airline/vim-airline-themes'
@@ -61,46 +61,47 @@ Plug 'junegunn/goyo.vim'                  " :Goyo to activate :Goyo! to deactiva
 
 " Javascript
 "Plug 'vimlab/neojs'                     " will load a set of plugins
-"Plug 'pangloss/vim-javascript'          " Disabled to enable vim-jsx-improve
 Plug 'tpope/vim-sensible'
 Plug 'Shougo/unite.vim'
 Plug 'Shougo/neosnippet'                 " snippet engine that exploits vimscript (not slower python)
 Plug 'Shougo/neosnippet-snippets'        " snippet repository; requires a separate snippet engine: neosnippet
 Plug 'vimlab/split-term.vim'             " provides user-friendly bindings for neovim's built-in Terminal functionality
 Plug 'moll/vim-node'
-Plug 'othree/yajs.vim'
 Plug 'nono/vim-handlebars'
-Plug 'benekastah/neomake',               { 'do': 'npm install --cache-min Infinity --loglevel http -g eslint jsonlint' }
+"Plug 'neomake/neomake',                 { 'do': 'npm install --cache-min Infinity --loglevel http -g eslint jsonlint' }
                                          " provides asynch capacity for linters and build tools
                                          " ... a Syntastic alternative
 Plug 'neovim/node-host',                 { 'do': 'npm install --cache-min Infinity --loglevel http' }
-Plug 'othree/jspc.vim',                  { 'for': ['javascript', 'javascript.jsx'] }
+Plug 'othree/jspc.vim',                  { 'for': ['javascript', 'javascript.jsx'] } " function parameter completion
+Plug 'w0rp/ale'                       " Live linting that uses eslint
 
 " JS Auto-completion
+Plug 'carlitux/deoplete-ternjs'
 Plug 'ternjs/tern_for_vim',              { 'do': 'npm install --cache-min Infinity --loglevel http && npm install -g tern' }
-Plug 'carlitux/deoplete-ternjs',         "{ 'do': 'npm install --cache-min Infinity --loglevel http -g tern' }
+"Plug 'neoclide/tern-neovim',             { 'do': 'npm install --cache-min Infinity --loglevel http && npm install -g tern' }
 
-" ES.Next syntax
-Plug 'othree/es.next.syntax.vim',        { 'for': ['javascript', 'javascript.jsx'] }
+" JS syntax highlighting
+"Plug 'pangloss/vim-javascript'          " Disabled to enable vim-jsx-improve
+Plug 'othree/yajs.vim'
+Plug 'othree/es.next.syntax.vim', { 'for': ['javascript', 'javascript.jsx'] }
+Plug 'chemzqm/vim-jsx-improve' ",         { 'for': ['javascript', 'javascript.jsx'] }
 
 " Syntax for JavaScript libraries
 Plug 'othree/javascript-libraries-syntax.vim', { 'for': ['javascript', 'javascript.jsx'] }
 
 " Block comments based on a function signature
-Plug 'heavenshell/vim-jsdoc',           { 'for': ['javascript', 'javascript.jsx'] }
+Plug 'heavenshell/vim-jsdoc' "           { 'for': ['javascript', 'javascript.jsx'] }
 
 " Syntax for styled-components
-Plug 'fleischie/vim-styled-components', { 'for': ['javascript', 'javascript.jsx'] }
+Plug 'fleischie/vim-styled-components' ", { 'for': ['javascript', 'javascript.jsx'] }
 
-" JSX for React - all-in-one javascript highlighter
-Plug 'chemzqm/vim-jsx-improve',         { 'for': ['javascript', 'javascript.jsx'] }
 
 " Typescript
 " Plug 'HerringtonDarkholme/deoplete-typescript'    " Provides auto-completion, view documentation and type-signature
 " Plug 'HerringtonDarkholme/yats.vim'      " Typescript syntax highlighting
 
 " CSS in a JSX file
-Plug 'styled-components/vim-styled-components',  { 'for': ['javascript', 'javascript.jsx'] }
+Plug 'styled-components/vim-styled-components' "  { 'for': ['javascript', 'javascript.jsx'] }
 Plug 'hail2u/vim-css3-syntax'
 
 " CTags - help lookup definitions
