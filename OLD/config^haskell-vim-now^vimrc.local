@@ -33,11 +33,26 @@ let g:deoplete#auto_complete_start_length = 99
 inoremap <expr> <M-,> pumvisible() ? '<C-n>' :
   \ '<C-x><C-o><C-n><C-p><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
 
-" Leader key to access my own settings
+" Leader key and timeout
 let mapleader = "\<SPACE>"
+set tm=2000
 
 " Cursor setting
 :set guicursor=n-v-c:block-Cursor/lCursor-blinkon0,i-ci:ver25-Cursor/lCursor,r-cr:hor20-Cursor/lCursor
+
+" Use par for prettier line formatting
+" UNKNOWN
+set formatprg=par
+let $PARINIT = 'rTbgqR B=.,?_A_a Q=_s>|'
+
+" Kill the damned Ex mode.
+" UNKNOWN
+nnoremap Q <nop>
+
+" Make <c-h> work like <c-h> again (this is a problem with libterm)
+" UNKNOWN
+nnoremap <BS> <C-w>h
+
 
 " TESTING
 " Make Vim recognize XTerm escape sequences for Page and Arrow
@@ -119,12 +134,162 @@ map <silent> ts :GhcModSplitFunCase<CR>
 map <silent> tq :GhcModType<CR>
 map <silent> te :GhcModTypeClear<CR>
 
-" " Display GHC errors and warnings
-" nmap <silent> <leader>hc :Neomake ghcmod<CR>
-" nmap <silent> <leader>hl :w<CR>:GhcModLint<CR>
-" nmap <silent> <leader>hc :w<CR>:GhcModCheck<CR>:GhcModLint<CR>
+" =========
+" PLUGINS
+" =========
+call plug#begin('~/.config/nvim/bundle')
+" Support bundles
+Plug 'jgdavey/tslime.vim'
+Plug 'Shougo/vimproc.vim', { 'do': 'make' }
+Plug 'ervandew/supertab'
+"Plug 'benekastah/neomake'
+Plug 'moll/vim-bbye'
+"Plug 'nathanaelkane/vim-indent-guides'
+Plug 'vim-scripts/gitignore'
 
-" DashSearch
+" Git
+Plug 'tpope/vim-fugitive'
+Plug 'int3/vim-extradite'
+
+" Bars, panels, and files
+Plug 'scrooloose/nerdtree'
+Plug 'vim-airline/vim-airline'
+Plug 'ctrlpvim/ctrlp.vim'
+Plug 'majutsushi/tagbar'
+
+" Text manipulation
+Plug 'vim-scripts/Align'
+Plug 'simnalamburt/vim-mundo'
+Plug 'tpope/vim-commentary'
+Plug 'godlygeek/tabular'
+Plug 'michaeljsmith/vim-indent-object'
+Plug 'easymotion/vim-easymotion'
+Plug 'ConradIrwin/vim-bracketed-paste'
+
+" Allow pane movement to jump out of vim into tmux
+Plug 'christoomey/vim-tmux-navigator'
+
+" Haskell
+Plug 'neovimhaskell/haskell-vim', { 'for': 'haskell' }
+Plug 'enomsg/vim-haskellConcealPlus', { 'for': 'haskell' }
+Plug 'eagletmt/ghcmod-vim', { 'for': 'haskell' }
+Plug 'eagletmt/neco-ghc', { 'for': 'haskell' }
+Plug 'Twinside/vim-hoogle', { 'for': 'haskell' }
+Plug 'mpickering/hlint-refactor-vim', { 'for': 'haskell' }
+
+" Colorscheme
+Plug 'vim-scripts/wombat256.vim'
+
+Plug 'Raimondi/delimitMate'              " auto complete the second bracket
+Plug 'tpope/vim-surround'                " visual mode S to surround text with ()
+Plug 'tpope/vim-repeat'                  " Dot . to repeat command
+Plug 'tpope/vim-dispatch'                " Manages compiler
+Plug 'kana/vim-submode'                  " Enables repeated use of key after leader
+Plug 'junegunn/vader.vim'                " Vimscript debugger/test engine
+Plug 'godlygeek/tabular'                 " aligns text into table format
+Plug 'Yggdroot/indentLine'               " visual tab guides
+Plug 'rizzatti/dash.vim'                 " Documentation viewer (activate with: :Dash)
+
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' } " neocomplete for neovim
+
+" Highlighting
+Plug 'shmup/vim-sql-syntax', { 'for': [ 'sql' ] }           " Highlighting for sql
+Plug 'jalvesaq/nvim-r',      { 'for': [ 'r', 'rscript' ] }  " Highlighting for R
+Plug 'xu-cheng/brew.vim'                 " Highlighting for Brew Formula editing
+
+" Color schemes
+"Plug 'flazz/vim-colorschemes'
+Plug 'sickill/vim-monokai'               " js friendly color scheme
+
+" vim-airline-themes
+Plug 'vim-airline/vim-airline-themes'
+
+" Plugins for snipmate
+"Plug 'tomtom/tlib_vim'
+"Plug 'MarcWeber/vim-addon-mw-utils'
+"Plug 'garbas/vim-snipmate'
+
+" Haskell
+Plug 'neovimhaskell/haskell-vim',    { 'for': [ 'haskell', 'cabal' ] }
+
+" Lisp
+Plug 'vim-scripts/paredit.vim',      { 'for': [ 'scheme', 'lisp', 'commonlisp' ] }
+
+" Pandoc / Markdown
+Plug 'vim-pandoc/vim-pandoc',        { 'for': [ 'pandoc', 'markdown' ] }
+Plug 'vim-pandoc/vim-pandoc-syntax', { 'for': [ 'pandoc', 'markdown' ] }
+
+" Markdown preview
+Plug 'euclio/vim-markdown-composer', { 'do': 'cargo build --release' }
+
+" HTML (note: this is in addition to custom shorthand)
+Plug 'alvan/vim-closetag',           { 'for': [ 'html', 'js', 'jsx', 'xml' ] }
+
+" CSV
+Plug 'chrisbra/csv.vim',             { 'for': [ 'csv' ] }
+
+" Distraction-free txt
+Plug 'junegunn/goyo.vim'                  " :Goyo to activate :Goyo! to deactivate
+" set: wrap
+" set: linebreak
+" set: nolist
+" set: textwidth=0
+" set: wrapmargin=0
+
+" Javascript
+"Plug 'vimlab/neojs'                     " will load a set of plugins
+Plug 'tpope/vim-sensible'
+Plug 'Shougo/unite.vim'
+Plug 'Shougo/neosnippet'                 " snippet engine that exploits vimscript (not slower python)
+Plug 'Shougo/neosnippet-snippets'        " snippet repository; requires a separate snippet engine: neosnippet
+Plug 'vimlab/split-term.vim'             " provides user-friendly bindings for neovim's built-in Terminal functionality
+Plug 'moll/vim-node'
+Plug 'nono/vim-handlebars'
+"Plug 'neomake/neomake',                 { 'do': 'npm install --cache-min Infinity --loglevel http -g eslint jsonlint' }
+                                         " provides asynch capacity for linters and build tools
+                                         " ... a Syntastic alternative
+Plug 'neovim/node-host',                 { 'do': 'npm install --cache-min Infinity --loglevel http' }
+Plug 'othree/jspc.vim',                  { 'for': ['javascript', 'javascript.jsx'] } " function parameter completion
+Plug 'w0rp/ale'                       " Live linting that uses eslint
+
+" JS Auto-completion
+Plug 'carlitux/deoplete-ternjs'
+Plug 'ternjs/tern_for_vim',              { 'do': 'npm install --cache-min Infinity --loglevel http && npm install -g tern' }
+"Plug 'neoclide/tern-neovim',             { 'do': 'npm install --cache-min Infinity --loglevel http && npm install -g tern' }
+
+" JS syntax highlighting
+"Plug 'pangloss/vim-javascript'          " Disabled to enable vim-jsx-improve
+Plug 'othree/yajs.vim'
+Plug 'othree/es.next.syntax.vim', { 'for': ['javascript', 'javascript.jsx'] }
+Plug 'chemzqm/vim-jsx-improve' ",         { 'for': ['javascript', 'javascript.jsx'] }
+
+" Syntax for JavaScript libraries
+Plug 'othree/javascript-libraries-syntax.vim', { 'for': ['javascript', 'javascript.jsx'] }
+
+" Block comments based on a function signature
+Plug 'heavenshell/vim-jsdoc' "           { 'for': ['javascript', 'javascript.jsx'] }
+
+" Syntax for styled-components
+Plug 'fleischie/vim-styled-components' ", { 'for': ['javascript', 'javascript.jsx'] }
+
+
+" Typescript
+" Plug 'HerringtonDarkholme/deoplete-typescript'    " Provides auto-completion, view documentation and type-signature
+" Plug 'HerringtonDarkholme/yats.vim'      " Typescript syntax highlighting
+
+" CSS in a JSX file
+Plug 'styled-components/vim-styled-components' "  { 'for': ['javascript', 'javascript.jsx'] }
+Plug 'hail2u/vim-css3-syntax'
+
+" CTags - help lookup definitions
+Plug 'ludovicchabant/vim-gutentags'       " Definition lookup. It will generate a file in root of project
+
+" add the plugins to the runtime
+call plug#end()
+
+" END PLUGINS
+
+" " DashSearch
 " ===========
 " Send a search term to Dash (documentation viewer)
 nmap <silent> <leader>d <Plug>DashSearch
@@ -388,80 +553,6 @@ let g:gutentags_trace = 0
 " Enable jsx for *.js files
 let g:jsx_ext_required = 0
 
-"" Neomake (a syntastic replacement)
-"" =================================
-"" Manual usage: Open a JS file, then run  :Neomake eslint
-"" Lint when writing a buffer, and on normal mode changes (after 750ms).
-"" TODO: Make sure it does not parse the quickfix window
-""       It uses several parsers by default. It seems it does not know
-""       where the plugins are for all of them (e.g., flowtype).
-""call neomake#configure#automake('nw', 750)
-"" Neomake has default values; for JS it includes 3 makers
-"" Here setting to only eslint
-"let g:neomake_javascript_enabled_makers = ['eslint']
-"let g:neomake_jsx_enable_makers = ['eslint']
-"let g:neomake_json_enable_makers = ['jsonlint']
-"let g:neomake_css_enable_makers = ['csslint', 'stylelint']
-"let g:neomake_html_enable_makers = ['tidy', 'htmlhint']
-"let g:neomake_sql_enable_makers = ['sqllint']
-
-"let g:neomake_open_list = 2
-"" DEBUGGING
-"" Log-level in the vim messages
-"let g:neomake_verbose = 0   " (0:errors only 1:quiet 2:loud 3:debug)
-"" Logging in a separate terminal
-"" Usage: tail -f /tmp/neomake.log in a separate terminal
-"let g:neomake_logfile = '/tmp/neomake.log'
-
-"autocmd FileType javascript :call NeomakeESlintChecker()
-"function! NeomakeESlintChecker()
-"   let l:npm_bin = ''
-"   let l:eslint = 'eslint'
-
-"   if executable('npm-which')
-"      let l:eslint = split(system('npm-which eslint'))[0]
-"      return 0
-"   endif
-
-"   if executable('npm')
-"      let l:npm_bin = split(system('npm bin'), '\n')[0]
-"   endif
-
-"   if strlen(l:npm_bin) && executable(l:npm_bin . '/eslint')
-"      let l:eslint = l:npm_bin . '/eslint'
-"   endif
-
-"   let b:neomake_javascript_eslint_exe = l:eslint
-"endfunction
-
-"" DEBUGGING extra messaging - call with :messages
-" " let makers = neomake#GetEnabledMakers('javascript')
-" " echom string(map(makers, 'v:val.exe'))
-
-" " V - deprecated - V
-" " hi SignColumn guibg=#83A8C1
-" " hi SignColumn ctermbg=black guibg=black
-" " hi NeomakeErrorSign ctermfg=red guifg=red
-" " hi NeomakeWarningSign ctermfg=yellow guifg=yellow
-" " let b:neomake_javascript_eslint_maker = {
-" "     \ 'args': ['--no-color', '--format', 'compact', '--config', '~/.eslintrc.json'],
-" "     \ 'errorformat': '%f: line %l\, col %c\, %m'
-" "     \ }
-" " let g:neomake_highlight_columns = 0
-" " let b:neomake_place_signs = 1
-" " let b:neomake_javascript_eslint_exe = system('PATH=$(npm bin):$PATH && which eslint | tr -d "\n"')
-" " END
-
-" " neomake keybindings
-" nmap <Leader><Space>o :lopen<CR>      " open location window
-" nmap <Leader><Space>c :lclose<CR>     " close location window
-" nmap <Leader><Space>, :ll<CR>         " go to current error/warning
-" nmap <Leader><Space>n :lnext<CR>      " next error/warning
-" nmap <Leader><Space>p :lprev<CR>      " previous error/warning
-
-" markdown-preview - STILL looking for a good plugin: just use chrome with
-" a chrome plugin enabled for md files
-
 " Tmux
 " Change the size: height
 call submode#enter_with('grow/shrink', 'n', '', '<leader>j', '<C-w>+')
@@ -499,19 +590,6 @@ nnoremap <leader>sc :CloseSession<CR>
 
 " Default saving of sessions
 let g:session_autosave = 'no'
-
-" " Save folds etc..
-" set foldnestmax=2
-" set foldmethod=syntax
-" " ... if using manual
-" augroup AutoSaveFolds
-"    autocmd!
-"    if &foldmethod ==# "manual"
-"       autocmd BufWinLeave * silent! mkview
-"       autocmd BufWinEnter * silent! loadview
-"    endif
-" augroup END
-
 
 " autocomplete
 augroup autocmds

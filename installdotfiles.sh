@@ -5,16 +5,15 @@
 
 symlinks="${HOME}/.zshrc
           ${HOME}/.bash_profile
-          ${HOME}/.config/haskell-vim-now/plugins.vim
-          ${HOME}/.config/haskell-vim-now/vimrc.local
+          ${HOME}/.config/nvim/init.vim
           ${HOME}/.tmux.conf"                         # symlinks to be built
 
-sourcedir="${HOME}/dotfiles"                          # dotfiles directory
+sourcedir="${HOME}/dotfiles"                          # where the dot files are
+
 sourcefiles="zshrc
-            bash_profile
-            config^haskell-vim-now^plugins.vim
-            config^haskell-vim-now^vimrc.local
-            tmux.conf"                                # source files^folders
+             bash_profile
+             init.vim
+             tmux.conf"                               # source files^folders
 
 backupdir="${HOME}/dotfiles_old"                      # old dotfiles backup directory
 
@@ -57,24 +56,3 @@ do
   echo "...done"
 
 done
-
-# while
-#     [ -n "$x" ]
-# do
-#     set $x
-#     current_x=$1
-#     shift
-#     x="$*"
-#
-#     set $y
-#     current_y=$1
-#     shift
-#     y="$*"
-#
-#     set $z
-#     current_z=$1
-#     shift
-#     z="$*"
-#
-#     echo "x=$current_x y=$current_y z=$current_z"
-# done

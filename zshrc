@@ -1,12 +1,16 @@
 # tracking
 # echo reading .zshrc
 
+# fpath=(/usr/local/share/zsh-completions $fpath)
+
 # Path to your oh-my-zsh installation.
 export ZSH=${HOME}/.oh-my-zsh
 
 # Fire up tmux
-#export TERM=xterm-256color
 ZSH_TMUX_AUTOSTART="true"
+
+# Do not set the terminal here (bad policy)
+#export TERM=screen-256color
 
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
@@ -35,7 +39,7 @@ ZSH_THEME="robbyrussell"
 export DISABLE_AUTO_TITLE="true"
 
 # Uncomment the following line to enable command auto-correction.
-ENABLE_CORRECTION="true"
+# ENABLE_CORRECTION="true"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
 # COMPLETION_WAITING_DOTS="true"
@@ -58,7 +62,20 @@ ENABLE_CORRECTION="true"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 
-plugins=(git history history-substring-search osx cabal brew nanoc)
+plugins=(
+  brew
+  cabal
+  git
+  history
+  history-substring-search
+  jsontools
+  nanoc
+  osx
+  sudu
+  tmux
+  vi-like
+  yarn
+)
 
 # ---------------------------------------------------------
 # User configuration
@@ -84,7 +101,7 @@ pman() {
    man -t ${@} | open -f -a /Applications/Preview.app/
 }
 
-# To problem solve tern - a js vim plugin
+# Increase the cache size for ternJS
 ulimit -n 2048
 
 # Required for Tern to access webpack (where webpack requires
@@ -114,26 +131,33 @@ export EDITOR='nvim'
 alias zshconfig="nvim ~/.zshrc"
 alias ohmyzsh="nvim ~/.oh-my-zsh"
 alias reload='. ~/.zshrc; echo "Executed: . ~/.zshrc" '
-alias sd="spindrive_toggle"
+#alias sd="spindrive_toggle"
 
 # May 25, 2016
 alias vi='nvim'
 alias vim='nvim'
+alias ctags="`brew --prefix`/bin/ctags"
 
-alias nvim="stty stop '' -ixoff; nvim"
+# Dec 15, 2017
+alias plugins='cd ~/.config/nvim/bundle'
+alias snippets='cd ~/.config/nvim/snippets'
+
+#TESTING - related to Ctr-Z to send NVIM to background
+# alias nvim="stty stop '' -ixoff; nvim"
+
 alias ghc='stack exec -- ghc'
 alias ghci='stack exec -- ghci'
 alias runghc='stack runghc'
 
 # Jan 14, 2017
 alias code="cd ~/Dropbox/Programming"
-alias tnc="cd ~/Dropbox/Programming/TnC"
-
-# Jul 25, 2017
-alias mongod="mongod --config /usr/local/etc/mongod.conf"
-
+alias tnc="cd ~/Dropbox/Programming/Tnc"
 # Nov 13, 2017
 alias client-app="cd ~/Dropbox/Programming/TnC/ui/client-app/"
+# Dec 15, 2017
+alias plural="cd ~/Dropbox/Programming/react/pluralsight"
+# Jul 25, 2017
+alias mongod="mongod --config /usr/local/etc/mongod.conf"
 
 # Dec 5, 2017 node.js REPL with es6 compilation support
 alias node-es6="NODE_NO_READLINE=1 npx rlwrap --always-readline babel-node"
@@ -153,41 +177,42 @@ END{if (max>0) {printf "%.0f%%\n",cur/max*100} else {print "?"}}'
 # ---------------------------------------------------------
 # Homebrew doctor: make sure /usr/local/bin appears first.
 # Note: edit /etc/paths - it manages sequence of PATH
-# Warning: do not forget to export the final path (for child processes)
+# Warning: do not forget to export the final path
+# (for child processes)
 PATH="/usr/local/bin:"
-# Addition Feb 8, 2016 (system upgrade)
 PATH+="/usr/bin:/bin:"
 PATH+="/usr/sbin:/sbin:"
 # ---------------------------------------------------------
 # Other path settings
 # ---------------------------------------------------------
-# Addition for Haskell (July 12, 2015)
-PATH+="/Users/${USER}/Library/Haskell/bin:"
-PATH+="/Users/${USER}/.local/bin:"
-PATH="/Users/${USER}/Library/Haskell/bin:${PATH}"
-PATH="/Users/${USER}/.local/bin:${PATH}"
-
-PATH+="/usr/local/opt/texinfo/bin:"
-# Jun 7, 2017: PATH to python Jupyter notebook
-#PATH="/Users/${USER}/anaconda3/bin:$PATH"
-# Jul 1, 2017: PATH to user-defined bin
-PATH+="/Users/${USER}/Code/bin:"
-# ~2017
+PATH+="/usr/local/opt/python/libexec/bin:"
 PATH+="/usr/local/opt/sqlite/bin:"
 PATH+="/usr/local/opt/qt/bin:"
-PATH+="/usr/local/opt/qt/bin:"
 PATH+="/usr/local/opt/texinfo/bin:"
 
+# User - defined code
+PATH+="/Users/${USER}/.local/bin:"
+PATH+="/Users/${USER}/Code/bin:"
+
+# ---------------------------------------------------------
+# End with system paths
+# ---------------------------------------------------------
 export PATH
 
+# node related
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-# -------------------
-# Use VIM keybindings
+# ---------------------------------------------------------
+# VIM and iTerm integration
+# ---------------------------------------------------------
 bindkey -v
 bindkey -M viins 'df' vi-cmd-mode
 bindkey '^R' history-incremental-search-backward
 
+# iterm2 integration
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
+# Ruby - version manager to avoid overwriting system
+if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
