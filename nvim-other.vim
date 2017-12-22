@@ -19,23 +19,6 @@ set autoread     " Detect file changes outside vim
 set autochdir    " change working dir to current buffer
 " TODO: may improve how C-x C-f works
 
-" Paths to `included` files
-" -------------------------------------------------------------------------------
-let file_plugins        = expand(resolve($HOME . "/dotfiles/nvim-plugins.vim"))
-let file_typo_repair_db = expand(resolve($HOME . "/dotfiles/nvim-typo-repair-db.vim"))
-" Project specific configurations
-" NVIM will also source .vimrc if present in the project directory
-if filereadable(file_plugins)
-  echom "Plugins file: " . file_plugins
-else
-  echoerr "Could not find Plugins: " . file_plugins
-endif
-if filereadable(file_typo_repair_db)
-  echom "Typo repair db file: " . file_typo_repair_db
-else
-  echoerr "Could not find Typo Repair: " . file_typo_repair_db
-endif
-
 " -------------------------------------------------------------------------------
 " Neovim's Python provider(s)
 " -------------------------------------------------------------------------------
@@ -50,7 +33,7 @@ inoremap df <esc><esc>l
 
 " Leader key and timeout
 let mapleader = "\<SPACE>"
-set tm=2000
+set tm=1100
 
 " Cursor (note color is controlled by iTerm)
 set guicursor=n-v-c:block-Cursor/lCursor-blinkon0,
@@ -74,11 +57,9 @@ nnoremap <BS> <C-w>h
 " ---------------------------
 " Remap start of the line; end of the file and EOF
 nnoremap 0 ^
+nnoremap 00 0
 nnoremap gg :0<CR>
 nnoremap G G$
-
-nnoremap <M-:> :
-inoremap <M-:> :
 
 " Writing to file with <ctr-a>
 nnoremap <C-a> :w<CR>
@@ -116,13 +97,16 @@ nnoremap <Leader>a ggVG
 
 " TESTING
 " Operator-pending maps
+" d[elete] c[hange] y[ank]
 " p -> parentheses
 " b -> bracket
 " e.g., change contents between () with cp
 onoremap p i(
 onoremap b i{
-onoremap np :<c-u>normal! f(vi(<cr>
-onoremap nb :<c-u>normal! f{ivi{<cr>
+onoremap np :<c-u>normal! f(lvi(<cr>
+onoremap nb :<c-u>normal! f{lvi{<cr>
+onoremap pp :<c-u>normal! F(lvi(<cr>
+onoremap pb :<c-u>normal! F{lvi{<cr>
 
 " Map esc to remove highlighting of previous search
 nnoremap <esc> :noh<return><esc>
@@ -131,7 +115,7 @@ nnoremap <esc> :noh<return><esc>
 "       It may not be required anymore.
 "       Recall using it to enable alt-hjkl to size window
 "disable submode timeouts:
-let g:submode_timeout = 800
+let g:submode_timeout = 500
 " don't consume submode-leaving key
 let g:submode_keep_leaving_key = 1
 
@@ -151,15 +135,15 @@ let g:session_autosave = 'no'
 " keys combined with modifiers such as Shift, Control, and Alt.
 " See http://www.reddit.com/r/vim/comments/1a29vk/_/c8tze8p
 if &term =~ '^screen'
-   " Page keys http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/FAQ
-   execute "set t_kP=\e[5;*~"
-   execute "set t_kN=\e[6;*~"
+  " Page keys http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/FAQ
+  execute "set t_kP=\e[5;*~"
+  execute "set t_kN=\e[6;*~"
 
-   " Arrow keys http://unix.stackexchange.com/a/34723
-   execute "set <xUp>=\e[1;*A"
-   execute "set <xDown>=\e[1;*B"
-   execute "set <xRight>=\e[1;*C"
-   execute "set <xLeft>=\e[1;*D"
+  " Arrow keys http://unix.stackexchange.com/a/34723
+  execute "set <xUp>=\e[1;*A"
+  execute "set <xDown>=\e[1;*B"
+  execute "set <xRight>=\e[1;*C"
+  execute "set <xLeft>=\e[1;*D"
 endif
 
 " BUFFERS
@@ -200,16 +184,6 @@ noremap <leader>tt :TagbarToggle<CR>
 " Force redraw
 noremap <silent> <leader>r :redraw!<CR>
 
-" WIP - set source locations at the top
-" of the file
-" Source: iabbrev for frequent typos
-" =============
-" test if file exists
-" source it
-inoreabbrev waht what
-inoreabbrev functino function
-inoreabbrev teh the
-
 " TAGS
 " Notes:
 " 1. use of `;` makes it recursive
@@ -241,8 +215,6 @@ vnoremap <leader>p "*p
 " Super useful! From an idea by Michael Naumann
 vnoremap <silent> * :call VisualSelection('f', '')<CR>
 vnoremap <silent> # :call VisualSelection('b', '')<CR>
-
-" Moving around, tabs, windows and buffers {{{
 
 " Treat long lines as break lines (useful when moving around in them)
 nnoremap j gj
@@ -277,9 +249,9 @@ nnoremap <leader>sj :rightbelow new<CR>
 augroup last_edit
   autocmd!
   autocmd BufReadPost *
-       \ if line("'\"") > 0 && line("'\"") <= line("$") |
-       \   exe "normal! g`\"" |
-       \ endif
+        \ if line("'\"") > 0 && line("'\"") <= line("$") |
+        \   exe "normal! g`\"" |
+        \ endif
 augroup END
 " Remember info about open buffers on close
 set viminfo^=%
@@ -361,113 +333,6 @@ let g:closetag_emptyTags_caseSensitive = 1
 "" close the Hoogle window
 "nnoremap <silent> <leader>hz :HoogleClose<CR>
 
-" Enable vim's built-in omni-complete feature
-" uses defaults informed by syntax to populate completion suggestions
-" Note: This is the default; deoplete will take over when and if
-"       configured. They can be what deoplete uses if
-"       g:deoplete#omni#input_patterns is *not* {}
-" Here are explicit settings of vim's built-in omnifunc capacity
-" augroup omnifuncs
-"   au!
-"   au FileType css setlocal omnifunc=csscomplete#CompleteCSS
-"   au FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-"   au FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-"   au FileType python setlocal omnifunc=pythoncomplete#Complete
-"   au FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-" augroup end
-"
-
-" TODO: Maybe put this function onto functionComplete <c-x><c-u>
-set omnifunc=syntaxcomplete#Complete
-set completeopt=longest,menuone,preview
-set pumheight=30  " max height of popup before using scroll
-                  " Note: deoplete has max candidates = 100
-
-" deoplete
-" ========
-" Note: Make sure to use Plug to install and start tern with the
-" --persistent flag, --verbose when debugging
-" Debugging:
-" 1. :echo &tags to make sure you are getting an
-"    absolute file location; fully evaluated
-" 2. :echo &omnifunc -> should be the wrapper jspc#omni
-"    (it wraps tern#Complete, or deoplete-terns's equivalent)
-" 3. fire-up a tern server with --verbose and --persistent options
-"    from the same root project directory to view what is being
-"    sent to deoplete throughout your coding session
-" 4. turn deoplete debugging on and track the changing log with tail
-"    (at best it gives you the sources being used)
-" 5. call ctags from the terminal ctags -R <list directories>;
-"    [specify options in .guttags or .ctags]
-nnoremap <leader>dx :call deoplete#toggle()<CR>
-let g:deoplete#enable_at_startup = 1
-let g:deoplete#complete_method='omnifunc'
-let g:deoplete#auto_complete_start_length = 0
-let g:deoplete#enable_camel_case = 1
-let g:deoplete#enable_refresh_always = 1       " required for continous search
-let g:deoplete#max_list = 100                  " default
-let g:deoplete#max_menu_width = 30
-" DEBUG
-let g:deoplete#enable_profile = 1
-call deoplete#enable_logging('DEBUG', '/tmp/deoplete.log')
-call deoplete#custom#source('tern', 'is_debug_enabled', 1)
-
-"" Deoplete TernJS source configuration
-let g:deoplete#sources#ternjs#types = 1
-let g:deoplete#sources#ternjs#docs = 1
-let g:deoplete#sources#ternjs#depths = 1
-let g:deoplete#sources#ternjs#guess = 0
-let g:deoplete#sources#ternjs#sort = 1
-let g:deoplete#sources#ternjs#expand_word_forward = 1
-let g:deoplete#sources#ternjs#include_keywords = 0
-
-" use deoplete-specific settings instead of omnifunc
-" See: deoplete issue 352
-" TESTING may be tern#Complete
-let g:deoplete#omni#functions = {}
-let g:deoplete#omni#functions.javascript = ['ternjs#Complete', 'jspc#omni']
-let g:deoplete#omni#functions.haskell = ['necoghc#omnifunc']
-
-" Sources: Default is a long list including file, dictionary etc.
-"          Turn on deoplete logging to see what is being sourced
-"          for any one popup.
-" let g:deoplete#sources = {}
-" let g:deoplete#sources['javascript'] = ['around', 'neosnippet', 'tern', 'file/include']
-" let g:deoplete#sources['javascript'] = ['file', 'file/include', 'tern']
-" let g:deoplete#sources['haskell'] = ['file', 'neosnippet', 'ghc']
-
-" " Default rank is 100, higher is better.
-call deoplete#custom#source('omni',          'mark', '⌾')
-call deoplete#custom#source('tern',          'mark', '')  " tern not ternJS is the internal ref
-call deoplete#custom#source('ghc',           'mark', '')
-call deoplete#custom#source('vim',           'mark', '')
-call deoplete#custom#source('tag',           'mark', '⌦')
-call deoplete#custom#source('neosnippet',    'mark', '⌘')
-call deoplete#custom#source('around',        'mark', '↻')
-call deoplete#custom#source('buffer',        'mark', 'ℬ')
-call deoplete#custom#source('syntax',        'mark', '♯')
-call deoplete#custom#source('file',          'mark', 'F')
-call deoplete#custom#source('file_include',  'mark', '⌁')
-call deoplete#custom#source('member',        'mark', '.')
-
-call deoplete#custom#source('vim',           'rank', 640)
-call deoplete#custom#source('tern',          'rank', 620)
-call deoplete#custom#source('ghc',           'rank', 620)
-call deoplete#custom#source('tag',           'rank', 600)
-call deoplete#custom#source('omni',          'rank', 550)
-call deoplete#custom#source('neosnippet',    'rank', 510)
-call deoplete#custom#source('member',        'rank', 500)
-call deoplete#custom#source('file_include',  'rank', 420)
-call deoplete#custom#source('file',          'rank', 410)
-call deoplete#custom#source('around',        'rank', 330)
-call deoplete#custom#source('buffer',        'rank', 320)
-call deoplete#custom#source('dictionary',    'rank', 310)
-call deoplete#custom#source('syntax',        'rank', 200)
-
-" If using tern_for_vim
-" let g:tern#command = ["tern"]
-" let g:tern#arguments = ["--persistent"]
-
 " neosnippet
 " ===========
 let g:my_snippet_manager = "neosnippet"
@@ -482,14 +347,6 @@ let g:neosnippet#disable_runtime_snippets = { '_' : 1, }
 imap <C-k>     <Plug>(neosnippet_expand_or_jump)
 smap <C-k>     <Plug>(neosnippet_expand_or_jump)
 xmap <C-k>     <Plug>(neosnippet_expand_target)
-
-" SuperTab
-" ========
-"autocmd FileType javascript let g:SuperTabDefaultCompletionType = "<c-x><c-o>"
-inoremap <expr> <tab>  pumvisible() ? "\<C-n>" : "\<tab>"
-let g:SuperTabContextDefaultCompletionType = "<c-n>"
-let g:SuperTabDefaultCompletionType = "context"
-" TODO: define a function for the user-defined <c-x><c-u>
 
 " ALE - live linting
 " ==================
@@ -528,25 +385,6 @@ let g:ale_javascript_prettier_use_local_config = 1
 " ALE map binding
 nnoremap <silent> <leader>k <Plug>(ale_previous_wrap)
 nnoremap <silent> <leader>j <Plug>(ale_next_wrap)
-
-" Tweaks to the IDE-like popups
-" remap enter when the completion menu is open (now selects the item)
-inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-
-" keep searching while typing <C-n> behaves like a down arrow
-inoremap <expr> <C-n> pumvisible() ? "\<C-n>" :
-      \ '<C-n><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
-
-inoremap <expr> <M-,> pumvisible() ? "\<C-n>" :
-      \ '<C-x><C-o><C-n><C-p><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
-
-" close the popup with esc
-inoremap <expr> <esc> pumvisible()? deoplete#mappings#close_popup() : "\<esc>"
-
-" Automating closing the preview window
-" [populated with type and documentation about the chosen option]
-" Manual: :pc, :pclose, :q
-" autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
 
 " tabularize
 " ===========
@@ -588,7 +426,7 @@ let g:gutentags_trace = 0
 let g:gutentags_debug = 1
 
 " FileType (mostly) autocmd
-augroup aus
+augroup fileTypes
   au!
   " set the working directory to the active file
   " au BufEnter * silent! lcd %:p:h
@@ -627,17 +465,18 @@ augroup aus
   " <buffer> means applies to current buffer only
   au Filetype help nnoremap <buffer> q :q<CR>
   au Filetype qf   nnoremap <buffer> q :q<CR>
-  au WinEnter * if &previewwindow |
-        \ setlocal wrap nonumber colorcolumn= |
-        \ echom "preview set wrap" |
-        \ endif
-  " overide indentline use of conceal that hides quotes
-  " au Filetype json let g:indentLine_setConceal=0
-  " aka: let g:vim_json_syntax_conceal = 0
 
   " Resize panes whenever containing window resized.
   au VimResized * wincmd =
 
+augroup END
+
+augroup previewWindow
+  au!
+  au WinEnter * if &previewwindow |
+        \ setlocal wrap nonumber colorcolumn= |
+        \ echom "preview set wrap and nonumber" |
+        \ endif
 augroup END
 
 " augroup haskell

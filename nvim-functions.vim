@@ -4,8 +4,12 @@
 " last updated: Dec 21, 2017
 " -------------------------------------------------------------------------------
 " Support functions
-"
 " -------------------------------------------------------------------------------
+"
+" Check for .vimrc before loading
+fun! HasVimrc()
+  return findfile(".vimrc", ".")
+endfun
 
 " Speed up searches by inserting the current directory at the top
 let s:default_path = escape(&path, '\ ') " store default value of 'path'
@@ -32,8 +36,23 @@ fun! ToggleText()
   endif
 endfun
 
+" Deoplete activation
+fun! ToggleDeoplete()
+  call deoplete#toggle()
+  echom "Toggled deoplete (0:disabled 1:enabled): " . deoplete#is_enabled()
+endfun
+command! -complete=command ToggleDeoplete call ToggleDeoplete()
+
+fun! EnableDeoplete()
+  if !deoplete#is_enabled()
+    call deoplete#toggle()
+  endif
+  echom "Deoplete enabled: " . deoplete#is_enabled()
+endfun
+command! -complete=command EnableDeoplete call EnableDeoplete()
+
 " Debugging functions
-function! GetSettingsFor (term)
+fun! GetSettingsFor (term)
   redir => message
   silent execute "let"
   redir END
@@ -46,8 +65,9 @@ function! GetSettingsFor (term)
     execute "g/" . a:term . "/y A"
     enew
     setlocal buftype=nofile bufhidden=wipe noswapfile nobuflisted nomodified
-    execute "put A"
+    execute "put a"
     normal! gg
+    execute setreg('a',[])
   endif
 endfun
 command! -nargs=+ -complete=command GetSettingsFor call GetSettingsFor (<q-args>)
@@ -151,7 +171,7 @@ endfun
 
 " Logging
 " Note: use with tail -f /tmp/vim.log
-func! ToggleVerbose()
+fun! ToggleVerbose()
   if !&verbose
     set verbosefile=/tmp/vim.log
     set verbose=15
@@ -159,29 +179,29 @@ func! ToggleVerbose()
     set verbose=0
     set verbosefile=
   endif
-endfunc
+endfun
 
 " Reveal current color scheme
 " Usage: :call ShowColorSchemeName()
-func! ShowColorSchemeName()
+fun! ShowColorSchemeName()
   try
     echo g:colors_name
   catch /^Vim:E121/
     echo "default
   endtry
-endfunc
+endfun
 
 " Reveal highlight group of word below the cursor
 " Usage: :set statusline+=%{HiGroup()}
-func! HiGroup()
+fun! HiGroup()
   return synIDattr(synID(line("."),col("."),1),"name")
-endfunc
+endfun
 
 " Haskell
 " =======
 " Automatically make cscope connections
 " Called with .hs specific autocmd
-func! LoadHscope()
+fun! LoadHscope()
   let db = findfile("hscope.out", ".;")
   if (!empty(db))
     let path = strpart(db, 0, match(db, "/hscope.out$"))
@@ -189,7 +209,7 @@ func! LoadHscope()
     exe "cs add " . db . " " . path
     set cscopeverbose
   endif
-endfunc
+endfun
 
 " Helper functions
 " ================
