@@ -1,36 +1,63 @@
-"-------------------------
+" -------------------------------------------------------------------------------
 " ~/.config/nvim/init.vim
-"-------------------------
+" last updated: Dec 21, 2017
+" -------------------------------------------------------------------------------
 " Debugging tips
 " :scriptnames to see what is running
-" :setlocal syntax
+" :GetSettingsFor <setting>
+" :TabMessage <command>
 " :syntax list
 " :debug <cmd>
 " :call ToggleVerbose()
 " :setlocal makeprg=... , confirm: echo &makeprg
 " :$VIMRUNTIME/debugscript.vim
+
+function! GetSettingsFor (term)
+  redir => message
+  silent execute "let"
+  redir END
+  if empty(message)
+    echoerr "no result"
+  else
+    enew
+    setlocal buftype=nofile bufhidden=wipe noswapfile nobuflisted nomodified
+    silent put=message
+    execute "g/" . a:term . "/y A"
+    enew
+    setlocal buftype=nofile bufhidden=wipe noswapfile nobuflisted nomodified
+    execute "put A"
+    normal! gg
+  endif
+endfun
+command! -nargs=+ -complete=command GetSettingsFor call GetSettingsFor (<q-args>)
+
 "
 " TODO: generate a version for Haskell
 
 set nocompatible " No VI compatibility
 set autoread     " Detect file changes outside vim
-
-" Change directory based on current buffer
-" ==========================================
+set autochdir    " change working dir to current buffer
 " TODO: may improve how C-x C-f works
-set autochdir  " change working dir to current buffer
 
-"----------------------------------------------------------
-" Neovim's Python provider
-"----------------------------------------------------------
+" Paths to `included` files
+" -------------------------------------------------------------------------------
+let path_plugins        = expand(resolve($HOME . "/dotfiles/nvim-plugins.vim"))
+let path_typo_repair_db = expand(resolve($HOME . "/dotfiles/nvim-iabbrev-db.vim"))
+" Project specific configurations
+" NVIM will also source .vimrc if present in the project directory
+" -------------------------------------------------------------------------------
+
+" -------------------------------------------------------------------------------
+" Neovim's Python provider(s)
+" -------------------------------------------------------------------------------
 let g:python_host_prog  = '/usr/local/bin/python2'
 let g:python3_host_prog = '/usr/local/bin/python3'
-" Note: Do not use the following setting
-" let g:loaded_python_provider = 1
+" Note: disable by setting g:loaded_python_provider = 1
+" -------------------------------------------------------------------------------
 
 " esc key with cursor moved forward
 " (faster than `ff` for instance)
-imap df <esc><esc>l
+inoremap df <esc><esc>l
 
 " Leader key and timeout
 let mapleader = "\<SPACE>"
@@ -56,35 +83,32 @@ nnoremap <BS> <C-w>h
 " ---------------------------
 " Tweaks to default mappings
 " ---------------------------
-" Remap start of the line; end of the file
-nmap 0 ^
-nmap gg :0<CR>
-nmap G G$
+" Remap start of the line; end of the file and EOF
+nnoremap 0 ^
+nnoremap gg :0<CR>
+nnoremap G G$
 
-nmap <M-:> :
-imap <M-:> :
+nnoremap <M-:> :
+inoremap <M-:> :
 
 " Writing to file with <ctr-a>
 nnoremap <C-a> :w<CR>
 inoremap <C-a> <Esc>:w<CR>l
 vnoremap <C-a> <Esc>:w<CR>
 
-" Select all text in current buffer
-nmap <Leader>a ggVG
-
 " Copy filename and filepath
-nmap <Leader>fc :let @+=expand("%")<CR>
-nmap <leader>fn :let @*=expand("%")<CR>
-nmap <leader>fp :let @*=expand("%:p")<CR>
+nnoremap <Leader>fc :let @+=expand("%")<CR>
+nnoremap <leader>fn :let @*=expand("%")<CR>
+nnoremap <leader>fp :let @*=expand("%:p")<CR>
 
 " Open file prompt with current path
-nmap <leader>e :e <C-R>=expand("%:p:h") . '/'<CR>
+nnoremap <leader>e :e <C-R>=expand("%:p:h") . '/'<CR>
 
 " NerdTree
 " ========
 " If nerd tree is closed, find current file, if open, close it
-nmap <silent> <leader>f <ESC>:call ToggleFindNerd()<CR>
-nmap <silent> <leader>F <ESC>:NERDTreeToggle<CR>
+nnoremap <silent> <leader>f <ESC>:call ToggleFindNerd()<CR>
+nnoremap <silent> <leader>F <ESC>:NERDTreeToggle<CR>
 
 " vim-bby
 " =======
@@ -92,11 +116,24 @@ nmap <silent> <leader>F <ESC>:NERDTreeToggle<CR>
 nnoremap <Leader>q :Bdelete<CR>
 
 " Display .vimrc in a new window; source when done
-nmap <leader>forc :sp ${HOME}/.config/nvim/init.vim<CR>
+nnoremap <leader>forc :sp ${HOME}/.config/nvim/init.vim <CR>
 augroup sourcing
   autocmd!
-  autocmd bufwritepost init.vim source $MYVIMRC
+  autocmd bufwritepost init.vim :source $MYVIMRC
 augroup END
+
+" Select all text in current buffer
+nnoremap <Leader>a ggVG
+
+" TESTING
+" Operator-pending maps
+" p -> parentheses
+" b -> bracket
+" e.g., change contents between () with cp
+onoremap p i(
+onoremap b i{
+onoremap np :<c-u>normal! f(vi(<cr>
+onoremap nb :<c-u>normal! f{ivi{<cr>
 
 " Map esc to remove highlighting of previous search
 nnoremap <esc> :noh<return><esc>
@@ -149,7 +186,7 @@ set switchbuf=useopen
 noremap <leader>bd :bp<bar>sp<bar>bn<bar>bd<CR>
 
 " close every window except the current (o = other)
-nmap <leader>bo <c-w>o
+nnoremap <leader>bo <c-w>o
 
 " list files and option to jump (not buffers)
 nnoremap<leader>bb :buffers<CR>:buffer<Space>
@@ -165,21 +202,24 @@ tnoremap <c-k> <C-\><C-n><C-w>k
 tnoremap <c-l> <C-\><C-n><C-w>l
 
 " spell checking
-map <leader>ss :setlocal spell!<cr>
+noremap <leader>ss :setlocal spell!<cr>
 
 " Tags and Tagbar
 " ===============
-map <leader>tt :TagbarToggle<CR>
-" Notes:
-" 1. use of `;` makes it recursive
-" 2. the `.` will be substituted with a directory
-" 3. May not set once NVIM is open
-" 4. Haskell uses hscope
-" 5. Plugins that require tags like have their own
-"    settings.  Writing to this may prevent ctag-dependent
-"    plugins from working.
-"set tags=./tags,tags;
-"" :set tags=./tags,tags,/home/user/commontags
+noremap <leader>tt :TagbarToggle<CR>
+
+" Force redraw
+noremap <silent> <leader>r :redraw!<CR>
+
+" WIP - set source locations at the top
+" of the file
+" Source: iabbrev for frequent typos
+" =============
+" test if file exists
+" source it
+inoreabbrev waht what
+inoreabbrev functino function
+inoreabbrev teh the
 
 " =========
 " PLUGINS
@@ -279,10 +319,10 @@ Plug 'hail2u/vim-css3-syntax',        { 'for': 'css' }
 " Pandoc / Markdown
 Plug 'vim-pandoc/vim-pandoc',        { 'for': [ 'pandoc', 'markdown' ] }
 Plug 'vim-pandoc/vim-pandoc-syntax', { 'for': [ 'pandoc', 'markdown' ] }
-
-" Markdown preview
-Plug 'mklabs/mdn.vim', { 'do': 'yarn install --prefer-offline mdn-cli' }
 Plug 'euclio/vim-markdown-composer',   { 'do': 'cargo build --release' }
+
+" MDN documentation grabber: :Mdn <search terms>
+Plug 'mklabs/mdn.vim', { 'do': 'yarn install --prefer-offline mdn-cli' }
 
 " HTML (note: this is in addition to custom shorthand)
 Plug 'alvan/vim-closetag',           { 'for': [ 'html', 'javascript', 'javascript.jsx', 'xml' ] }
@@ -326,22 +366,33 @@ call plug#end()
 "Plug 'Shougo/vimproc.vim', { 'do': 'make' } " not required for asynch in neovim
 "Plug 'neovim/node-host', { 'do': 'npm install --cache-min Infinity --loglevel http' }
 " END PLUGINS
-"
-" Force redraw
-map <silent> <leader>r :redraw!<CR>
+
+" TAGS
+" Notes:
+" 1. use of `;` makes it recursive
+" 2. the `.` will be substituted with a directory
+" 3. May not set once NVIM is open
+" 4. Haskell uses hscope
+" 5. Plugins that require tags like have their own
+"    settings.  Writing to this may prevent ctag-dependent
+"    plugins from working.
+"set tags=./tags,tags;
+"" :set tags=./tags,tags,/home/user/commontags
 
 " Surround
 " ========
 " TODO: figure out what this mapping does
 "nnoremap <silent> <C-\> :cs find c <C-R>=expand("<cword>")<CR><CR>
 
+" OS Clipboard
 " Copy and paste to os clipboard
-nmap <leader>y "*y
-vmap <leader>y "*y
-" nmap <leader>d "*d
-" vmap <leader>d "*d
-nmap <leader>p "*p
-vmap <leader>p "*p
+" Note: Ctrp uses <leader>p_
+nnoremap <leader>y "*y
+vnoremap <leader>y "*y
+" nnoremap <leader>d "*d
+" vnoremap <leader>d "*d
+nnoremap <leader>p "*p
+vnoremap <leader>p "*p
 
 " Visual mode pressing * or # searches for the current selection
 " Super useful! From an idea by Michael Naumann
@@ -370,14 +421,14 @@ nnoremap <silent> <c-l> :TmuxNavigateRight<cr>
 nnoremap <leader>- :sp<CR>
 nnoremap <leader>\ :vsp<CR>
 " Open window splits in various places
-nmap <leader>sh :leftabove  vnew<CR>
-nmap <leader>sl :rightbelow vnew<CR>
-nmap <leader>sk :leftabove  new<CR>
-nmap <leader>sj :rightbelow new<CR>
+nnoremap <leader>sh :leftabove  vnew<CR>
+nnoremap <leader>sl :rightbelow vnew<CR>
+nnoremap <leader>sk :leftabove  new<CR>
+nnoremap <leader>sj :rightbelow new<CR>
 
 " Disable highlight when <leader><cr> is pressed
 " but preserve cursor coloring
-"nmap <silent> <leader><cr> :noh\|hi Cursor guibg=red<cr>
+"nnoremap <silent> <leader><cr> :noh\|hi Cursor guibg=red<cr>
 
 " Return to last edit position when opening files
 augroup last_edit
@@ -391,13 +442,13 @@ augroup END
 set viminfo^=%
 
 " Helper functions
-function! CmdLine(str)
+fun! CmdLine(str)
   exe "menu Foo.Bar :" . a:str
   emenu Foo.Bar
   unmenu Foo
-endfunction
+endfun
 
-function! VisualSelection(direction, extra_filter) range
+fun! VisualSelection(direction, extra_filter) range
   let l:saved_reg = @"
   execute "normal! vgvy"
 
@@ -405,43 +456,43 @@ function! VisualSelection(direction, extra_filter) range
   let l:pattern = substitute(l:pattern, "\n$", "", "")
 
   if a:direction == 'b'
-    execute "normal ?" . l:pattern . "^M"
+    execute "normal! ?" . l:pattern . "^M"
   elseif a:direction == 'gv'
     call CmdLine("vimgrep " . '/'. l:pattern . '/' . ' **/*.' . a:extra_filter)
   elseif a:direction == 'replace'
     call CmdLine("%s" . '/'. l:pattern . '/')
   elseif a:direction == 'f'
-    execute "normal /" . l:pattern . "^M"
+    execute "normal! /" . l:pattern . "^M"
   endif
 
   let @/ = l:pattern
   let @" = l:saved_reg
-endfunction
+endfun
 
 " VIMUX - a new Slime
 " ====================
 map <Leader>rb :call VimuxRunCommand("clear; rspec " . bufname("%"))<CR>
-vmap <silent> <Leader>rs <Plug>SendSelectionToTmux
-nmap <silent> <Leader>rs <Plug>NormalModeSendToTmux
-nmap <silent> <Leader>rv <Plug>SetTmuxVars
-function! VimuxSlime()
+vnoremap <silent> <Leader>rs <Plug>SendSelectionToTmux
+nnoremap <silent> <Leader>rs <Plug>NormalModeSendToTmux
+nnoremap <silent> <Leader>rv <Plug>SetTmuxVars
+fun! VimuxSlime()
   call VimuxSendText(@v)
   call VimuxSendKeys("Enter")
-endfunction
+endfun
 " If text is selected, save it in the v buffer and send that buffer it to tmux
-vmap <LocalLeader>vs "vy :call VimuxSlime()<CR>
+vnoremap <LocalLeader>vs "vy :call VimuxSlime()<CR>
 " Select current paragraph and send it to tmux
-nmap <LocalLeader>vs vip<LocalLeader>vs<CR>
+nnoremap <LocalLeader>vs vip<LocalLeader>vs<CR>
 
 " NerdTree
 " ========
 " Usage: <leader>f OR <leader>F
 let NERDTreeQuitOnOpen = 1
-function! IsNERDTreeOpen()
+fun! IsNERDTreeOpen()
   return exists("t:NERDTreeBufName") && (bufwinnr(t:NERDTreeBufName) != -1)
-endfunction
+endfun
 
-function! ToggleFindNerd()
+fun! ToggleFindNerd()
   if !(exists('*NERDTreeFind'))
     exec 'NERDTreeToggle'
     return
@@ -451,28 +502,28 @@ function! ToggleFindNerd()
   else
     exec ':NERDTreeFind'
   endif
-endfunction
+endfun
 
 " Git
 " =====
 let g:extradite_width = 60
 " Hide messy Ggrep output and :copen automatically
-function! NonintrusiveGitGrep(term)
+fun! NonintrusiveGitGrep(term)
   execute "copen"
   " Map 't' to open selected item in new tab
   execute "nnoremap <silent> <buffer> t <C-W><CR><C-W>T"
   execute "silent! Ggrep " . a:term
   execute "redraw!"
-endfunction
+endfun
 
 command! -nargs=1 GGrep call NonintrusiveGitGrep(<q-args>)
-nmap <leader>gs :Gstatus<CR>
-nmap <leader>gg :copen<CR>:GGrep
-nmap <leader>gl :Extradite!<CR>
-nmap <leader>gd :Gdiff<CR>
-nmap <leader>gb :Gblame<CR>
+nnoremap <leader>gs :Gstatus<CR>
+nnoremap <leader>gg :copen<CR>:GGrep
+nnoremap <leader>gl :Extradite!<CR>
+nnoremap <leader>gd :Gdiff<CR>
+nnoremap <leader>gb :Gblame<CR>
 
-function! CommittedFiles()
+fun! CommittedFiles()
   " Clear quickfix list
   let qf_list = []
   " Find files committed in HEAD
@@ -483,7 +534,7 @@ function! CommittedFiles()
   endfor
   " Fill quickfix list with them
   call setqflist(qf_list)
-endfunction
+endfun
 
 " Show list of last-committed files
 nnoremap <silent> <leader>g? :call CommittedFiles()<CR>:copen<CR>
@@ -491,7 +542,7 @@ nnoremap <silent> <leader>g? :call CommittedFiles()<CR>:copen<CR>
 " DashSearch
 " ===========
 " Send a search term to Dash (documentation viewer)
-nmap <silent> <leader>da <Plug>DashSearch
+nnoremap <silent> <leader>da <Plug>DashSearch
 let g:dash_activate = 0
 
 " HTML plugin
@@ -518,10 +569,10 @@ let g:closetag_emptyTags_caseSensitive = 1
 "map <silent> <leader>hR :call ApplyOneSuggestion()<CR>
 
 "" ghc-mod - type checker
-"nmap <silent> <leader>ht :GhcModType<CR>
-"nmap <silent> <leader>hT :GhcModTypeInsert<CR>
-"nmap <silent> <leader>hs :GhcModSplitFunCase<CR>
-"nmap <silent> <leader>he :GhcModTypeClear<CR>
+"nnoremap <silent> <leader>ht :GhcModType<CR>
+"nnoremap <silent> <leader>hT :GhcModTypeInsert<CR>
+"nnoremap <silent> <leader>hs :GhcModSplitFunCase<CR>
+"nnoremap <silent> <leader>he :GhcModTypeClear<CR>
 
 "" Hoogle
 "" ======
@@ -542,12 +593,12 @@ let g:closetag_emptyTags_caseSensitive = 1
 "       g:deoplete#omni#input_patterns is *not* {}
 " Here are explicit settings of vim's built-in omnifunc capacity
 " augroup omnifuncs
-"   autocmd!
-"   autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-"   autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-"   autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-"   autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-"   autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+"   au!
+"   au FileType css setlocal omnifunc=csscomplete#CompleteCSS
+"   au FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+"   au FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+"   au FileType python setlocal omnifunc=pythoncomplete#Complete
+"   au FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 " augroup end
 "
 
@@ -573,7 +624,7 @@ set pumheight=30  " max height of popup before using scroll
 "    (at best it gives you the sources being used)
 " 5. call ctags from the terminal ctags -R <list directories>;
 "    [specify options in .guttags or .ctags]
-nmap <leader>dx :call deoplete#toggle()<CR>
+nnoremap <leader>dx :call deoplete#toggle()<CR>
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#complete_method='omnifunc'
 let g:deoplete#auto_complete_start_length = 0
@@ -655,8 +706,10 @@ let g:neosnippet#enable_snipmate_compatibility = 1
 let g:neosnippet#snippets_directory='${HOME}/.config/nvim/snippets'
 let g:neosnippet#disable_runtime_snippets = { '_' : 1, }
 
-" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
-" Jump within a snippet with <C-k> (tab does not work with SuperTab)
+" Jump within a snippet with <C-k>
+" Notes:
+" 1. It must be "imap" and "smap".  It uses <Plug> mappings
+" 2. Potential interaction with SuperTab
 imap <C-k>     <Plug>(neosnippet_expand_or_jump)
 smap <C-k>     <Plug>(neosnippet_expand_or_jump)
 xmap <C-k>     <Plug>(neosnippet_expand_target)
@@ -704,8 +757,8 @@ let g:ale_javascript_prettier_use_local_config = 1
 " " autocmd FileType javascript set formatprg=prettier-eslint\ --stdin
 
 " ALE map binding
-nmap <silent> <leader>k <Plug>(ale_previous_wrap)
-nmap <silent> <leader>j <Plug>(ale_next_wrap)
+nnoremap <silent> <leader>k <Plug>(ale_previous_wrap)
+nnoremap <silent> <leader>j <Plug>(ale_next_wrap)
 
 " Tweaks to the IDE-like popups
 " remap enter when the completion menu is open (now selects the item)
@@ -731,10 +784,10 @@ inoremap <expr> <esc> pumvisible()? deoplete#mappings#close_popup() : "\<esc>"
 " formats text to align in a table format
 " Usage:   :Tab /:\zs   |     :Tab /:
 let g:haskell_tabular = 1
-vmap a= :Tabularize /=<CR>
-vmap a; :Tabularize /::<CR>
-vmap a- :Tabularize /-><CR>
-vmap a{ :Tabularize /{><CR>
+vnoremap a= :Tabularize /=<CR>
+vnoremap a; :Tabularize /::<CR>
+vnoremap a- :Tabularize /-><CR>
+vnoremap a{ :Tabularize /{><CR>
 
 " ctrl-p
 " =======
@@ -748,11 +801,11 @@ nnoremap <Leader>po :CtrlP<CR>
 " Open buffer menu
 nnoremap <Leader>pb :CtrlPBuffer<CR>
 " Open most recently used files
-nnoremap <Leader>pf :CtrlPMRUFiles<CR>
+nnoremap <Leader>pr :CtrlPMRUFiles<CR>
 " Fuzzy find files
-nnoremap <silent> <Leader><space> :CtrlP<CR>
+nnoremap <silent> <Leader>pf<space> :CtrlP<CR>
 " fuzzy find buffers
-nnoremap <silent> <leader>b<space> :CtrlPBuffer<cr>
+nnoremap <silent> <leader>pb<space> :CtrlPBuffer<cr>
 
 " ctags gutentags -- <C-[>
 " ========================
@@ -767,12 +820,15 @@ let g:gutentags_debug = 1
 
 " Speed up searches by inserting the current directory at the top
 let s:default_path = escape(&path, '\ ') " store default value of 'path'
-autocmd BufRead *
-      \ let s:tempPath=escape(escape(expand("%:p:h"), ' '), '\ ') |
-      \ exec "set path-=".s:tempPath |
-      \ exec "set path-=".s:default_path |
-      \ exec "set path^=".s:tempPath |
-      \ exec "set path^=".s:default_path
+augroup insertdir
+  au!
+  au BufRead *
+        \ let s:tempPath=escape(escape(expand("%:p:h"), ' '), '\ ') |
+        \ exec "set path-=".s:tempPath |
+        \ exec "set path-=".s:default_path |
+        \ exec "set path^=".s:tempPath |
+        \ exec "set path^=".s:default_path
+augroup END
 
 " FileType (mostly) autocmd
 augroup aus
@@ -796,6 +852,7 @@ augroup aus
   au BufNewFile,BufRead gitconfig     setfiletype gitconfig
   au BufNewFile,BufRead .jsx          setfiletype javascript
   au BufNewFile,BufRead .hs           setfiletype haskell
+  au BufNewFile,BufRead .md           setfiletype markdown
 
   " oh-my-zsh file types
   au BufNewFile,BufRead *.zsh-theme   setfiletype sh
@@ -811,8 +868,8 @@ augroup aus
 
   " Quick escape q to exit a help file
   " <buffer> means applies to current buffer only
-  au Filetype help nmap <buffer> q :q<CR>
-  au Filetype qf   nmap <buffer> q :q<CR>
+  au Filetype help nnoremap <buffer> q :q<CR>
+  au Filetype qf   nnoremap <buffer> q :q<CR>
   au WinEnter * if &previewwindow |
         \ setlocal wrap nonumber colorcolumn= |
         \ echom "preview set wrap" |
@@ -828,12 +885,12 @@ augroup END
 
 " augroup haskell
 "   au!
-"   au FileType haskell nmap <silent> <leader><cr> :noh<cr>:GhcModTypeClear<cr>
+"   au FileType haskell nnoremap <silent> <leader><cr> :noh<cr>:GhcModTypeClear<cr>
 "   " Resolve ghcmod base directory
 "   au FileType haskell let g:ghcmod_use_basedir = getcwd()
 "   " Use hindent instead of par for haskell buffers
 "   au FileType haskell let &formatprg="hindent --tab-size 2 -XQuasiQuotes"
-"   au FileType haskell nmap <leader>tg :!codex update --force<CR>:call system("git-hscope -X TemplateHaskell")<CR><CR>:call LoadHscope()<CR>
+"   au FileType haskell nnoremap <leader>tg :!codex update --force<CR>:call system("git-hscope -X TemplateHaskell")<CR><CR>:call LoadHscope()<CR>
 "   au BufEnter /*.hs call LoadHscope()
 "   au BufEnter hi! link Conceal Function
 "   au FileType haskell set tags+=codex.tags;
@@ -846,7 +903,7 @@ augroup END
 " set csto=1       " search codex tags first
 
 " Tag Generation (manual to force what is configured automagically)
-au FileType javascript nmap <leader>tg :call GetNewTags()<cr>
+au FileType javascript nnoremap <leader>tg :call GetNewTags()<cr>
 fun! GetNewTags()
   call plug#load('vim-gutentags')
   if !exists("*GutentagsUpdate")
@@ -920,7 +977,7 @@ set sidescroll=1
 " ===========
 " Note: not compatible with Haskell
 let g:indentLine_char = '┊'
-let g:indentLine_fileTypeExclude = ['haskell','json','text','sh','vim']
+let g:indentLine_fileTypeExclude = ['haskell','json','markdown','text','sh','vim']
 let g:indentLine_faster=1
 let g:indentLine_conceallevel=1
 let g:indentLine_setConceal=1
@@ -1035,19 +1092,19 @@ endfunc
 "             - create a new buffer and paste in @a
 " Usage:  :TabMessage <:command>
 "
-function! TabMessage(cmd)
+fun! TabMessage(cmd)
   redir => message
   silent execute a:cmd
   redir END
   if empty(message)
     echoerr "no output"
   else
-    " use "new" instead of "tabnew" below if you prefer split windows instead of tabs
-    tabnew
+    " use "new" for new window, "tabnew" for new tab, "enew" for new buffer
+    enew
     setlocal buftype=nofile bufhidden=wipe noswapfile nobuflisted nomodified
     silent put=message
   endif
-endfunction
+endfun
 command! -nargs=+ -complete=command TabMessage call TabMessage(<q-args>)
 
 " Text file settings
@@ -1086,8 +1143,8 @@ func! HiGroup()
   return synIDattr(synID(line("."),col("."),1),"name")
 endfunc
 
-" nmap <leader>hg :call <SID>SynStack()<CR>
-" function! <SID>SynStack()
+" nnoremap <leader>hg :call <SID>SynStack()<CR>
+" fun! <SID>SynStack()
 "   if !exists("*synstack")
 "     return
 "   endif
@@ -1215,7 +1272,7 @@ hi clear Conceal
 " =========================
 " colors[guifg, guibg, ctermfg, ctermbg]
 let g:airline_theme_patch_func = 'AirlineThemePatch'
-function! AirlineThemePatch(palette)
+fun! AirlineThemePatch(palette)
   if g:airline_theme == 'badwolf'
     for colors in values(a:palette.inactive)
       let colors[0] = '#9E9E9E'
@@ -1224,7 +1281,7 @@ function! AirlineThemePatch(palette)
       let colors[3] = 235
     endfor
   endif
-endfunction
+endfun
 
 " Parent highlighting groups
 " ==========================
