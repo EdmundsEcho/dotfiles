@@ -157,8 +157,8 @@ fun! MkDir()
       lcd %:p:h
       saveas %:t
       echom "Created a new directory:" expand("<afile>:p:h")
-      let buf_del = bufnr("$")
-      exe "bd" . buf_del
+      " let buf_del = bufnr("$")
+      " exe "bd" . buf_del
     endif
     redraw
   endif

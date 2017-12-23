@@ -1,11 +1,11 @@
-" -------------------------------------------------------------------------------
+" ------------------------------------------------------------------------------
 " ~/dotfiles/nvim-deoplete.vim
 " required by: ~/.config/nvim/config/init.vim
 " last updated: Dec 22, 2017
-" -------------------------------------------------------------------------------
+" ------------------------------------------------------------------------------
 " Deoplete
 " IDE-like auto-complete provider
-" -------------------------------------------------------------------------------
+" ------------------------------------------------------------------------------
 " TODO: define a function for the user-defined <c-x><c-u>
 
 " SuperTab
@@ -17,6 +17,7 @@
 " files (/) if found in the text before the cursor.
 " let g:SuperTabContextDefaultCompletionType = "<c-n>"
 " let g:SuperTabDefaultCompletionType = "context"
+"
 " Recall: <c-n> and <c-p> are two ways to cycle through completion
 " options.  <c-n> works top to bottom (next)...
 
@@ -50,16 +51,11 @@ inoremap <expr> <space><space> pumvisible() ? "\<C-y>\<space>" : "\<space><space
 
 " close the popup and/or temporarily disable deoplete with esc
 inoremap <expr> <esc> pumvisible()? deoplete#mappings#close_popup() : "\<esc>"
-inoremap <expr> <esc><esc> pumvisible()? GetItDone() : "\<esc>"
+inoremap <expr> <esc><esc> pumvisible()? ToggleDeoplete() : "\<esc>"
 augroup deo
   au!
   au InsertEnter * :call EnableDeoplete()
 augroup END
-x
-function! GetItDone()
-  call ToggleDeoplete()
-  startinsert
-endfunction
 
 function! s:is_whitespace()
   let col = col('.') - 1
@@ -76,9 +72,12 @@ autocmd InsertLeave * if !pumvisible() | pclose | endif
 " Note: This is the default; deoplete will take over when and if
 "       configured. They can be what deoplete uses if
 "       g:deoplete#omni#input_patterns is *not* {}
+" ------------------------------------------------------------------------------
 " set omnifunc=syntaxcomplete#Complete
+" ------------------------------------------------------------------------------
 set completeopt=longest,menuone,preview
 set pumheight=30  " max height of popup before using scroll
+" ------------------------------------------------------------------------------
 " Note: deoplete has max candidates = 100
 " Here are explicit settings of vim's built-in omnifunc capacity
 " augroup omnifuncs
@@ -89,8 +88,6 @@ set pumheight=30  " max height of popup before using scroll
 "   au FileType python setlocal omnifunc=pythoncomplete#Complete
 "   au FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 " augroup end
-"
-
 
 " deoplete
 " ========
@@ -126,10 +123,10 @@ let g:deoplete#tag#cache_limit_size = 800000
 call deoplete#custom#source('_', 'matchers', ['matcher_head'])
 call deoplete#custom#set('_', 'converters', ['converter_auto_paren'])
 " DEBUG
-let g:deoplete#enable_profile = 1
-call deoplete#enable_logging('DEBUG', '/tmp/deoplete.log')
-call deoplete#custom#source('jspc#omni', 'is_debug_enabled', 1)
-call deoplete#custom#source('tern#Complete', 'is_debug_enabled', 1)
+" let g:deoplete#enable_profile = 1
+" call deoplete#enable_logging('DEBUG', '/tmp/deoplete.log')
+" call deoplete#custom#source('jspc#omni', 'is_debug_enabled', 1)
+" call deoplete#custom#source('tern#Complete', 'is_debug_enabled', 1)
 
 "" Deoplete TernJS source configuration
 let g:deoplete#sources#ternjs#types = 1
@@ -140,7 +137,7 @@ let g:deoplete#sources#ternjs#sort = 1
 let g:deoplete#sources#ternjs#expand_word_forward = 1
 let g:deoplete#sources#ternjs#include_keywords = 0
 
-" use deoplete-specific settings instead of omnifunc
+" use deoplete-specific settings if not using method 'omnifunc'
 " See: deoplete issue 352
 let g:deoplete#omni#functions = {}
 let g:deoplete#omni#functions.javascript = ['tern#Complete', 'jspc#omni']
@@ -149,6 +146,7 @@ let g:deoplete#omni#functions.haskell = ['necoghc#omnifunc']
 " Sources: Default is a long list including file, dictionary etc.
 "          Turn on deoplete logging to see what is being sourced
 "          for any one popup.
+"
 " let g:deoplete#sources = {}
 " let g:deoplete#sources['javascript'] = ['around', 'neosnippet', 'tern', 'file/include']
 " let g:deoplete#sources['javascript'] = ['file', 'file/include', 'tern']
@@ -182,6 +180,4 @@ call deoplete#custom#source('buffer',        'rank', 320)
 call deoplete#custom#source('dictionary',    'rank', 310)
 call deoplete#custom#source('syntax',        'rank', 200)
 
-" If using tern_for_vim
-" let g:tern#command = ["tern"]
-" let g:tern#arguments = ["--persistent"]
+" ------------------------------------------------------------------------------
