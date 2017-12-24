@@ -16,7 +16,9 @@ ZSH_TMUX_AUTOSTART="true"
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
 #time that oh-my-zsh is loaded.
+
 ZSH_THEME="robbyrussell"
+# ZSH_THEME="nothing"
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -78,6 +80,12 @@ plugins=(
 )
 
 # ---------------------------------------------------------
+# User defined functions
+# ---------------------------------------------------------
+swapzt() {
+  swap-zsh-themes.sh $@;
+}
+# ---------------------------------------------------------
 # User configuration
 # ---------------------------------------------------------
 
@@ -87,7 +95,7 @@ source $ZSH/oh-my-zsh.sh
 # Nov 30, 2017
 # Shortcut for chrome
 chrome () {
-   open -a /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome "$1"
+  open -a /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome "$1"
 }
 
 # Nov 7, 2017
@@ -98,7 +106,7 @@ source $HOME/.config/most.sh
 # provide option to view man pages in preview app
 # Usage: pman man_app_file
 pman() {
-   man -t ${@} | open -f -a /Applications/Preview.app/
+  man -t ${@} | open -f -a /Applications/Preview.app/
 }
 
 # Increase the cache size for ternJS
@@ -130,7 +138,7 @@ export EDITOR='nvim'
 # ---------------------------------------------------------
 alias zshconfig="nvim ~/.zshrc"
 alias ohmyzsh="nvim ~/.oh-my-zsh"
-alias reload='. ~/.zshrc; echo "Executed: . ~/.zshrc" '
+alias reload='. ~/.zshrc; echo "Sourced ~/.zshrc" '
 #alias sd="spindrive_toggle"
 
 # May 25, 2016
@@ -168,9 +176,9 @@ export VISUAL=nvim
 
 # Jul 12th, 2016
 bat() {
-   ioreg -l |awk 'BEGIN{FS="=";max=0;cur=0;}
-   $1~/CurrentCapacity/{cur=$2}
-   $1~/MaxCapacity/{max=$2}
+  ioreg -l |awk 'BEGIN{FS="=";max=0;cur=0;}
+  $1~/CurrentCapacity/{cur=$2}
+  $1~/MaxCapacity/{max=$2}
 END{if (max>0) {printf "%.0f%%\n",cur/max*100} else {print "?"}}'
 }
 
