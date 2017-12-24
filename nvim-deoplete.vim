@@ -44,12 +44,13 @@ snoremap <silent><expr><Tab> pumvisible() ? "\<Down>"
 inoremap <expr><S-Tab>  pumvisible() ? "\<Up>" : "\<C-h>"
 
 " select item with enter or space
-inoremap <expr> <CR>           pumvisible() ? "\<C-y>" : "\<CR>"
-inoremap <expr> <space><space> pumvisible() ? "\<C-y>\<space>" : "\<space><space>"
+inoremap <expr> <CR>      pumvisible() ? "\<C-y>" : "\<CR>"
+inoremap <expr> <c-space> pumvisible() ? "\<C-y>\<space>" : "\<space>"
 " Note: see help: complete-items and set completeopt+=noinsert
 "       to do more.
 
 " close the popup and/or temporarily disable deoplete with esc
+" TODO: fix getting `0` inserted into the document
 inoremap <expr> <esc> pumvisible()? deoplete#mappings#close_popup() : "\<esc>"
 inoremap <expr> <esc><esc> pumvisible()? ToggleDeoplete() : "\<esc>"
 augroup deo
