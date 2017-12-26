@@ -8,26 +8,57 @@
 " ------------------------------------------------------------------------------
 " TODO: define a function for the user-defined <c-x><c-u>
 
+" ------------------------------------------------------------------------------
+" Option to enable vim's built-in omni-complete feature
+" uses defaults informed by syntax to populate completion suggestions
+" Note: This is the default; deoplete will take over when and if
+"       configured. They can be what deoplete uses if
+"       g:deoplete#omni#input_patterns is *not* {}
+" ------------------------------------------------------------------------------
+" set omnifunc=syntaxcomplete#Complete
+" ------------------------------------------------------------------------------
+"
+" ------------------------------------------------------------------------------
+" nvim popup options
+" ------------------------------------------------------------------------------
+set completeopt=menuone,preview
+set completeopt+=noselect
+set completeopt+=noinsert
+set pumheight=20                " max height of popup before using scroll
+" Note: deoplete has max candidates = 100
+" ------------------------------------------------------------------------------
+" Here are explicit settings of vim's built-in omnifunc capacity
+" augroup omnifuncs
+"   au!
+"   au FileType css setlocal omnifunc=csscomplete#CompleteCSS
+"   au FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+"   au FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+"   au FileType python setlocal omnifunc=pythoncomplete#Complete
+"   au FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+" augroup end
+
+" ------------------------------------------------------------------------------
 " SuperTab
-" ========
+" ------------------------------------------------------------------------------
 " NOTE: Deoplete provides most of the context `magic` in SuperTab.
-"       The rest can be easily configured manually.
+"       The rest is straightforward to configure manually.
 "
 " About SuperTab: SupterTab "context" will identify members (. or ->) and
 " files (/) if found in the text before the cursor.
 " let g:SuperTabContextDefaultCompletionType = "<c-n>"
 " let g:SuperTabDefaultCompletionType = "context"
-"
-" Recall: <c-n> and <c-p> are two ways to cycle through completion
-" options.  <c-n> works top to bottom (next)...
 
+" ------------------------------------------------------------------------------
 " Manual configuration of <tab>
-" ============================
+" ------------------------------------------------------------------------------
 " 1. If popup menu is visible, select and insert next item
 " 2. Otherwise, if within a snippet, jump to next input
 " 3. Otherwise, if preceding chars are whitespace, insert tab char
 " 4. Otherwise, start manual autocomplete
 " [configured for both insert and select modes
+"
+" Recall: <c-n> and <c-p> are two ways to cycle through completion
+" options.  <c-n> works top to bottom (next)...
 
 " I - Insert mode
 inoremap <silent><expr><Tab> pumvisible() ? "\<Down>"
@@ -43,57 +74,59 @@ snoremap <silent><expr><Tab> pumvisible() ? "\<Down>"
 
 inoremap <expr><S-Tab>  pumvisible() ? "\<Up>" : "\<C-h>"
 
-" select item with enter or space
-inoremap <expr> <CR>      pumvisible() ? "\<C-y>" : "\<CR>"
-inoremap <expr> <c-space> pumvisible() ? "\<C-y>\<space>" : "\<space>"
-" Note: see help: complete-items and set completeopt+=noinsert
-"       to do more.
-
-" close the popup and/or temporarily disable deoplete with esc
-" TODO: fix getting `0` inserted into the document
-inoremap <expr> <esc> pumvisible()? deoplete#mappings#close_popup() : "\<esc>"
-inoremap <expr> <esc><esc> pumvisible()? ToggleDeoplete() : "\<esc>"
-augroup deo
-  au!
-  au InsertEnter * :call EnableDeoplete()
-augroup END
-
 function! s:is_whitespace()
   let col = col('.') - 1
   return ! col || getline('.')[col - 1] =~? '\s'
 endfunction
 
+" ------------------------------------------------------------------------------
+" select item with space (preferred over enter)
+" keeps the cursor moving forward when ignoring input.
+" ------------------------------------------------------------------------------
+inoremap <expr> <space> pumvisible() ? "\<C-y>\<space>" : "\<space>"
+snoremap <expr> <c-space> pumvisible() ? "\<C-y>" : "\<space>"
+
+" Note: see help: complete-items and set completeopt+=noinsert
+"       to do more.
+" WIP Autocmd: when MenuPopup let g:userIDE=false
+" inoremap <expr> <CR> pumvisible() ?
+"       \ (empty(v:completed_item) ? "\<C-e>\<CR>" : "\<C-y><CR>") : "\<CR>"
+
+" ------------------------------------------------------------------------------
+" close the popup with <esc>
+" (this setting prevents esc from exiting insert mode)
+" ------------------------------------------------------------------------------
+" TODO: fix getting `0` inserted into the document
+" inoremap <expr> <esc> pumvisible()? deoplete#mappings#close_popup() : "\<esc>"
+inoremap <expr> <esc> pumvisible()? "\<C-e>" : "\<esc>"
+" ------------------------------------------------------------------------------
+" OR disable deoplete temporarily
+" will reactivate on next entry to insert
+" ------------------------------------------------------------------------------
+inoremap <expr> <esc><esc> pumvisible()? ToggleDeoplete() : "\<esc>"
+augroup deo
+  au!
+  au InsertEnter * :call EnableDeoplete()
+augroup END
+" ------------------------------------------------------------------------------
+
+" ------------------------------------------------------------------------------
 " close the preview window
-" [populated with type and documentation about the chosen option]
+" (populated with type and documentation about the chosen option)
 " Manual: :pc, :pclose, :q
 autocmd InsertLeave * if !pumvisible() | pclose | endif
-
-" Enable vim's built-in omni-complete feature
-" uses defaults informed by syntax to populate completion suggestions
-" Note: This is the default; deoplete will take over when and if
-"       configured. They can be what deoplete uses if
-"       g:deoplete#omni#input_patterns is *not* {}
 " ------------------------------------------------------------------------------
-" set omnifunc=syntaxcomplete#Complete
+"
 " ------------------------------------------------------------------------------
-set completeopt=longest,menuone,preview
-set pumheight=30  " max height of popup before using scroll
-" ------------------------------------------------------------------------------
-" Note: deoplete has max candidates = 100
-" Here are explicit settings of vim's built-in omnifunc capacity
-" augroup omnifuncs
-"   au!
-"   au FileType css setlocal omnifunc=csscomplete#CompleteCSS
-"   au FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-"   au FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-"   au FileType python setlocal omnifunc=pythoncomplete#Complete
-"   au FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-" augroup end
-
 " deoplete
-" ========
-" Note: Make sure to use Plug to install and start the
+" ------------------------------------------------------------------------------
+nnoremap <leader>dx :call ToggleDeoplete()<CR>
+" it will be re-activated with every new entry into insert-mode
+" ------------------------------------------------------------------------------
+" Note:
+" 1. Make sure to use Plug to install and start the
 " *tern* server with the  --persistent flag, --verbose when debugging
+" 2. Run the :UpdateRemotePlugins once loaded (vim-plug do)
 "
 " Debugging:
 " 1. :echo &tags to make sure you are getting an expanded
@@ -108,7 +141,6 @@ set pumheight=30  " max height of popup before using scroll
 " 5. call ctags from the terminal ctags -R <list directories>;
 "    [specify options in .guttags or .ctags]
 
-nnoremap <leader>dx :call ToggleDeoplete()<CR>
 
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#auto_complete_start_length = 0

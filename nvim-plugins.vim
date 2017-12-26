@@ -114,6 +114,8 @@ Plug 'othree/html5.vim',             { 'for': 'html' }
 " Snippets
 Plug 'Shougo/neosnippet'                 " snippet engine that exploits vimscript (not slower python)
 Plug 'Shougo/neosnippet-snippets'        " snippet repository; requires a separate snippet engine: neosnippet
+Plug 'honza/vim-snippets'                " alternative that seems to provide a modern JS set (including react)
+Plug 'Shougo/context_filetype.vim'       " provide filetype info within caged code
 
 " Dialogue to generate jsdoc required comments
 Plug 'heavenshell/vim-jsdoc',          { 'for': ['javascript', 'javascript.jsx'] }

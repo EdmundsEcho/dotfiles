@@ -156,7 +156,7 @@ nnoremap <leader>bn :bn<cr>
 set switchbuf=useopen
 
 " close a buffer without losing my window split
-noremap <leader>bd :bp<bar>sp<bar>bn<bar>bd<CR>
+nnoremap <leader>bd :bp<bar>sp<bar>bn<bar>bd<CR>
 
 " close every window except the current (o = other)
 nnoremap <leader>bo <c-w>o
@@ -175,14 +175,14 @@ tnoremap <c-k> <C-\><C-n><C-w>k
 tnoremap <c-l> <C-\><C-n><C-w>l
 
 " spell checking
-noremap <leader>ss :setlocal spell!<cr>
+nnoremap <leader>ss :setlocal spell!<cr>
 
 " Tags and Tagbar
 " ===============
-noremap <leader>tt :TagbarToggle<CR>
+nnoremap <leader>tt :TagbarToggle<CR>
 
 " Force redraw
-noremap <silent> <leader>r :redraw!<CR>
+nnoremap <silent> <leader>r :redraw!<CR>
 
 " TAGS
 " Notes:
@@ -200,6 +200,11 @@ noremap <silent> <leader>r :redraw!<CR>
 " ========
 " TODO: figure out what this mapping does
 "nnoremap <silent> <C-\> :cs find c <C-R>=expand("<cword>")<CR><CR>
+
+" Copy/Paste
+" ==========
+" Access clipboard from yank while in insert-mode
+inoremap <c-p> <c-r>*
 
 " OS Clipboard
 " Copy and paste to os clipboard
@@ -258,7 +263,7 @@ set viminfo^=%
 
 " VIMUX - a new Slime
 " ====================
-map <Leader>rb :call VimuxRunCommand("clear; rspec " . bufname("%"))<CR>
+nnoremap <Leader>rb :call VimuxRunCommand("clear; rspec " . bufname("%"))<CR>
 vnoremap <silent> <Leader>rs <Plug>SendSelectionToTmux
 nnoremap <silent> <Leader>rs <Plug>NormalModeSendToTmux
 nnoremap <silent> <Leader>rv <Plug>SetTmuxVars
@@ -312,8 +317,8 @@ let g:closetag_emptyTags_caseSensitive = 1
 "let g:hlintRefactor#disableDefaultKeybindings = 1
 
 "" hlint-refactor-vim keybindings
-"map <silent> <leader>hr :call ApplyOneSuggestion()<CR>
-"map <silent> <leader>hR :call ApplyOneSuggestion()<CR>
+"nnoremap <silent> <leader>hr :call ApplyOneSuggestion()<CR>
+"nnoremap <silent> <leader>hR :call ApplyOneSuggestion()<CR>
 
 "" ghc-mod - type checker
 "nnoremap <silent> <leader>ht :GhcModType<CR>
@@ -335,18 +340,22 @@ let g:closetag_emptyTags_caseSensitive = 1
 
 " neosnippet
 " ===========
-let g:my_snippet_manager = "neosnippet"
-let g:neosnippet#enable_snipmate_compatibility = 1
-let g:neosnippet#snippets_directory='${HOME}/.config/nvim/snippets'
-let g:neosnippet#disable_runtime_snippets = { '_' : 1, }
-
+" accessbible with deoplete
 " Jump within a snippet with <C-k>
+" source directories must be set before initiation
+let g:neosnippet#snippets_directory="~/.config/nvim/snippets"
+let g:neosnippet#snippets_directory='~/.config/nvim/bundle/vim-snippets/snippets'
+let g:my_snippet_manager = "neosnippet"
+let g:neosnippet#enable_completed_snippet=1
+
 " Notes:
 " 1. It must be "imap" and "smap".  It uses <Plug> mappings
 " 2. Potential interaction with SuperTab
-imap <C-k>     <Plug>(neosnippet_expand_or_jump)
-smap <C-k>     <Plug>(neosnippet_expand_or_jump)
-xmap <C-k>     <Plug>(neosnippet_expand_target)
+" Plugin key-mappings.
+" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
+imap <C-k> <Plug>(neosnippet_expand_or_jump)
+smap <C-k> <Plug>(neosnippet_expand_or_jump)
+xmap <C-k> <Plug>(neosnippet_expand_target)
 
 " ALE - live linting
 " ==================

@@ -3,23 +3,19 @@
 # change-zsh-theme.sh new_theme
 #---------------------------------------------------------------
 # TODO: verify that the new theme exists
-#       create a default theme if nothing is returned
 #       use autoload -U add-zsh-hook to force cursor update
 #
 # Note: If a theme is replaced with one that does not exist
 #       oh-my-xsh defaults to `robbyrussell`.  The requested
 #       theme must already have an entry in the config
-#       file.  This script only toggles the presence of a
-#       comment.  Finally, look for a backup file if required
-#       (e.g., zshrc_bk).
+#       file.  This script only toggles commenting in/out
+#       to activate a theme entry. Finally, the zshrc file
+#       is copied to a backup before changes are maded file
+#       if required (e.g., zshrc_bk).
 #
 #---------------------------------------------------------------
 ZSHRC=$HOME/dotfiles/zshrc
 #---------------------------------------------------------------
-# set -o errexit
-# set -o pipefail
-# set -o nounset
-# set -o xtrace
 
 PROGNAME=${0##*/}
 ARGS=1
