@@ -17,8 +17,8 @@ ZSH_TMUX_AUTOSTART="true"
 # Optionally, if you set this to "random", it'll load a random theme each
 #time that oh-my-zsh is loaded.
 
-# ZSH_THEME="robbyrussell"
-ZSH_THEME="nothing"
+ZSH_THEME="robbyrussell"
+# ZSH_THEME="nothing"
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"

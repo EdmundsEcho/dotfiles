@@ -82,9 +82,15 @@ endfunction
 " ------------------------------------------------------------------------------
 " select item with space (preferred over enter)
 " keeps the cursor moving forward when ignoring input.
+" Note: bindings for <c-space> and .
 " ------------------------------------------------------------------------------
 inoremap <expr> <space> pumvisible() ? "\<C-y>\<space>" : "\<space>"
+snoremap <expr> <space> pumvisible() ? "\<C-y>\<space>" : "\<space>"
+inoremap <expr> <c-space> pumvisible() ? "\<C-y>" : "\<space>"
 snoremap <expr> <c-space> pumvisible() ? "\<C-y>" : "\<space>"
+
+inoremap <expr> . pumvisible() ? "\<C-y>." : "."
+snoremap <expr> . pumvisible() ? "\<C-y>." : "."
 
 " Note: see help: complete-items and set completeopt+=noinsert
 "       to do more.
@@ -149,8 +155,8 @@ let g:deoplete#auto_complete_delay = 3
 let g:deoplete#enable_camel_case = 1
 let g:deoplete#enable_refresh_always = 1       " required for continous search
 let g:deoplete#max_list = 100                  " default
-let g:deoplete#max_menu_width = 30
 let g:deoplete#skip_chars = ['(', ')', '<', '>']
+let g:deoplete#max_menu_width = 30             " deoplete width
 
 let g:deoplete#tag#cache_limit_size = 800000
 call deoplete#custom#source('_', 'matchers', ['matcher_head'])
