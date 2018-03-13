@@ -7,7 +7,7 @@
 export ZSH=${HOME}/.oh-my-zsh
 
 # Fire up tmux
-ZSH_TMUX_AUTOSTART="true"
+# ZSH_TMUX_AUTOSTART="true"
 
 # Do not set the terminal here (bad policy)
 #export TERM=screen-256color
@@ -100,7 +100,7 @@ chrome () {
 
 # Nov 7, 2017
 # use MOST as my Pager for man
-source $HOME/.config/most.sh
+# source $HOME/.config/most.sh
 
 # Nov 28, 2017
 # provide option to view man pages in preview app
@@ -200,6 +200,7 @@ PATH+="/usr/local/opt/texinfo/bin:"
 
 # User - defined code
 PATH+="/Users/${USER}/.local/bin:"
+PATH+="/Users/${USER}/Library/Haskell/bin:"
 PATH+="/Users/${USER}/Code/bin:"
 
 # ---------------------------------------------------------

@@ -83,6 +83,8 @@ Plug 'eagletmt/ghcmod-vim',           { 'for': 'haskell' }
 Plug 'eagletmt/neco-ghc',             { 'for': 'haskell' }
 Plug 'Twinside/vim-hoogle',           { 'for': 'haskell' }
 Plug 'mpickering/hlint-refactor-vim', { 'for': 'haskell' }
+Plug 'Shougo/vimproc.vim', { 'for': 'haskell', 'do': 'make' } " not required for asynch in neovim
+Plug 'mkasa/neco-ghc-lushtags',       { 'for': 'haskell' }
 
 " Lisp
 Plug 'vim-scripts/paredit.vim',       { 'for': [ 'scheme', 'lisp', 'commonlisp' ] }
@@ -142,6 +144,5 @@ Plug 'ryanoasis/vim-devicons'            " Nerd fonts (load last)
 call plug#end()
 " -------------------------------------------------------------------------------
 "Plug 'tpope/vim-sensible'                   " a laundry list of vim configurations
-"Plug 'Shougo/vimproc.vim', { 'do': 'make' } " not required for asynch in neovim
 "Plug 'neovim/node-host', { 'do': 'npm install --cache-min Infinity --loglevel http' }
 " END PLUGINS

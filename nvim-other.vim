@@ -12,7 +12,12 @@
 " :setlocal makeprg=... , confirm: echo &makeprg
 " :$VIMRUNTIME/debugscript.vim
 
-" TODO: generate a version for Haskell
+" TODO: Coordinate any conflicts between Haskell and JS
+" TODO: map to a macro that copies the word above the cursor
+" TESTING
+" inoremap <ctr-g><ctr-f> <esc>kbywj0pA
+
+
 
 set nocompatible " No VI compatibility
 set autoread     " Detect file changes outside vim
@@ -29,7 +34,8 @@ let g:python3_host_prog = '/usr/local/bin/python3'
 
 " esc key with cursor moved forward
 " (faster than `ff` for instance)
-inoremap df <esc><esc>l
+" TESTING - Before had esc twice.. not sure why.
+inoremap df <esc>l
 
 " Leader key and timeout
 let mapleader = "\<SPACE>"
@@ -306,38 +312,6 @@ let g:closetag_filenames = '*.html, *,xhtml, *.phtml'
 let g:closetag_xhtml_filenames = '*.xhtml, *.js, *,jsx'
 let g:closetag_emptyTags_caseSensitive = 1
 
-"" neco-ghc
-"" ========
-"" Haskell
-"" disable vim default
-"let g:haskellmode_completion_ghc = 0
-"" Show types in completion suggestions
-"let g:necoghc_enable_detailed_browse = 1
-"" Disable hlint-refactor-vim's default keybindings
-"let g:hlintRefactor#disableDefaultKeybindings = 1
-
-"" hlint-refactor-vim keybindings
-"nnoremap <silent> <leader>hr :call ApplyOneSuggestion()<CR>
-"nnoremap <silent> <leader>hR :call ApplyOneSuggestion()<CR>
-
-"" ghc-mod - type checker
-"nnoremap <silent> <leader>ht :GhcModType<CR>
-"nnoremap <silent> <leader>hT :GhcModTypeInsert<CR>
-"nnoremap <silent> <leader>hs :GhcModSplitFunCase<CR>
-"nnoremap <silent> <leader>he :GhcModTypeClear<CR>
-
-"" Hoogle
-"" ======
-"nnoremap <silent> <leader>hh :Hoogle<CR>
-"" prompt for input
-"nnoremap <leader>hH :Hoogle
-"" detailed documentation (e.g. "Functor")
-"nnoremap <silent> <leader>hi :HoogleInfo<CR>
-"" detailed documentation and prompt for input
-"nnoremap <leader>hI :HoogleInfo
-"" close the Hoogle window
-"nnoremap <silent> <leader>hz :HoogleClose<CR>
-
 " neosnippet
 " ===========
 " accessbible with deoplete
@@ -347,6 +321,8 @@ let g:neosnippet#snippets_directory="~/.config/nvim/snippets"
 let g:neosnippet#snippets_directory='~/.config/nvim/bundle/vim-snippets/snippets'
 let g:my_snippet_manager = "neosnippet"
 let g:neosnippet#enable_completed_snippet=1
+" Do not use this compatibility feature; breaks clean use of <c-k>
+" let g:neosnippet#enable_snipmate_compatibility = 1
 
 " Notes:
 " 1. It must be "imap" and "smap".  It uses <Plug> mappings
@@ -382,7 +358,9 @@ let g:ale_linters = {
       \'javascript': ['eslint'],
       \'json': ['jsonlint','prettier'],
       \'css': ['csslint','prettier'],
+      \'haskell': ['hlint','hdevtools'],
       \}
+      " \'haskell': ['hlint','stack-ghc-mod','stack-build','stack-ghc','hdevtools'],
 let g:ale_fixers = {}
 let g:ale_fixers['javascript'] = ['prettier-eslint']
 let g:ale_fixers['css'] = ['prettier']
@@ -488,24 +466,73 @@ augroup previewWindow
         \ endif
 augroup END
 
-" augroup haskell
-"   au!
-"   au FileType haskell nnoremap <silent> <leader><cr> :noh<cr>:GhcModTypeClear<cr>
-"   " Resolve ghcmod base directory
-"   au FileType haskell let g:ghcmod_use_basedir = getcwd()
-"   " Use hindent instead of par for haskell buffers
-"   au FileType haskell let &formatprg="hindent --tab-size 2 -XQuasiQuotes"
-"   au FileType haskell nnoremap <leader>tg :!codex update --force<CR>:call system("git-hscope -X TemplateHaskell")<CR><CR>:call LoadHscope()<CR>
-"   au BufEnter /*.hs call LoadHscope()
-"   au BufEnter hi! link Conceal Function
-"   au FileType haskell set tags+=codex.tags;
-"   au FileType haskell set cst
-"   au FileType haskell set csverb
-" augroup END
-" " Must be set when first loaded
-" " TODO: figure out impact on Haskell versus JS
-" set csprg=hscope " cscope for haskell
-" set csto=1       " search codex tags first
+" HASKELL specific
+augroup haskell
+  au!
+  au FileType haskell nnoremap <silent> <leader><cr> :noh<cr>:GhcModTypeClear<cr>
+  " Resolve ghcmod base directory
+  au FileType haskell let g:ghcmod_use_basedir = getcwd()
+  " Use hindent instead of par for haskell buffers
+  au FileType haskell let &formatprg="hindent --tab-size 2 -XQuasiQuotes"
+  au FileType haskell nnoremap <leader>tg :!codex update --force<CR>:call system("git-hscope -X TemplateHaskell")<CR><CR>:call LoadHscope()<CR>
+  au BufEnter /*.hs call LoadHscope()
+  au FileType haskell set tags+=codex.tags;
+  au FileType haskell set cst
+  au FileType haskell set csverb
+
+  " change indentLine colorscheme to increase visibility of concealed chars
+  " TODO: can this setting work locally?
+  au FileType haskell let g:indentLine_color_term=192
+  au FileType haskell let g:indentLine_color_gui='#CAE982'
+  " au BufEnter hi! link Conceal Function
+
+  " Linting and error detection
+  au FileType haskell let g:hdevtools_options = '-g -isrc -g -Wall -g -hide-package -g transformers'
+  " autocompletion
+  au FileType haskell setlocal omnifunc=necoghc#omnifunc
+augroup END
+
+" Must be set when first loaded
+" TODO: figure out impact on Haskell versus JS
+set csprg=hscope " cscope for haskell
+set csto=1       " search codex tags first
+
+" neco-ghc
+" ========
+" disable vim default (necoghc set in haskell filetype)
+let g:haskellmode_completion_ghc = 0
+" Use stack
+let g:necoghc_use_stack = 1
+" Show types in completion suggestions
+let g:necoghc_enable_detailed_browse = 1
+" Disable hlint-refactor-vim's default keybindings
+let g:hlintRefactor#disableDefaultKeybindings = 1
+" FYI - set in teh file: deoplete source
+" let g:deoplete#omni#functions.haskell = ['necoghc#omnifunc']
+
+" hlint-refactor-vim keybindings
+nnoremap <silent> <leader>hr :call ApplyOneSuggestion()<CR>
+nnoremap <silent> <leader>hR :call ApplyOneSuggestion()<CR>
+
+" ghc-mod - type checker
+nnoremap <silent> <leader>ht :GhcModType<CR>
+nnoremap <silent> <leader>hT :GhcModTypeInsert<CR>
+nnoremap <silent> <leader>hs :GhcModSplitFunCase<CR>
+nnoremap <silent> <leader>he :GhcModTypeClear<CR>
+
+" Hoogle
+" ======
+nnoremap <silent> <leader>hh :Hoogle<CR>
+" prompt for input
+nnoremap <leader>hH :Hoogle
+" detailed documentation (e.g. "Functor")
+nnoremap <silent> <leader>hi :HoogleInfo<CR>
+" detailed documentation and prompt for input
+nnoremap <leader>hI :HoogleInfo
+" close the Hoogle window
+nnoremap <silent> <leader>hz :HoogleClose<CR>
+" END HASKELL specific
+
 
 " TODO: Find a better place for these settings
 let g:jsx_ext_required = 0          " Enable jsx for *.js files
@@ -569,7 +596,7 @@ set sidescroll=1
 " ===========
 " Note: not compatible with Haskell
 let g:indentLine_char = '┊'
-let g:indentLine_fileTypeExclude = ['haskell','json','markdown','text','sh','vim']
+let g:indentLine_fileTypeExclude = ['haskell','json','yaml','markdown','text','sh','vim']
 let g:indentLine_faster=1
 let g:indentLine_conceallevel=1
 let g:indentLine_setConceal=1
@@ -637,48 +664,51 @@ if has("gui_running")
   set guitablabel=%M\ %t
 endif
 
+" HASKELL specific
 " More Haskell
 " stack bin path
-" let haskell_config_dir = $HOME . "/.config/nvim/haskell"
+let haskell_config_dir = $HOME
 " let haskell_stack_bin = expand(resolve(haskell_config_dir . "/.stack-bin"))
-" let $PATH = $PATH . expand(haskell_stack_bin) . ':'
+let haskell_stack_bin = expand(resolve(haskell_config_dir . "/.local/bin"))
+let $PATH = $PATH . expand(haskell_stack_bin) . ':'
 
-" " Pretty unicode haskell symbols
-" let g:haskell_conceal_wide = 1
-" let g:haskell_conceal_enumerations = 1
-" let hscoptions="𝐒𝐓𝐄𝐌xRtB𝔻w"
+" Pretty unicode haskell symbols
+let g:haskell_conceal_wide = 1
+let g:haskell_conceal_enumerations = 1
+let hscoptions="𝐒𝐓𝐄𝐌xRtB𝔻w"
 
-" let g:tagbar_type_haskell = {
-"       \ 'ctagsbin'  : 'hasktags',
-"       \ 'ctagsargs' : '-x -c -o-',
-"       \ 'kinds'     : [
-"       \  'm:modules:0:1',
-"       \  'd:data: 0:1',
-"       \  'd_gadt: data gadt:0:1',
-"       \  't:type names:0:1',
-"       \  'nt:new types:0:1',
-"       \  'c:classes:0:1',
-"       \  'cons:constructors:1:1',
-"       \  'c_gadt:constructor gadt:1:1',
-"       \  'c_a:constructor accessors:1:1',
-"       \  'ft:function types:1:1',
-"       \  'fi:function implementations:0:1',
-"       \  'o:others:0:1'
-"       \ ],
-"       \ 'sro'        : '.',
-"       \ 'kind2scope' : {
-"       \ 'm' : 'module',
-"       \ 'c' : 'class',
-"       \ 'd' : 'data',
-"       \ 't' : 'type'
-"       \ },
-"       \ 'scope2kind' : {
-"       \ 'module' : 'm',
-"       \ 'class'  : 'c',
-"       \ 'data'   : 'd',
-"       \ 'type'   : 't'
-"       \ }
-"       \ }
+let g:tagbar_type_haskell = {
+      \ 'ctagsbin'  : 'hasktags',
+      \ 'ctagsargs' : '-x -c -o-',
+      \ 'kinds'     : [
+      \  'm:modules:0:1',
+      \  'd:data: 0:1',
+      \  'd_gadt: data gadt:0:1',
+      \  't:type names:0:1',
+      \  'nt:new types:0:1',
+      \  'c:classes:0:1',
+      \  'cons:constructors:1:1',
+      \  'c_gadt:constructor gadt:1:1',
+      \  'c_a:constructor accessors:1:1',
+      \  'ft:function types:1:1',
+      \  'fi:function implementations:0:1',
+      \  'o:others:0:1'
+      \ ],
+      \ 'sro'        : '.',
+      \ 'kind2scope' : {
+      \ 'm' : 'module',
+      \ 'c' : 'class',
+      \ 'd' : 'data',
+      \ 't' : 'type'
+      \ },
+      \ 'scope2kind' : {
+      \ 'module' : 'm',
+      \ 'class'  : 'c',
+      \ 'data'   : 'd',
+      \ 'type'   : 't'
+      \ }
+      \ }
+" END HASKELL
 
 " Enable some tabular presets for Haskell
 let g:haskell_tabular = 1
