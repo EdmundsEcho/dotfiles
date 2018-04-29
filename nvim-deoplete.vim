@@ -5,6 +5,7 @@
 " ------------------------------------------------------------------------------
 " Deoplete
 " IDE-like auto-complete provider
+" Toggle control in nvim-bindings.vim
 " ------------------------------------------------------------------------------
 " TODO: define a function for the user-defined <c-x><c-u>
 
@@ -25,6 +26,7 @@ set completeopt=menuone,preview
 set completeopt+=noselect
 set completeopt+=noinsert
 set pumheight=20                " max height of popup before using scroll
+set shortmess+=c                " disable showing index and search count
 " Note: deoplete has max candidates = 100
 " ------------------------------------------------------------------------------
 " Here are explicit settings of vim's built-in omnifunc capacity
@@ -59,12 +61,18 @@ set pumheight=20                " max height of popup before using scroll
 "
 " Recall: <c-n> and <c-p> are two ways to cycle through completion
 " options.  <c-n> works top to bottom (next)...
+" DEBUGGING
+" inoremap <silent><expr><Tab> :call GetVimVariables() "\<Tab>"
+" snoremap <silent><expr><Tab> :call GetVimVariables() "\<Tab>"
+" inoremap <silent><space>     :call GetVimVariables() "\<space>"
+" snoremap <silent><space>     :call GetVimVariables() "\<space>"
 
 " I - Insert mode
-inoremap <silent><expr><Tab> pumvisible() ? "\<Down>"
-  \ : (neosnippet#jumpable() ? "\<Plug>(neosnippet_jump)"
-  \ : (<SID>is_whitespace() ? "\<Tab>"
-  \ : deoplete#manual_complete()))
+" TESTING to regain C-I for use in insert-mode
+" inoremap <silent><expr><Tab> pumvisible() ? "\<Down>"
+"   \ : (neosnippet#jumpable() ? "\<Plug>(neosnippet_jump)"
+"   \ : (<SID>is_whitespace() ? "\<Tab>"
+"   \ : deoplete#manual_complete()))
 
 " S - Select mode
 snoremap <silent><expr><Tab> pumvisible() ? "\<Down>"
@@ -94,7 +102,12 @@ snoremap <expr> . pumvisible() ? "\<C-y>." : "."
 
 " Note: see help: complete-items and set completeopt+=noinsert
 "       to do more.
-" WIP Autocmd: when MenuPopup let g:userIDE=false
+"
+" TODO WIP Autocmd: when MenuPopup let g:userIDE=false
+"
+" display:
+"
+" :echo v:completed_item  by hitting esc twice before popup happens again
 " inoremap <expr> <CR> pumvisible() ?
 "       \ (empty(v:completed_item) ? "\<C-e>\<CR>" : "\<C-y><CR>") : "\<CR>"
 
@@ -109,11 +122,8 @@ inoremap <expr> <esc> pumvisible()? "\<C-e>" : "\<esc>"
 " OR disable deoplete temporarily
 " will reactivate on next entry to insert
 " ------------------------------------------------------------------------------
-inoremap <expr> <esc><esc> pumvisible()? ToggleDeoplete() : "\<esc>"
-augroup deo
-  au!
-  au InsertEnter * :call EnableDeoplete()
-augroup END
+" inoremap <expr> <esc><esc> pumvisible()? ToggleDeoplete() : "\<esc>"
+inoremap <expr> <esc><esc> pumvisible()? deoplete#disable() : "\<esc>"
 " ------------------------------------------------------------------------------
 
 " ------------------------------------------------------------------------------
@@ -125,9 +135,6 @@ autocmd InsertLeave * if !pumvisible() | pclose | endif
 "
 " ------------------------------------------------------------------------------
 " deoplete
-" ------------------------------------------------------------------------------
-nnoremap <leader>dx :call ToggleDeoplete()<CR>
-" it will be re-activated with every new entry into insert-mode
 " ------------------------------------------------------------------------------
 " Note:
 " 1. Make sure to use Plug to install and start the
@@ -147,8 +154,6 @@ nnoremap <leader>dx :call ToggleDeoplete()<CR>
 " 5. call ctags from the terminal ctags -R <list directories>;
 "    [specify options in .guttags or .ctags]
 
-
-let g:deoplete#enable_at_startup = 1
 let g:deoplete#auto_complete_start_length = 0
 let g:deoplete#auto_complete_delay = 3
 " let g:deoplete#complete_method='omnifunc'
@@ -156,12 +161,13 @@ let g:deoplete#enable_camel_case = 1
 let g:deoplete#enable_refresh_always = 1       " required for continous search
 let g:deoplete#max_list = 100                  " default
 let g:deoplete#skip_chars = ['(', ')', '<', '>']
-let g:deoplete#max_menu_width = 30             " deoplete width
+let g:deoplete#max_menu_width = 15             " deoplete width
 
 let g:deoplete#tag#cache_limit_size = 800000
 call deoplete#custom#source('_', 'matchers', ['matcher_head'])
-call deoplete#custom#set('_', 'converters', ['converter_auto_paren'])
-" DEBUG
+call deoplete#custom#source('_', 'converters', ['converter_auto_paren'])
+
+" For DEBUGGING
 " let g:deoplete#enable_profile = 1
 " call deoplete#enable_logging('DEBUG', '/tmp/deoplete.log')
 " call deoplete#custom#source('jspc#omni', 'is_debug_enabled', 1)
@@ -178,18 +184,18 @@ let g:deoplete#sources#ternjs#include_keywords = 0
 
 " use deoplete-specific settings if not using method 'omnifunc'
 " See: deoplete issue 352
-let g:deoplete#omni#functions = {}
+let g:deoplete#omni#functions            = {}
 let g:deoplete#omni#functions.javascript = ['tern#Complete', 'jspc#omni']
-let g:deoplete#omni#functions.haskell = ['necoghc#omnifunc']
+let g:deoplete#omni#functions.haskell    = ['necoghc#omnifunc']
 
 " Sources: Default is a long list including file, dictionary etc.
 "          Turn on deoplete logging to see what is being sourced
 "          for any one popup.
 "
-" let g:deoplete#sources = {}
+" let g:deoplete#sources               = {}
 " let g:deoplete#sources['javascript'] = ['around', 'neosnippet', 'tern', 'file/include']
 " let g:deoplete#sources['javascript'] = ['file', 'file/include', 'tern']
-" let g:deoplete#sources['haskell'] = ['file', 'neosnippet', 'ghc']
+" let g:deoplete#sources['haskell']    = ['file', 'neosnippet', 'ghc']
 
 " " Default rank is 100, higher is better.
 call deoplete#custom#source('omni',          'mark', '⌾')

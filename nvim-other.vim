@@ -3,11 +3,18 @@
 " last updated: Dec 21, 2017
 " -------------------------------------------------------------------------------
 " Debugging tips
+" insert :finish anywhere where you want the script to stop
+"         use a binary search to split in half the source of the problem
+"         with each iteration.
+" :set verbose=[0-9]
+"   e.g., set verbose=2 | :w | set verbose=0
+"   e.g., set verbosefile=~/tmp | 15verbose echo "foo" | vsplit /tmp
+" :debug <cmd>
+" :see help >cont, :breakadd _del and _list
 " :scriptnames to see what is running
 " :GetSettingsFor <setting>
 " :TabMessage <command>
 " :syntax list
-" :debug <cmd>
 " :call ToggleVerbose()
 " :setlocal makeprg=... , confirm: echo &makeprg
 " :$VIMRUNTIME/debugscript.vim
@@ -17,12 +24,12 @@
 " TESTING
 " inoremap <ctr-g><ctr-f> <esc>kbywj0pA
 
-
-
 set nocompatible " No VI compatibility
 set autoread     " Detect file changes outside vim
-set autochdir    " change working dir to current buffer
+
 " TODO: may improve how C-x C-f works
+" TESTING
+" set autochdir    " change working dir to current buffer
 
 " -------------------------------------------------------------------------------
 " Neovim's Python provider(s)
@@ -41,7 +48,14 @@ inoremap df <esc>l
 let mapleader = "\<SPACE>"
 set tm=1100
 
-" Cursor (note color is controlled by iTerm)
+" TODO: This relates to passing commands to tmux
+"       It may not be required anymore.
+"       Recall using it to enable alt-hjkl to size window
+"disable submode timeouts:
+let g:submode_timeout = 500
+" don't consume submode-leaving key
+let g:submode_keep_leaving_key = 1
+
 set guicursor=n-v-c:block-Cursor/lCursor-blinkon0,
       \i-ci:ver25-Cursor/lCursor,
       \r:hor50-Cursor
@@ -58,76 +72,34 @@ nnoremap Q <nop>
 " Make <c-h> work like <c-h> again (a 2015 libterm issue)
 nnoremap <BS> <C-w>h
 
+" Save and load views
+" Recall using bang silences errors not finding .vim
+augroup SaveView
+  au!
+  au BufWinLeave *.* mkview
+  au BufWinEnter *.* silent! loadview
+augroup END
+
 " ---------------------------
 " Tweaks to default mappings
 " ---------------------------
-" Remap start of the line; end of the file and EOF
-nnoremap 0 ^
-nnoremap 00 0
-nnoremap gg :0<CR>
-nnoremap G G$
+" TESTING to solve the problem that EasyMotion does not trigger
+" TODO: Update with noremap
+" <Leader>f{char} to move to {char}
 
-" Writing to file with <ctr-a>
-nnoremap <C-a> :w<CR>
-inoremap <C-a> <Esc>:w<CR>l
-vnoremap <C-a> <Esc>:w<CR>
-
-" Copy filename and filepath
-nnoremap <Leader>fc :let @+=expand("%")<CR>
-nnoremap <leader>fn :let @*=expand("%")<CR>
-nnoremap <leader>fp :let @*=expand("%:p")<CR>
-
-" Open file prompt with current path
-nnoremap <leader>e :e <C-R>=expand("%:p:h") . '/'<CR>
-
-" NerdTree
-" ========
-" If nerd tree is closed, find current file, if open, close it
-nnoremap <silent> <leader>f <ESC>:call ToggleFindNerd()<CR>
-nnoremap <silent> <leader>F <ESC>:NERDTreeToggle<CR>
-
-" vim-bby
+" echodoc
 " =======
-" close buffers without impacting windows
-nnoremap <Leader>q :Bdelete<CR>
+" toggle set noshowmode || set cmdheight=2
+" toggle activation: :EchoDocEnable
+let g:echodoc_enable_at_startup = 1
+let g:echodoc#enable_force_overwrite = 1
 
-" Display .vimrc in a new window; source when done
-nnoremap <leader>forc :sp ${HOME}/.config/nvim/init.vim <CR>
-augroup sourcing
-  autocmd!
-  autocmd bufwritepost init.vim :source $MYVIMRC
-augroup END
 
-" Select all text in current buffer
-nnoremap <Leader>a ggVG
-
-" TESTING
-" Operator-pending maps
-" d[elete] c[hange] y[ank]
-" p -> parentheses
-" b -> bracket
-" e.g., change contents between () with cp
-onoremap p i(
-onoremap b i{
-onoremap np :<c-u>normal! f(lvi(<cr>
-onoremap nb :<c-u>normal! f{lvi{<cr>
-onoremap pp :<c-u>normal! F(lvi(<cr>
-onoremap pb :<c-u>normal! F{lvi{<cr>
-
-" Map esc to remove highlighting of previous search
-nnoremap <esc> :noh<return><esc>
-
-" TODO: This relates to passing commands to tmux
-"       It may not be required anymore.
-"       Recall using it to enable alt-hjkl to size window
-"disable submode timeouts:
-let g:submode_timeout = 500
-" don't consume submode-leaving key
-let g:submode_keep_leaving_key = 1
-
-" zoom a vim pane, <C-w>= to re-balance
-nnoremap <leader>z :wincmd _<cr>:wincmd \|<cr>
-nnoremap <leader>Z :wincmd =<cr><Paste>
+" Improve Vim capacity to capture tmux active/inactive events
+" vim-tmux-focus-events
+" vim-diminactive
+" =====================
+let g:diminactive_enable_focus = 1
 
 " Working with Sessions vim-sessions
 let g:session_autosave = 'no'
@@ -135,6 +107,7 @@ let g:session_autosave = 'no'
 "               :source ~/.session
 " default: <CR-S><CR-S> to save
 " default: <CR-S><CR-R> to restore
+
 
 " REQUIRED (Dec 2017)
 " Make Vim recognize XTerm escape sequences for Page and Arrow
@@ -152,156 +125,6 @@ if &term =~ '^screen'
   execute "set <xLeft>=\e[1;*D"
 endif
 
-" BUFFERS
-" =======
-nnoremap <leader>bp :bp<cr>
-nnoremap <leader>bn :bn<cr>
-
-" switch to the window with the buffer if exists
-" Note: for quickfix buffers only
-set switchbuf=useopen
-
-" close a buffer without losing my window split
-nnoremap <leader>bd :bp<bar>sp<bar>bn<bar>bd<CR>
-
-" close every window except the current (o = other)
-nnoremap <leader>bo <c-w>o
-
-" list files and option to jump (not buffers)
-nnoremap<leader>bb :buffers<CR>:buffer<Space>
-
-" Neovim Terminal
-" ===============
-" Use <Esc> to escape terminal insert mode
-tnoremap <Esc> <C-\><C-n>
-" Make terminal split moving behave like normal neovim
-tnoremap <c-h> <C-\><C-n><C-w>h
-tnoremap <c-j> <C-\><C-n><C-w>j
-tnoremap <c-k> <C-\><C-n><C-w>k
-tnoremap <c-l> <C-\><C-n><C-w>l
-
-" spell checking
-nnoremap <leader>ss :setlocal spell!<cr>
-
-" Tags and Tagbar
-" ===============
-nnoremap <leader>tt :TagbarToggle<CR>
-
-" Force redraw
-nnoremap <silent> <leader>r :redraw!<CR>
-
-" TAGS
-" Notes:
-" 1. use of `;` makes it recursive
-" 2. the `.` will be substituted with a directory
-" 3. May not set once NVIM is open
-" 4. Haskell uses hscope
-" 5. Plugins that require tags like have their own
-"    settings.  Writing to this may prevent ctag-dependent
-"    plugins from working.
-"set tags=./tags,tags;
-"" :set tags=./tags,tags,/home/user/commontags
-
-" Surround
-" ========
-" TODO: figure out what this mapping does
-"nnoremap <silent> <C-\> :cs find c <C-R>=expand("<cword>")<CR><CR>
-
-" Copy/Paste
-" ==========
-" Access clipboard from yank while in insert-mode
-inoremap <c-p> <c-r>*
-
-" OS Clipboard
-" Copy and paste to os clipboard
-" Note: Ctrp uses <leader>p_
-nnoremap <leader>y "*y
-vnoremap <leader>y "*y
-" nnoremap <leader>d "*d
-" vnoremap <leader>d "*d
-nnoremap <leader>p "*p
-vnoremap <leader>p "*p
-
-" Visual mode pressing * or # searches for the current selection
-" Super useful! From an idea by Michael Naumann
-vnoremap <silent> * :call VisualSelection('f', '')<CR>
-vnoremap <silent> # :call VisualSelection('b', '')<CR>
-
-" Treat long lines as break lines (useful when moving around in them)
-nnoremap j gj
-nnoremap k gk
-
-" vim-tmux-navigator
-" ===================
-let g:tmux_navigator_no_mappings = 1
-nnoremap <c-h> <c-w>h
-nnoremap <c-k> <c-w>k
-nnoremap <c-j> <c-w>j
-nnoremap <c-l> <c-w>l
-nnoremap <silent> <c-h> :TmuxNavigateLeft<cr>
-nnoremap <silent> <c-j> :TmuxNavigateDown<cr>
-nnoremap <silent> <c-k> :TmuxNavigateUp<cr>
-nnoremap <silent> <c-l> :TmuxNavigateRight<cr>
-
-" Split *VIM* window
-nnoremap <leader>- :sp<CR>
-nnoremap <leader>\ :vsp<CR>
-" Open window splits in various places
-nnoremap <leader>sh :leftabove  vnew<CR>
-nnoremap <leader>sl :rightbelow vnew<CR>
-nnoremap <leader>sk :leftabove  new<CR>
-nnoremap <leader>sj :rightbelow new<CR>
-
-" Disable highlight when <leader><cr> is pressed
-" but preserve cursor coloring
-"nnoremap <silent> <leader><cr> :noh\|hi Cursor guibg=red<cr>
-
-" Return to last edit position when opening files
-augroup last_edit
-  autocmd!
-  autocmd BufReadPost *
-        \ if line("'\"") > 0 && line("'\"") <= line("$") |
-        \   exe "normal! g`\"" |
-        \ endif
-augroup END
-" Remember info about open buffers on close
-set viminfo^=%
-
-" VIMUX - a new Slime
-" ====================
-nnoremap <Leader>rb :call VimuxRunCommand("clear; rspec " . bufname("%"))<CR>
-vnoremap <silent> <Leader>rs <Plug>SendSelectionToTmux
-nnoremap <silent> <Leader>rs <Plug>NormalModeSendToTmux
-nnoremap <silent> <Leader>rv <Plug>SetTmuxVars
-fun! VimuxSlime()
-  call VimuxSendText(@v)
-  call VimuxSendKeys("Enter")
-endfun
-" If text is selected, save it in the v buffer and send that buffer it to tmux
-vnoremap <LocalLeader>vs "vy :call VimuxSlime()<CR>
-" Select current paragraph and send it to tmux
-nnoremap <LocalLeader>vs vip<LocalLeader>vs<CR>
-
-" NerdTree
-" ========
-" Usage: <leader>f OR <leader>F
-
-" Git
-" =====
-nnoremap <leader>gs :Gstatus<CR>
-nnoremap <leader>gg :copen<CR>:GGrep
-nnoremap <leader>gl :Extradite!<CR>
-nnoremap <leader>gd :Gdiff<CR>
-nnoremap <leader>gb :Gblame<CR>
-
-" Show list of last-committed files
-nnoremap <silent> <leader>g? :call CommittedFiles()<CR>:copen<CR>
-
-" DashSearch
-" ===========
-" Send a search term to Dash (documentation viewer)
-nnoremap <silent> <leader>da <Plug>DashSearch
-let g:dash_activate = 0
 
 " HTML plugin
 " ===========
@@ -344,7 +167,7 @@ let g:ale_set_quickfix = 1
 let g:ale_sign_column_always = 0
 let g:airline#extensions#ale#enabled = 1
 let g:ale_fix_on_save = 1
-" Notes:
+" JS specific Notes:
 " 1. jscs merged with eslint (jscs is not jspc)
 " 2. I'm chosing to run prettier through eslint
 "    (so where I see eslint, think eslint and prettier)
@@ -358,9 +181,9 @@ let g:ale_linters = {
       \'javascript': ['eslint'],
       \'json': ['jsonlint','prettier'],
       \'css': ['csslint','prettier'],
-      \'haskell': ['hlint','hdevtools'],
+      \'haskell': ['stack-ghc-mod','hlint','hdevtools'],
       \}
-      " \'haskell': ['hlint','stack-ghc-mod','stack-build','stack-ghc','hdevtools'],
+" \'haskell': ['hlint','stack-ghc-mod','stack-build','stack-ghc','hdevtools'],
 let g:ale_fixers = {}
 let g:ale_fixers['javascript'] = ['prettier-eslint']
 let g:ale_fixers['css'] = ['prettier']
@@ -369,37 +192,6 @@ let g:ale_javascript_prettier_use_local_config = 1
 " " requires npm installs e.g., of prettier-eslint and config
 " " autocmd FileType javascript set formatprg=prettier-eslint\ --stdin
 
-" ALE map binding
-nnoremap <silent> <leader>k <Plug>(ale_previous_wrap)
-nnoremap <silent> <leader>j <Plug>(ale_next_wrap)
-
-" tabularize
-" ===========
-" formats text to align in a table format
-" Usage:   :Tab /:\zs   |     :Tab /:
-let g:haskell_tabular = 1
-vnoremap a= :Tabularize /=<CR>
-vnoremap a; :Tabularize /::<CR>
-vnoremap a- :Tabularize /-><CR>
-vnoremap a{ :Tabularize /{><CR>
-
-" ctrl-p
-" =======
-" Silver search - faster and  hides unwanted
-let g:ctrlp_use_caching = 0
-let g:ctrlp_max_files=0
-let g:ctrlp_show_hidden=1
-let g:ctrlp_custom_ignore = { 'dir': '\v[\/](.git|.cabal-sandbox|.stack-work)$' }
-" Open file menu
-nnoremap <Leader>po :CtrlP<CR>
-" Open buffer menu
-nnoremap <Leader>pb :CtrlPBuffer<CR>
-" Open most recently used files
-nnoremap <Leader>pr :CtrlPMRUFiles<CR>
-" Fuzzy find files
-nnoremap <silent> <Leader>pf<space> :CtrlP<CR>
-" fuzzy find buffers
-nnoremap <silent> <leader>pb<space> :CtrlPBuffer<cr>
 
 " ctags gutentags -- <C-[>
 " ========================
@@ -467,35 +259,19 @@ augroup previewWindow
 augroup END
 
 " HASKELL specific
-augroup haskell
-  au!
-  au FileType haskell nnoremap <silent> <leader><cr> :noh<cr>:GhcModTypeClear<cr>
-  " Resolve ghcmod base directory
-  au FileType haskell let g:ghcmod_use_basedir = getcwd()
-  " Use hindent instead of par for haskell buffers
-  au FileType haskell let &formatprg="hindent --tab-size 2 -XQuasiQuotes"
-  au FileType haskell nnoremap <leader>tg :!codex update --force<CR>:call system("git-hscope -X TemplateHaskell")<CR><CR>:call LoadHscope()<CR>
-  au BufEnter /*.hs call LoadHscope()
-  au FileType haskell set tags+=codex.tags;
-  au FileType haskell set cst
-  au FileType haskell set csverb
-
-  " change indentLine colorscheme to increase visibility of concealed chars
-  " TODO: can this setting work locally?
-  au FileType haskell let g:indentLine_color_term=192
-  au FileType haskell let g:indentLine_color_gui='#CAE982'
-  " au BufEnter hi! link Conceal Function
-
-  " Linting and error detection
-  au FileType haskell let g:hdevtools_options = '-g -isrc -g -Wall -g -hide-package -g transformers'
-  " autocompletion
-  au FileType haskell setlocal omnifunc=necoghc#omnifunc
-augroup END
+" SOURCE
+source $HOME/dotfiles/nvim-haskell-extras.vim
 
 " Must be set when first loaded
 " TODO: figure out impact on Haskell versus JS
-set csprg=hscope " cscope for haskell
-set csto=1       " search codex tags first
+set csprg=hscope   " cscope for haskell
+set cscoperelative " this generates a full path
+
+" Linting
+" au FileType haskell let g:hdevtools_options = '-g -isrc -g -Wall -g -hide-package -g transformers -g -v'
+let g:hdevtools_options = '-g -isrc -g -Wall -g -hide-package -g transformers -g -v'
+" let g:ale_haskell_hdevtools_options = '-g -isrc -g -Wall -g -hide-package -g transformers -g -v'
+" let g:ale_haskell_ghc_options = '-g -isrc -g -Wall -g -hide-package -g transformers -g -v'
 
 " neco-ghc
 " ========
@@ -510,26 +286,6 @@ let g:hlintRefactor#disableDefaultKeybindings = 1
 " FYI - set in teh file: deoplete source
 " let g:deoplete#omni#functions.haskell = ['necoghc#omnifunc']
 
-" hlint-refactor-vim keybindings
-nnoremap <silent> <leader>hr :call ApplyOneSuggestion()<CR>
-nnoremap <silent> <leader>hR :call ApplyOneSuggestion()<CR>
-
-" ghc-mod - type checker
-nnoremap <silent> <leader>ht :GhcModType<CR>
-nnoremap <silent> <leader>hT :GhcModTypeInsert<CR>
-nnoremap <silent> <leader>hs :GhcModSplitFunCase<CR>
-nnoremap <silent> <leader>he :GhcModTypeClear<CR>
-
-" Hoogle
-" ======
-nnoremap <silent> <leader>hh :Hoogle<CR>
-" prompt for input
-nnoremap <leader>hH :Hoogle
-" detailed documentation (e.g. "Functor")
-nnoremap <silent> <leader>hi :HoogleInfo<CR>
-" detailed documentation and prompt for input
-nnoremap <leader>hI :HoogleInfo
-" close the Hoogle window
 nnoremap <silent> <leader>hz :HoogleClose<CR>
 " END HASKELL specific
 
@@ -562,21 +318,21 @@ set autowrite                   " Write for me when I take any action
 set relativenumber              " Combined with number; line number preference
 set clipboard=unnamed           " Copy/paste in vi with Sierra OS
 set encoding=UTF-8
-set showmode
+set showmode                    " Toggle this to noshowmode to enable echodoc
 set wildignore+=*\\tmp\\*,*.swp,*.swo,*.zip,.git,.cabal-sandbox
 
-set ut=1000                    " Change updatetime to faster than default 4 sec
-set lazyredraw                 " Don't redraw while executing macros (good performance config)
-set ruler                      " Always show current position
+set ut=1000                     " Change updatetime to faster than default 4 sec
+set lazyredraw                  " Don't redraw while executing macros (good performance config)
+" set ruler                       " Always show current position
 set number
-set cmdheight=1                " Height of the command bar
-set incsearch                  " Makes search act like search in modern browsers
-set hlsearch                   " Highlight search results
-set showmatch                  " Show matching brackets when text indicator is over them
-set mat=2                      " How many tenths of a second to blink when matching brackets
-set noerrorbells               " disable sound on errors
-set vb t_vb=                   " disable screen flash
-set list                       " Show trailing whitespace
+set cmdheight=3                 " Height of the command bar
+set incsearch                   " Makes search act like search in modern browsers
+set hlsearch                    " Highlight search results
+set showmatch                   " Show matching brackets when text indicator is over them
+set mat=2                       " How many tenths of a second to blink when matching brackets
+set noerrorbells                " disable sound on errors
+set vb t_vb=                    " disable screen flash
+set list                        " Show trailing whitespace
 " But only interesting whitespace
 if &listchars ==# 'eol:$'
   set listchars=tab:>\ ,trail:-,extends:>,precedes:<,nbsp:+
@@ -596,7 +352,10 @@ set sidescroll=1
 " ===========
 " Note: not compatible with Haskell
 let g:indentLine_char = '┊'
-let g:indentLine_fileTypeExclude = ['haskell','json','yaml','markdown','text','sh','vim']
+let g:indentLine_fileTypeExclude =
+      \ ['haskell','haskellstack','cabal',
+      \  'json','yaml','markdown','text','txt',
+      \  'sh','vim','tmux','help']
 let g:indentLine_faster=1
 let g:indentLine_conceallevel=1
 let g:indentLine_setConceal=1
@@ -607,8 +366,8 @@ let g:indentLine_bgcolor_term='NONE'
 let g:indentLine_color_gui='#1E1E1E'  " #303030
 let g:indentLine_bgcolor_gui='NONE'
 
-" Syntax highlighting
-" ===================
+" Syntax highlighting and indentation
+" ===================================
 " settings that nvim runs by default
 "syntax on
 "filetype on
@@ -636,7 +395,7 @@ set linebreak
 
 " Folding
 " =======
-set foldmethod=syntax
+set foldmethod=marker
 set foldnestmax=10
 set nofoldenable
 " Note: nofoldenable gets toggled with the first use of zc
@@ -708,6 +467,39 @@ let g:tagbar_type_haskell = {
       \ 'type'   : 't'
       \ }
       \ }
+
+if executable('lushtags')
+  let g:tagbar_type_haskell = {
+        \ 'ctagsbin' : 'lushtags',
+        \ 'ctagsargs' : '--ignore-parse-error --',
+        \ 'kinds' : [
+        \ 'm:module:0',
+        \ 'e:exports:1',
+        \ 'i:imports:1',
+        \ 't:declarations:0',
+        \ 'F:fields:1',
+        \ 'd:declarations:1',
+        \ 'n:declarations:1',
+        \ 'f:functions:0',
+        \ 'c:constructors:0'
+        \ ],
+        \ 'sro' : '.',
+        \ 'kind2scope' : {
+        \ 'd' : 'data',
+        \ 'n' : 'newtype',
+        \ 'c' : 'constructor',
+        \ 't' : 'type',
+        \ 'F' : 'field'
+        \ },
+        \ 'scope2kind' : {
+        \ 'data' : 'd',
+        \ 'newtype' : 'n',
+        \ 'constructor' : 'c',
+        \ 'type' : 't',
+        \ 'field' : 'F'
+        \ }
+        \ }
+endif
 " END HASKELL
 
 " Enable some tabular presets for Haskell
@@ -716,12 +508,10 @@ let g:haskell_tabular = 1
 func! Pointfree()
   call setline('.', split(system('pointfree '.shellescape(join(getline(a:firstline, a:lastline), "\n"))), "\n"))
 endfunc
-vnoremap <silent> <leader>h. :call Pointfree()<CR>
 
 func! Pointful()
   call setline('.', split(system('pointful '.shellescape(join(getline(a:firstline, a:lastline), "\n"))), "\n"))
 endfunc
-vnoremap <silent> <leader>h> :call Pointful()<CR>
 
 " Color Themes
 " ============
@@ -753,10 +543,23 @@ let g:WebDevIconsUnicodeDecorateFileNodes = 0
 
 " vim-airline banners
 " ====================
-set laststatus=2
+set laststatus=2   " `always` display a statusline
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 1
 let g:airline_theme='badwolf'
+" index tabs 1..n
+let g:airline#extensions#tabline#buffer_idx_mode = 1
+nnoremap <leader>1 :exe "normal \<Plug>AirlineSelectTab1"<CR>
+nnoremap <leader>2 :exe "normal \<Plug>AirlineSelectTab2"<CR>
+nnoremap <leader>3 :exe "normal \<Plug>AirlineSelectTab3"<CR>
+nnoremap <leader>4 :exe "normal \<Plug>AirlineSelectTab4"<CR>
+nnoremap <leader>5 :exe "normal \<Plug>AirlineSelectTab5"<CR>
+nnoremap <leader>6 :exe "normal \<Plug>AirlineSelectTab6"<CR>
+nnoremap <leader>7 :exe "normal \<Plug>AirlineSelectTab7"<CR>
+nnoremap <leader>8 :exe "normal \<Plug>AirlineSelectTab8"<CR>
+nnoremap <leader>9 :exe "normal \<Plug>AirlineSelectTab9"<CR>
+" TODO: Create a function that works in combination with
+"       a command to increment to the next tab.
 " if !exists('g:airline_symbols')
 "   let g:airline_symbols = {}
 " endif
@@ -780,7 +583,7 @@ fun! AirlineThemePatch(palette)
   if g:airline_theme == 'badwolf'
     for colors in values(a:palette.inactive)
       let colors[0] = '#9E9E9E'
-      let colors[1] = '#141414'
+      let colors[1] = '#212121'
       let colors[2] = 248
       let colors[3] = 235
     endfor
@@ -789,9 +592,19 @@ endfun
 
 " Parent highlighting groups
 " ==========================
+" Note: Normal gui=NONE is required to enable the active/inactive pane
+" configuration in tmux
 hi Normal        ctermbg=NONE guibg=NONE cterm=NONE gui=NONE
 hi Error         ctermbg=NONE guibg=NONE cterm=bold gui=bold
 hi ErrorMsg      ctermbg=NONE guibg=NONE cterm=NONE gui=NONE
+
+" Inactive vim window (plugin vim-diminactive)
+hi ColorColumn   ctermbg=235 guibg=#212121  " 1E1E1E is also good
+" Match with Tmux inactive and Airline
+
+" Search - improve contrast and match Airline Theme
+" may want to link to Visual
+hi Search        ctermfg=214 ctermbg=238 guifg=#ffa724 guibg=#45413b
 
 " White space and related
 " [link undefined to defined]
@@ -799,7 +612,6 @@ hi NonText       ctermfg=244  guifg=#808080 cterm=NONE gui=NONE
 hi! link SpecialKey   NonText
 hi! link LineNr       NonText
 hi CursorLineNR ctermfg=227  guifg=#FFFF5F cterm=NONE gui=NONE
-
 " Messages
 hi ErrorMsg      ctermfg=203  guifg=#FF5F55
 hi! link Error ErrorMsg

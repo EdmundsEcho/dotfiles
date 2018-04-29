@@ -23,6 +23,8 @@ Plug 'moll/vim-bbye'                     " closes buffers without closing window
 Plug 'rizzatti/dash.vim'                 " Documentation viewer (activate with: :Dash)
 Plug 'haya14busa/incsearch.vim'          " Better search highlighting
 Plug 'junegunn/vader.vim'                " Vimscript debugger/test engine
+Plug 'Shougo/echodoc.vim'                " Show function signature in insert mode
+Plug 'haya14busa/vim-debugger'           " Debugg vimscript
 
 " Generates menus - works with oh-my-vim
 Plug 'Shougo/unite.vim'                  " TESTING can source a search using multiple sources
@@ -31,25 +33,32 @@ Plug 'Shougo/unite.vim'                  " TESTING can source a search using mul
 Plug 'vimlab/split-term.vim'             " provides user-friendly bindings for neovim's built-in Terminal functionality
 
 " tmux integration
-Plug 'christoomey/vim-tmux-navigator'    " Allow pane movement to jump out of vim into tmux
-Plug 'benmills/vimux'                    " Send commands to tmux and vice versa
+Plug 'christoomey/vim-tmux-navigator'     " Allow pane movement to jump out of vim into tmux
+Plug 'benmills/vimux'                     " Send commands to tmux and vice versa
+Plug 'tmux-plugins/vim-tmux-focus-events' " Captures active/inactive pane events
+     Plug 'blueyed/vim-diminactive'       " dims inactive window; depends on tmux-focus events
 
 " Linting
 Plug 'w0rp/ale'                          " Live linting that uses eslint and prettier
 
 " Auto-completion related
-" Plug 'ervandew/supertab'
+" Plug 'ervandew/supertab'               " Functionality mostly accomplished with deoplete
 Plug 'Shougo/deoplete.nvim',     { 'do': ':UpdateRemotePlugins' } " neocomplete for neovim
-Plug 'carlitux/deoplete-ternjs', { 'do': ' yarn global install --prefer-offline tern && tern --persistent' }
 Plug 'Shougo/context_filetype.vim'       " adds the context filetype feature
 Plug 'Shougo/neoinclude.vim'             " source completions from the included files and file paths
 Plug 'Shougo/neopairs.vim'               " Inserts the parentheses pairs automatically
+
+" Language-specific sources for deoplete
+" Note: see haskell below
+Plug 'carlitux/deoplete-ternjs', { 'for': 'javascript', 'do': ' yarn global install --prefer-offline tern && tern --persistent' }
 Plug 'Shougo/neco-syntax'                " source completions from syntax files
 Plug 'Shougo/neco-vim'                   " source completions for vimscript
+
 " Plug 'roxma/nvim-yarp'
 
 " Ctags
-Plug 'ludovicchabant/vim-gutentags'  ", { 'for': 'javascript' }
+Plug 'ludovicchabant/vim-gutentags',  { 'for': 'javascript' }
+Plug 'mkasa/neco-ghc-lushtags',       { 'for': 'haskell' }
 
 " " Visual tab guides - Does not work with Haskell
 Plug 'Yggdroot/indentLine'
@@ -83,8 +92,9 @@ Plug 'eagletmt/ghcmod-vim',           { 'for': 'haskell' }
 Plug 'eagletmt/neco-ghc',             { 'for': 'haskell' }
 Plug 'Twinside/vim-hoogle',           { 'for': 'haskell' }
 Plug 'mpickering/hlint-refactor-vim', { 'for': 'haskell' }
-Plug 'Shougo/vimproc.vim', { 'for': 'haskell', 'do': 'make' } " not required for asynch in neovim
-Plug 'mkasa/neco-ghc-lushtags',       { 'for': 'haskell' }
+Plug 'Shougo/vimproc.vim',            { 'for': 'haskell', 'do': 'make' } " not required for asynch in neovim
+" TESTING
+Plug 'bitc/vim-hdevtools',            { 'for': 'haskell' }
 
 " Lisp
 Plug 'vim-scripts/paredit.vim',       { 'for': [ 'scheme', 'lisp', 'commonlisp' ] }

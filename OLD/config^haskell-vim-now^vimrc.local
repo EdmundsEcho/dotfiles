@@ -345,7 +345,7 @@ let g:deoplete#max_menu_width = 0
 let g:deoplete#omni#input_patterns = {}
 let g:deoplete#omni#input_patterns = get(g:,'deoplete#omni#input_patterns',{})
 let g:deoplete#omni#input_patterns.javascript = '[^. \t]\.\w*'
-"call deoplete#custom#set('_', 'matchers', ['matcher_full_fuzzy'])
+"call deoplete#custom#source('_', 'matchers', ['matcher_full_fuzzy'])
 
 let g:tern_request_timeout = 1
 let g:tern_request_timeout = 6000
@@ -437,11 +437,11 @@ let g:deoplete#sources = {}
 "let g:deoplete#sources['javascript.jsx'] = ['file', 'ultisnips', 'ternjs']
 let g:deoplete#sources['javascript.jsx'] = ['file', 'neosnippet', 'ternjs']
 let g:deoplete#sources._ = ['buffer']
-call deoplete#custom#set('_', 'sorters', ['sorter_word'])
-call deoplete#custom#set('ternjs', 'rank', 9000)
-call deoplete#custom#set('neosnippet', 'rank', 8000)
-call deoplete#custom#set('buffer', 'rank', 5000)
-call deoplete#custom#set('file', 'rank', 2000)
+call deoplete#custom#source('_', 'sorters', ['sorter_word'])
+call deoplete#custom#source('ternjs', 'rank', 9000)
+call deoplete#custom#source('neosnippet', 'rank', 8000)
+call deoplete#custom#source('buffer', 'rank', 5000)
+call deoplete#custom#source('file', 'rank', 2000)
 
 " omnifuncs
 " About: this is a vim setting.  The functionality analyzes the text before the

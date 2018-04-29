@@ -6,6 +6,21 @@
 " Support functions
 " -------------------------------------------------------------------------------
 "
+" Get to the beginning of a line without having to use single `0`
+fun! GoToFrontLine()
+  " if cursor is already at the first char, then go to the very
+  " front of the line
+  let col_num_cursor = col(".")   " store the current position of the cursor
+  let row_num_cursor = line(".")  " used to position the cursor
+  let col_num_front  = indent(line("."))
+  if (col_num_cursor != (1 + col_num_front))
+    call cursor(row_num_cursor, col_num_front + 1) " default
+  else
+    call cursor(row_num_cursor, 1)             " go to the very front
+  endif
+
+endfun
+
 " Check for .vimrc before loading
 fun! HasVimrc()
   return findfile(".vimrc", ".")
@@ -36,10 +51,21 @@ fun! ToggleText()
   endif
 endfun
 
+fun! GetVimVariables()
+  redir >> /tmp/vim.log
+  execute "echom empty(v:completed_item)"
+  call echom v:completed_item
+  silent execute "let v:"
+endfun
+fun! ToggleVimVariables()
+  redir END
+endfun
+
+
 " Deoplete activation
 fun! ToggleDeoplete()
   call deoplete#toggle()
-  echom "Toggled deoplete (0:disabled 1:enabled): " . deoplete#is_enabled()
+  " echom "Toggled deoplete (0:disabled 1:enabled): " . deoplete#is_enabled()
 endfun
 command! -complete=command ToggleDeoplete call ToggleDeoplete()
 
@@ -47,7 +73,7 @@ fun! EnableDeoplete()
   if !deoplete#is_enabled()
     call deoplete#toggle()
   endif
-  echom "Deoplete enabled: " . deoplete#is_enabled()
+  " echom "Deoplete enabled: " . deoplete#is_enabled()
 endfun
 command! -complete=command EnableDeoplete call EnableDeoplete()
 
@@ -147,6 +173,7 @@ endfun
 
 " Auto magically Mkdir
 " ====================
+" TODO: Fix bug; not sufficiently aware of changing directory.
 " Conditionaly create the parent directory when writing to disk
 " Called with autocmd
 fun! MkDir()
@@ -202,13 +229,33 @@ endfun
 " Automatically make cscope connections
 " Called with .hs specific autocmd
 fun! LoadHscope()
+  " See h:cscope Suggested Usage
+  " Set cscope = 0 -> cscope 1st in search order (vs tags)
+  set csto=1    " keep htags as 1st; call cscope separately
+  set cst
+  set nocsverb
+
+  " DEBUG
+  " exe "if empty(findfile(\"hscope.out\",'.;')) | echo 'cant find' | endif"
+  " exe "lcd /Users/edmund/scratch/idioms/"
+  " exe "pwd"
+  " exe "echo findfile('hscope.out', system('git rev-parse --show-toplevel'), -1)"
+
+  " Note: cscoperelative should be set.
+  " Otherwise, We can give cscope a prefix to add to the relative
+  " file locations. That seems to be what is going on here.  But,
+  " NVIM generates noisy errors.  HVN has a fix.
   let db = findfile("hscope.out", ".;")
   if (!empty(db))
     let path = strpart(db, 0, match(db, "/hscope.out$"))
-    set nocscopeverbose " suppress 'duplicate connection' error
     exe "cs add " . db . " " . path
-    set cscopeverbose
+  else
+    exe "pwd"
+    echoerr "Failed to load hscope.out (uses git roster)"
+    exe "normal! \<cr>\<cr>"
   endif
+  " display errors with manual db additions
+  set csverb
 endfun
 
 " Helper functions
