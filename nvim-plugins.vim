@@ -85,6 +85,9 @@ Plug 'ConradIrwin/vim-bracketed-paste'   " Enables cmd-v in insert mode
 " Distraction-free txt
 Plug 'junegunn/goyo.vim'                 " :Goyo to activate :Goyo! to deactivate
 
+" GraphQL
+Plug 'jparise/vim-graphql'               " .gql .graphql .graphqls syntax highlighting
+
 " Haskell
 Plug 'neovimhaskell/haskell-vim',     { 'for': [ 'haskell', 'cabal' ] }
 Plug 'enomsg/vim-haskellConcealPlus', { 'for': 'haskell' } " does not work with indentLine

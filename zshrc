@@ -140,6 +140,9 @@ export EDITOR='nvim'
 alias zshconfig="nvim ~/.zshrc"
 alias ohmyzsh="nvim ~/.oh-my-zsh"
 alias reload='. ~/.zshrc; echo "Sourced ~/.zshrc" '
+
+# July 1, 2018
+alias fixVideo="sudo killall VDCAssistant"
 #alias sd="spindrive_toggle"
 
 # May 25, 2016
@@ -198,6 +201,7 @@ PATH+="/usr/local/opt/python/libexec/bin:"
 PATH+="/usr/local/opt/sqlite/bin:"
 PATH+="/usr/local/opt/qt/bin:"
 PATH+="/usr/local/opt/texinfo/bin:"
+PATH+="/usr/local/CrossPack-AVR/bin:"
 
 # User - defined code
 PATH+="/Users/${USER}/.local/bin:"

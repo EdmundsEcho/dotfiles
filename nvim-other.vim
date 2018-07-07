@@ -181,7 +181,7 @@ let g:ale_linters = {
       \'javascript': ['eslint'],
       \'json': ['jsonlint','prettier'],
       \'css': ['csslint','prettier'],
-      \'haskell': ['stack-ghc-mod','hlint','hdevtools'],
+      \'haskell': ['stack-ghc-mod','hlint'],
       \}
 " \'haskell': ['hlint','stack-ghc-mod','stack-build','stack-ghc','hdevtools'],
 let g:ale_fixers = {}
@@ -325,7 +325,7 @@ set ut=1000                     " Change updatetime to faster than default 4 sec
 set lazyredraw                  " Don't redraw while executing macros (good performance config)
 " set ruler                       " Always show current position
 set number
-set cmdheight=3                 " Height of the command bar
+set cmdheight=1                 " Height of the command bar
 set incsearch                   " Makes search act like search in modern browsers
 set hlsearch                    " Highlight search results
 set showmatch                   " Show matching brackets when text indicator is over them
@@ -352,10 +352,12 @@ set sidescroll=1
 " ===========
 " Note: not compatible with Haskell
 let g:indentLine_char = '┊'
+
 let g:indentLine_fileTypeExclude =
-      \ ['haskell','haskellstack','cabal',
-      \  'json','yaml','markdown','text','txt',
+      \ ['haskell','haskellstack','cabal','haskellhpack',
+      \  'json','yaml','markdown','pandoc','text','txt',
       \  'sh','vim','tmux','help']
+
 let g:indentLine_faster=1
 let g:indentLine_conceallevel=1
 let g:indentLine_setConceal=1

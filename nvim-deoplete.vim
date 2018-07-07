@@ -69,10 +69,10 @@ set shortmess+=c                " disable showing index and search count
 
 " I - Insert mode
 " TESTING to regain C-I for use in insert-mode
-" inoremap <silent><expr><Tab> pumvisible() ? "\<Down>"
-"   \ : (neosnippet#jumpable() ? "\<Plug>(neosnippet_jump)"
-"   \ : (<SID>is_whitespace() ? "\<Tab>"
-"   \ : deoplete#manual_complete()))
+inoremap <silent><expr><Tab> pumvisible() ? "\<Down>"
+  \ : (neosnippet#jumpable() ? "\<Plug>(neosnippet_jump)"
+  \ : (<SID>is_whitespace() ? "\<Tab>"
+  \ : deoplete#manual_complete()))
 
 " S - Select mode
 snoremap <silent><expr><Tab> pumvisible() ? "\<Down>"
@@ -174,10 +174,10 @@ call deoplete#custom#source('_', 'converters', ['converter_auto_paren'])
 " call deoplete#custom#source('tern#Complete', 'is_debug_enabled', 1)
 
 "" Deoplete TernJS source configuration
-let g:deoplete#sources#ternjs#types = 1
-let g:deoplete#sources#ternjs#docs = 1
+let g:deoplete#sources#ternjs#types = 0
+let g:deoplete#sources#ternjs#docs = 0
 let g:deoplete#sources#ternjs#depths = 1
-let g:deoplete#sources#ternjs#guess = 0
+let g:deoplete#sources#ternjs#guess = 1
 let g:deoplete#sources#ternjs#sort = 1
 let g:deoplete#sources#ternjs#expand_word_forward = 1
 let g:deoplete#sources#ternjs#include_keywords = 0

@@ -6,7 +6,21 @@
 " Tweaks to default mappings
 " Capture most of the keybindings. Excludes bindings that don't often
 " change e.g., <leader>, esc etc. see nvim-other and nvim-deoplete
+"
+" Debugging tips: to use yanked content in command mode <C-R><C-O>"
+" use :registers to see the full contents of registers
+" in normal mode, hit " : p to print the previous command (a cmd)
+" from normal mode, y j : @ " <Enter> will execute the contents of the unamed
+" buffer, "
 " -------------------------------------------------------------------------------
+
+" Additional options to engage cmd mode from normal-mode
+nnoremap <leader>c :
+nnoremap <leader>n /
+nnoremap <leader>m :%s/
+nnoremap <leader>v :@:<CR>
+" v is next to c, v is mac pasting
+" recall, the `gc` postfix engages user-confirmed search and replace
 
 " Remap start of the line; end of the file and EOF
 nnoremap 0 :call GoToFrontLine()<CR>
@@ -87,7 +101,7 @@ onoremap p i(
 onoremap b i[
 " Include the surrounding brackets
 onoremap P i(<esc><Del>xi
-onoremap P i[<esc><Del>xi
+onoremap B i[<esc><Del>xi
 
 " Next and previous brackets
 onoremap np :<c-u>normal! f(lvi(<cr>
@@ -108,7 +122,7 @@ nnoremap [<space> :call append(line('.')-1,'')<cr>
 
 " Delete a line; including the line break
 " dd
-" ... keep the line break
+" ... keep the line break (and delete to the right without 0)
 " 0D
 
 " Insert mode
@@ -117,9 +131,18 @@ nnoremap [<space> :call append(line('.')-1,'')<cr>
 " e.g.,
 "       C-O D  delete line to the right of the cursor
 "       C-U    delete line to the left  of the cursor
+"
+" Note: <C-I> seems to point to Tab.  When I remap it, deoplete
+" stops working with <Tab>.
 
-" Insert the first word from the line above
-inoremap <C-I> <space><space><esc>kbywjPlli<C-V> <BS><BS>
+" Registers:
+" Use :reg to see them all!
+" In insert-mode accessed with <C-R> aka `"`
+" In cmd-mode no need for `"` e.g., :so %
+" paste most recent typed text with <C-R>. while in insert mode
+
+" Insert the first word from the line above (often a fn name)
+inoremap <C-F> <space><space><esc>kbywjPlli<C-V> <BS><BS>
 
 " shortcut to making arrows (note: - key maps to underscore)
 inoremap <C-_> ->
@@ -312,12 +335,14 @@ let g:dash_activate = 0
 " tabularize
 " ===========
 " formats text to align in a table format
-" Usage:   :Tab /:\zs   |     :Tab /:
 let g:haskell_tabular = 1
-vnoremap a= :Tabularize /=<CR>
-vnoremap a; :Tabularize /::<CR>
-vnoremap a- :Tabularize /-><CR>
+vnoremap a= :Tabularize /=/l1r1<CR>
+vnoremap a; :Tabularize /:/l1r0l0r1<CR>
+vnoremap a- :Tabularize /->/l1r0l0r1<CR>
 vnoremap a{ :Tabularize /{><CR>
+nnoremap <leader>ta :Tabularize<space>/
+" Align records in Hask
+nnoremap <leader>tr :Tabularize<space>/[:,{}]/l1l1l1r0l0l1l1<CR>
 
 " ctrl-p
 " =======
@@ -341,7 +366,7 @@ nnoremap <silent> <leader>pb<space> :CtrlPBuffer<cr>
 " Deoplete
 " ========
 " Toggle off/on
-let g:deoplete#enable_at_startup = 0
+let g:deoplete#enable_at_startup = 1
 augroup deo
   au!
 "   au InsertEnter * :call EnableDeoplete()
