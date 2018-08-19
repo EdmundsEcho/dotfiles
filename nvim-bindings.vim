@@ -116,6 +116,8 @@ onoremap pb :<c-u>normal! F[lvi[<cr>
 "
 " From normal, without insert mode
 noremap <Enter> O<Esc>j
+noremap <space> o<Esc>k
+" ^ TESTING
 
 " above the cursor
 nnoremap [<space> :call append(line('.')-1,'')<cr>
