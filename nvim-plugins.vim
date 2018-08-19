@@ -135,6 +135,9 @@ Plug 'Shougo/context_filetype.vim'       " provide filetype info within caged co
 " Dialogue to generate jsdoc required comments
 Plug 'heavenshell/vim-jsdoc',          { 'for': ['javascript', 'javascript.jsx'] }
 
+" GraphQL
+Plug 'jparise/vim-graphql'
+
 " Javascript
 Plug 'moll/vim-node'                    " TESTING: enables jumps between CommonJS modules
 Plug 'othree/jspc.vim',                  { 'for': ['javascript', 'javascript.jsx'] } " function parameter completion

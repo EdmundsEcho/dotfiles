@@ -184,6 +184,8 @@ let g:ale_linters = {
       \'haskell': ['stack-ghc-mod','hlint'],
       \}
 " \'haskell': ['hlint','stack-ghc-mod','stack-build','stack-ghc','hdevtools'],
+" use hlint, ghc or hdevtools.  intero is another substitute for ghc that works
+" with stack.
 let g:ale_fixers = {}
 let g:ale_fixers['javascript'] = ['prettier-eslint']
 let g:ale_fixers['css'] = ['prettier']
@@ -269,7 +271,7 @@ set cscoperelative " this generates a full path
 
 " Linting
 " au FileType haskell let g:hdevtools_options = '-g -isrc -g -Wall -g -hide-package -g transformers -g -v'
-let g:hdevtools_options = '-g -isrc -g -Wall -g -hide-package -g transformers -g -v'
+let g:hdevtools_options = '-g -isrc -g -Wall -g -v'
 " let g:ale_haskell_hdevtools_options = '-g -isrc -g -Wall -g -hide-package -g transformers -g -v'
 " let g:ale_haskell_ghc_options = '-g -isrc -g -Wall -g -hide-package -g transformers -g -v'
 

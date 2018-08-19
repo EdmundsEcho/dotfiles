@@ -40,6 +40,9 @@ ZSH_THEME="robbyrussell"
 # Uncomment the following line to disable auto-setting terminal title.
 export DISABLE_AUTO_TITLE="true"
 
+# Aug 8, 2018
+export HIST_FIND_NO_DUPS="true"
+
 # Uncomment the following line to enable command auto-correction.
 # ENABLE_CORRECTION="true"
 

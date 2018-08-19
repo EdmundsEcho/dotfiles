@@ -25,7 +25,7 @@
 set completeopt=menuone,preview
 set completeopt+=noselect
 set completeopt+=noinsert
-set pumheight=20                " max height of popup before using scroll
+set pumheight=10                " max height of popup before using scroll
 set shortmess+=c                " disable showing index and search count
 " Note: deoplete has max candidates = 100
 " ------------------------------------------------------------------------------
