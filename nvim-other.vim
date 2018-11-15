@@ -181,13 +181,15 @@ let g:ale_linters = {
       \'javascript': ['eslint'],
       \'json': ['jsonlint','prettier'],
       \'css': ['csslint','prettier'],
-      \'haskell': ['stack-ghc-mod','hlint'],
+      \'haskell': ['ghc-mod','hlint'],
       \}
+"     \'haskell': ['hdevtools','hlint'],
+"
 " \'haskell': ['hlint','stack-ghc-mod','stack-build','stack-ghc','hdevtools'],
 " use hlint, ghc or hdevtools.  intero is another substitute for ghc that works
 " with stack.
 let g:ale_fixers = {}
-let g:ale_fixers['javascript'] = ['prettier-eslint']
+let g:ale_fixers['javascript'] = ['eslint']
 let g:ale_fixers['css'] = ['prettier']
 let g:ale_javascript_prettier_use_local_config = 1
 " let g:ale_linter_aliases = {'jsx': 'css'}
@@ -195,8 +197,8 @@ let g:ale_javascript_prettier_use_local_config = 1
 " " autocmd FileType javascript set formatprg=prettier-eslint\ --stdin
 
 
-" ctags gutentags -- <C-[>
-" ========================
+" ctags gutentags -- <C-[> or <C-]>
+" =================================
 let g:gutentags_enabled = 1
 let g:gutentags_resolve_symlinks = 1
 let g:gutentags_generate_on_missing = 1   " default = 1
@@ -210,7 +212,8 @@ let g:gutentags_debug = 1
 augroup fileTypes
   au!
   " set the working directory to the active file
-  " au BufEnter * silent! lcd %:p:h
+  " TESTING
+  au BufEnter * silent! lcd %:p:h
   " [see set autochdir]
 
   " Create a new directory if required
@@ -357,7 +360,7 @@ let g:indentLine_char = '┊'
 
 let g:indentLine_fileTypeExclude =
       \ ['haskell','haskellstack','cabal','haskellhpack',
-      \  'json','yaml','markdown','pandoc','text','txt',
+      \  'yaml','markdown','pandoc','text','txt',
       \  'sh','vim','tmux','help']
 
 let g:indentLine_faster=1
@@ -631,6 +634,7 @@ hi! link ALEWarningSign WarningMsg
 hi! link ALEStyleErrorSign Search
 " Note: SpellBad, SpellCap, Error and Todo can be
 " used depending on what the linters produce
+"
 
 " Window and folds
 hi VertSplit    ctermfg=51   guifg=#00FFFF " turquoise

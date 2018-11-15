@@ -250,9 +250,16 @@ fun! LoadHscope()
     let path = strpart(db, 0, match(db, "/hscope.out$"))
     exe "cs add " . db . " " . path
   else
-    exe "pwd"
-    echoerr "Failed to load hscope.out (uses git roster)"
-    exe "normal! \<cr>\<cr>"
+    exe "codex update --force<CR>:call system('git-hscope -X TemplateHaskell')
+    db = findfile("hscope.out", ".;")
+    if (!empty(db))
+      let path = strpart(db, 0, match(db, "/hscope.out$"))
+      exe "cs add " . db . " " . path
+    else
+      exe "pwd"
+      echoerr "Failed to load hscope.out (uses git roster)"
+      exe "normal! \<cr>\<cr>"
+    endif
   endif
   " display errors with manual db additions
   set csverb
