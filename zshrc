@@ -40,8 +40,19 @@ ZSH_THEME="robbyrussell"
 # Uncomment the following line to disable auto-setting terminal title.
 export DISABLE_AUTO_TITLE="true"
 
-# Aug 8, 2018
+# Aug 8, 2018, Oct 21, 2018
+# Do not log if the command repeats the previous one
+export HIST_IGNORE_DUPS="true"
+# alternative, delete all previous logs with the same command
+# export HIST_IGNORE_ALL_DUPS="true"
+
+# When searching...only present unique commands
 export HIST_FIND_NO_DUPS="true"
+
+# Append history from different terminals once they quit
+# ... not on the fly.  So histories will *not* be shared.
+export APPEND_HISTORY="true"
+# export INC_APPEND_HISTORY="true" ... to share on the fly.
 
 # Uncomment the following line to enable command auto-correction.
 # ENABLE_CORRECTION="true"
@@ -78,7 +89,7 @@ plugins=(
   osx
   sudu
   tmux
-  vi-like
+  vi-mode
   yarn
   z
 )
@@ -166,7 +177,6 @@ alias runghc='stack runghc'
 
 # Jan 14, 2017
 alias code="cd ~/Dropbox/Programming"
-alias tnc="cd ~/Dropbox/Programming/Tnc"
 # Nov 13, 2017
 alias client-app="cd ~/Dropbox/Programming/TnC/ui/client-app/"
 # Dec 15, 2017
@@ -234,3 +244,9 @@ test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell
 # Ruby - version manager to avoid overwriting system
 if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 alias scratch='cd ~/scratch'
+
+
+# Jupyter Lucivia spec
+export LUCIVIA_PSQL_USER=luciviaadmin
+export LUCIVIA_PSQL_PASSWD=a4cJEEFT6Ac30Hihx6KXdACXkZjDAPvi
+export LUCIVIA_PSQL_HOST=lucivia.ctw1gymgj8f5.us-east-1.rds.amazonaws.com
