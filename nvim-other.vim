@@ -181,7 +181,7 @@ let g:ale_linters = {
       \'javascript': ['eslint'],
       \'json': ['jsonlint','prettier'],
       \'css': ['csslint','prettier'],
-      \'haskell': ['stack-ghc-mod','hlint'],
+      \'haskell': ['stack-ghc-mod','hdevtools'],
       \}
 " \'haskell': ['hlint','stack-ghc-mod','stack-build','stack-ghc','hdevtools'],
 let g:ale_fixers = {}
@@ -227,6 +227,7 @@ augroup fileTypes
   au BufNewFile,BufRead .jsx          setfiletype javascript
   au BufNewFile,BufRead .hs           setfiletype haskell
   au BufNewFile,BufRead .md           setfiletype markdown
+  au BufNewFile,BufRead .yaml         setfiletype yaml
 
   " oh-my-zsh file types
   au BufNewFile,BufRead *.zsh-theme   setfiletype sh
