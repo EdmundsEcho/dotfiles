@@ -71,13 +71,13 @@ plugins=(
   history
   history-substring-search
   jsontools
-  nanoc
   osx
-  sudu
   tmux
-  vi-like
+  vi-mode
   yarn
   z
+  zsh-autosuggestions
+  zsh-syntax-highlighting
 )
 
 # ---------------------------------------------------------
@@ -207,6 +207,7 @@ PATH+="/usr/local/CrossPack-AVR/bin:"
 PATH+="/Users/${USER}/.local/bin:"
 PATH+="/Users/${USER}/Library/Haskell/bin:"
 PATH+="/Users/${USER}/Code/bin:"
+PATH+="/Users/${USER}/.cargo/bin:"
 
 # ---------------------------------------------------------
 # End with system paths
@@ -224,6 +225,10 @@ export NVM_DIR="$HOME/.nvm"
 bindkey -v
 bindkey -M viins 'df' vi-cmd-mode
 bindkey '^R' history-incremental-search-backward
+
+# binding for autosuggestions
+bindkey '^ ' autosuggest-accept
+
 
 # iterm2 integration
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"

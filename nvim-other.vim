@@ -27,16 +27,18 @@
 set nocompatible " No VI compatibility
 set autoread     " Detect file changes outside vim
 
-" TODO: may improve how C-x C-f works
-" TESTING
-" set autochdir    " change working dir to current buffer
+" Improves how C-x C-f works
+" use set noautochdir to turn it off
+set autochdir    " change working dir to current buffer
 
 " -------------------------------------------------------------------------------
 " Neovim's Python provider(s)
 " -------------------------------------------------------------------------------
+let g:loaded_python_provider = 1
 let g:python_host_prog  = '/usr/local/bin/python2'
 let g:python3_host_prog = '/usr/local/bin/python3'
 " Note: disable by setting g:loaded_python_provider = 1
+" Note: disable by setting g:loaded_python3_provider = 1
 " -------------------------------------------------------------------------------
 
 " esc key with cursor moved forward
@@ -47,6 +49,10 @@ inoremap df <esc>l
 " Leader key and timeout
 let mapleader = "\<SPACE>"
 set tm=1100
+
+" Spelling
+set spelllang=en
+set spellfile=$HOME/dotfiles/en.utf-8.add
 
 " TODO: This relates to passing commands to tmux
 "       It may not be required anymore.
@@ -89,7 +95,7 @@ augroup END
 
 " echodoc
 " =======
-" toggle set noshowmode || set cmdheight=2
+" toggle set noshowmode || set cmdheight=2 (see elsewhere)
 " toggle activation: :EchoDocEnable
 let g:echodoc_enable_at_startup = 1
 let g:echodoc#enable_force_overwrite = 1
@@ -143,7 +149,7 @@ let g:closetag_emptyTags_caseSensitive = 1
 let g:neosnippet#snippets_directory="~/.config/nvim/snippets"
 let g:neosnippet#snippets_directory='~/.config/nvim/bundle/vim-snippets/snippets'
 let g:my_snippet_manager = "neosnippet"
-let g:neosnippet#enable_completed_snippet=1
+let g:neosnippet#enable_completed_snippet = 1
 " Do not use this compatibility feature; breaks clean use of <c-k>
 " let g:neosnippet#enable_snipmate_compatibility = 1
 
@@ -156,14 +162,56 @@ imap <C-k> <Plug>(neosnippet_expand_or_jump)
 smap <C-k> <Plug>(neosnippet_expand_or_jump)
 xmap <C-k> <Plug>(neosnippet_expand_target)
 
+" NerdTree configuration
+let NERDTreeQuitOnOpen = 1
+let NERDTreeAutoDeleteBuffer = 1
+" let NERDTreeMinimalUI = 1
+let NERDTreeDirArrows = 1
+
 " ALE - live linting
 " ==================
+" coordination with deoplete
+" Linter
+let g:ale_lint_on_text_changed = 'never'
+let g:ale_lint_on_insert_leave = 1
+let g:ale_lint_on_save = 0
+let g:ale_lint_on_enter = 0
+let g:ale_virtualtext_cursor = 1
+let g:ale_rust_rls_config = {
+	\ 'rust': {
+		\ 'all_targets': 1,
+		\ 'build_on_save': 1,
+		\ 'clippy_preference': 'on'
+	\ }
+	\ }
+let g:ale_rust_rls_toolchain = ''
+let g:ale_linters = {'rust': ['rls']}
+highlight link ALEWarningSign Todo
+highlight link ALEErrorSign WarningMsg
+highlight link ALEVirtualTextWarning Todo
+highlight link ALEVirtualTextInfo Todo
+highlight link ALEVirtualTextError WarningMsg
+highlight ALEError guibg=None
+highlight ALEWarning guibg=None
+let g:ale_sign_error = ">>"
+let g:ale_sign_warning = "->"
+let g:ale_sign_info = "i"
+let g:ale_sign_hint = "➤"
+
+nnoremap <silent> K :ALEHover<CR>
+nnoremap <silent> gd :ALEGoToDefinition<CR>
+"nnoremap <silent> <F2> :call LanguageClient_textDocument_rename()<CR>
+" TEST
+let g:ale_completion_enabled = 1
+let g:ale_rust_cargo_use_clippy = 1         "improves code syntax
+let g:ale_rust_cargo_clippy_options =
+      \'-- -W clippy::nursery -W clippy::pedantic'
 " live piping of eslint and prettier linting
 " information to my file
-let g:ale_sign_error = '>>'
-let g:ale_sign_warning = '->'
-let g:ale_set_loclist = 0
+" let g:ale_set_loclist = 1
 let g:ale_set_quickfix = 1
+" let g:ale_open_list = 1              " open the quickfix window
+" let g:ale_keep_list_window_open = 1  " keep it open
 let g:ale_sign_column_always = 0
 let g:airline#extensions#ale#enabled = 1
 let g:ale_fix_on_save = 1
@@ -177,21 +225,46 @@ let g:ale_fix_on_save = 1
 " 5. add the following to package.json
 "    eslint-check: eslint --print-config .eslintrc.js | eslint-config-prettier-check
 let g:ale_linters = {
-      \'jsx': ['eslint'],
-      \'javascript': ['eslint'],
+      \'jsx': ['prettier','eslint','flow'],
+      \'javascript': ['eslint','flow','flow-language-server'],
       \'json': ['jsonlint','prettier'],
       \'css': ['csslint','prettier'],
       \'haskell': ['stack-ghc-mod','hdevtools'],
+      \'rust': ['rls','cargo'],
       \}
 " \'haskell': ['hlint','stack-ghc-mod','stack-build','stack-ghc','hdevtools'],
+" : ['eslint', 'flow', 'flow-language-server', 'jscs', 'jshint', 'standard', 'tsserver', 'xo']
 let g:ale_fixers = {}
-let g:ale_fixers['javascript'] = ['prettier-eslint']
+let g:ale_fixers['javascript'] = ['eslint', 'importjs']
 let g:ale_fixers['css'] = ['prettier']
+let g:ale_fixers['rust'] = ['rustfmt']
+let g:ale_fixers['python'] = ['yapf']
 let g:ale_javascript_prettier_use_local_config = 1
 " let g:ale_linter_aliases = {'jsx': 'css'}
 " " requires npm installs e.g., of prettier-eslint and config
 " " autocmd FileType javascript set formatprg=prettier-eslint\ --stdin
 
+" language server commands
+"\ 'cpp': ['ccls', '--log-file=/tmp/ccls.log'],
+let g:LanguageClient_serverCommands = {
+            \ 'cpp': ['ccls'],
+            \ 'c': ['ccls'],
+            \ 'python': ['pyls'],
+            \ 'rust': ['rls'],
+            \ 'haskell': ['hie-wrapper'],
+            \ 'javascript': ['javascript-typescript-stdio'],
+            \ 'typescript': ['javascript-typescript-stdio'],
+            \ }
+            " \ 'javascript.jsx': ['tcp://127.0.0.1:2089'],
+let g:LanguageClient_autoStart = 1
+let g:LanguageClient_rootMarkers = {
+            \ 'cpp': ['compile_commands.json', 'build', '.ccls', '.git'],
+            \ 'c': ['compile_commands.json', 'build', '.ccls', '.git'],
+            \ 'haskell': ['*.cabal', 'stack.yaml'],
+            \ 'rust': ['Cargo.toml', '.git'],
+            \ }
+
+set completefunc=LanguageClient#complete
 
 " ctags gutentags -- <C-[>
 " ========================
@@ -202,10 +275,26 @@ let g:gutentags_generate_on_missing = 1   " default = 1
 
 " DEBUG set to 1
 let g:gutentags_trace = 0
-let g:gutentags_debug = 1
+let g:gutentags_debug = 0
 
 " FileType (mostly) autocmd
-augroup fileTypes
+" Note: vim puts these commands in a command group already.
+" Miscellaneous file types to augment vim's default
+au BufNewFile,BufRead .babelrc      setf javascript
+au BufNewFile,BufRead .eslintrc     setf json
+au BufNewFile,BufRead *.reduxrc     setf json
+au BufNewFile,BufRead .tern-config  setf json
+au BufNewFile,BufRead .tern-project setf json
+au BufNewFile,BufRead gitconfig     setf gitconfig
+au BufNewFile,BufRead *.hs          setf haskell
+au BufNewFile,BufRead *.yaml        setf yaml
+au BufNewFile,BufRead *.md          setf markdown.pandoc
+au BufNewFile,BufRead *.jsx         setf javascript
+" oh-my-zsh file types
+au BufNewFile,BufRead *.zsh-theme   setfiletype sh
+au BufNewFile,BufRead *.zsh         setfiletype sh
+
+augroup misc
   au!
   " set the working directory to the active file
   " au BufEnter * silent! lcd %:p:h
@@ -216,22 +305,6 @@ augroup fileTypes
 
   " Trim trailing white space on save
   au BufWrite * :call TrimWhitespace()
-
-  " Miscellaneous file types.
-  au BufNewFile,BufRead .babelrc      setfiletype javascript
-  au BufNewFile,BufRead .eslintrc     setfiletype json
-  au BufNewFile,BufRead .reduxrc      setfiletype json
-  au BufNewFile,BufRead .tern-config  setfiletype json
-  au BufNewFile,BufRead .tern-project setfiletype json
-  au BufNewFile,BufRead gitconfig     setfiletype gitconfig
-  au BufNewFile,BufRead .jsx          setfiletype javascript
-  au BufNewFile,BufRead .hs           setfiletype haskell
-  au BufNewFile,BufRead .md           setfiletype markdown
-  au BufNewFile,BufRead .yaml         setfiletype yaml
-
-  " oh-my-zsh file types
-  au BufNewFile,BufRead *.zsh-theme   setfiletype sh
-  au BufNewFile,BufRead *.zsh         setfiletype sh
 
   " Spellcheck for text files
   au BufNewFile,BufRead *.txt,*.md,*.mkd,*.markdown,*.rst setlocal spell
@@ -248,7 +321,6 @@ augroup fileTypes
 
   " Resize panes whenever containing window resized.
   au VimResized * wincmd =
-
 augroup END
 
 augroup previewWindow
@@ -311,8 +383,6 @@ set nobackup                    " No backup, since most stuff is in Git anyway..
 set nowb
 set noswapfile
 
-set undofile
-set undolevels=1000
 set splitbelow                  " Horizontal splits - below
 set splitright                  " Vertical splits - right
 set autowrite                   " Write for me when I take any action
@@ -326,7 +396,7 @@ set ut=1000                     " Change updatetime to faster than default 4 sec
 set lazyredraw                  " Don't redraw while executing macros (good performance config)
 " set ruler                       " Always show current position
 set number
-set cmdheight=1                 " Height of the command bar
+set cmdheight=2                 " Height of the command bar
 set incsearch                   " Makes search act like search in modern browsers
 set hlsearch                    " Highlight search results
 set showmatch                   " Show matching brackets when text indicator is over them
@@ -334,6 +404,12 @@ set mat=2                       " How many tenths of a second to blink when matc
 set noerrorbells                " disable sound on errors
 set vb t_vb=                    " disable screen flash
 set list                        " Show trailing whitespace
+
+" Permanent undo
+set undodir=~/.vimdid
+set undolevels=1000
+set undofile
+
 " But only interesting whitespace
 if &listchars ==# 'eol:$'
   set listchars=tab:>\ ,trail:-,extends:>,precedes:<,nbsp:+
@@ -345,8 +421,8 @@ set whichwrap+=<,>,h,l
 
 " Autoscroll
 " ==========
-set scrolloff=10                " Keep at least X lines below cursor
-set sidescrolloff=15
+set scrolloff=20                " Keep at least X lines below cursor
+set sidescrolloff=5
 set sidescroll=1
 
 " indentLine
@@ -359,14 +435,16 @@ let g:indentLine_fileTypeExclude =
       \  'json','yaml','markdown','pandoc','text','txt',
       \  'sh','vim','tmux','help']
 
-let g:indentLine_faster=1
-let g:indentLine_conceallevel=1
 let g:indentLine_setConceal=1
+let g:indentLine_concealcursor = 'inc'
+let g:indentLine_conceallevel = 2
+let g:indentLine_faster=1
 " color
 let g:indentLine_color_term=236
 let g:indentLine_bgcolor_term='NONE'
 " required if termguicolors is set
-let g:indentLine_color_gui='#1E1E1E'  " #303030
+let g:indentLine_color_term = 239
+let g:indentLine_color_gui='#555555'  "'#1E1E1E'   #303030
 let g:indentLine_bgcolor_gui='NONE'
 
 " Syntax highlighting and indentation
@@ -399,7 +477,7 @@ set linebreak
 " Folding
 " =======
 set foldmethod=marker
-set foldnestmax=10
+set foldnestmax=5
 set nofoldenable
 " Note: nofoldenable gets toggled with the first use of zc
 "       setting the value here now as `no` prevents folds
@@ -415,16 +493,23 @@ set autoindent
 set smartindent
 set smarttab
 
-" vim-jsx-pretty
-" ==============
-let g:vim_jsx_pretty_colorful_config = 1
-
 " Set extra options when running in GUI mode
 if has("gui_running")
   set guioptions-=T
   set guioptions-=e
   set guitablabel=%M\ %t
 endif
+
+" vim-jsx-pretty
+" ==============
+let g:vim_jsx_pretty_colorful_config = 1      " default 0
+let g:vim_jsx_pretty_enable_jsx_highlight = 0 " default 1
+
+" rustfmt
+let g:rustfmt_autosave = 1
+
+" typescript
+let g:yats_host_keyword = 1  " syntax config file for yats
 
 " HASKELL specific
 " More Haskell
@@ -638,3 +723,22 @@ hi StatusLineNC ctermfg=51   guifg=#00FFFF " turquoise
 hi Folded       ctermfg=250  ctermbg=235 guifg=#A8A8A8 guibg=#262626
 hi FoldedColumn ctermfg=250  ctermbg=235 guifg=#A8A8A8 guibg=#262626
 hi! link SignColumn LineNr
+
+" jsx pretty syntax highlighting
+hi def link  jsxTag          Function
+hi def link  jsxTagName      Function
+hi def link  jsxString       String
+hi def link  jsxNameSpace    Function
+hi def link  jsxComment      Error
+hi def link  jsxAttrib       Type
+hi def link  jsxEscapeJs     jsxEscapeJs
+hi def link  jsxCloseTag     Identifier
+hi def link  jsxCloseString  Identifier
+hi jsxClass  ctermfg=100 guifg=#D4AC0D
+hi def link  xmlTagName      jsxClass
+hi def link  jsxCloseClass     jsxClass
+hi def link  jsClassDefinition jsxClass
+hi def link  jsObjectKey       Identifier
+hi xmlAttrib  ctermfg=100 guifg=#873DA0
+hi jsBraces   ctermfg=100 guifg=#9AA436
+" hi jsxClass  ctermfg=72 guifg=#5FAF87

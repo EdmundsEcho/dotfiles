@@ -14,6 +14,9 @@
 " buffer, "
 " -------------------------------------------------------------------------------
 
+" A fix for when using deoplete
+inoremap <expr> <CR> (pumvisible() ? "\<c-y>\<cr>" : "\<CR>")
+
 " Additional options to engage cmd mode from normal-mode
 nnoremap <leader>c :
 nnoremap <leader>n /
@@ -39,6 +42,7 @@ nnoremap <leader>fp :let @*=expand("%:p")<CR>
 
 " Open file prompt with current path
 nnoremap <leader>e :e <C-R>=expand("%:p:h") . '/'<CR>
+nnoremap <leader>o :e <C-R>=expand("%:p:h") . '/'<CR>
 
 " Ctags and Cscope (hscope for Haskell)
 " =====================================
@@ -70,19 +74,19 @@ augroup END
 
 " EasyMotion
 " ==========
-map  <Leader><Leader>f <Plug>(easymotion-bd-f)
-nmap <Leader><Leader>f <Plug>(easymotion-overwin-f)
+map  <leader><leader>f <Plug>(easymotion-bd-f)
+nmap <leader><leader>f <Plug>(easymotion-overwin-f)
 
 " s{char}{char} to move to {char}{char}
 nmap s <Plug>(easymotion-overwin-f2)
 
 " Move to line
-map  <Leader><Leader>l <Plug>(easymotion-bd-jk)
-nmap <Leader><Leader>l <Plug>(easymotion-overwin-line)
+map  <leader><leader>l <Plug>(easymotion-bd-jk)
+nmap <leader><leader>l <Plug>(easymotion-overwin-line)
 
 " Move to word
-map  <Leader><Leader>w <Plug>(easymotion-bd-w)
-nmap <Leader><Leader>w <Plug>(easymotion-overwin-w)
+map  <leader><leader>w <Plug>(easymotion-bd-w)
+nmap <leader><leader>w <Plug>(easymotion-overwin-w)
 
 " NerdTree
 " ========
@@ -109,13 +113,14 @@ onoremap nb :<c-u>normal! f[lvi[<cr>
 onoremap pp :<c-u>normal! F(lvi(<cr>
 onoremap pb :<c-u>normal! F[lvi[<cr>
 
-" Inserting a line
-" ================
+" Inserting a line (or tab)
+" ========================
 " From normal mode, default
 " o  to insert below, O to insert above
 "
 " From normal, without insert mode
-noremap <Enter> O<Esc>j
+noremap <Enter> O<esc>j
+noremap <Tab> i<space><space><esc>l
 
 " above the cursor
 nnoremap [<space> :call append(line('.')-1,'')<cr>
@@ -145,7 +150,12 @@ nnoremap [<space> :call append(line('.')-1,'')<cr>
 inoremap <C-F> <space><space><esc>kbywjPlli<C-V> <BS><BS>
 
 " shortcut to making arrows (note: - key maps to underscore)
-inoremap <C-_> ->
+inoremap <C-_> -><space>
+inoremap <C-\> =><space>
+
+" Place `;` at the end of the line
+" Note: . and ; cannot be mapped.
+inoremap <C-]> <Esc>A;<CR>
 
 " Undo from insertmode
 inoremap <C-B> <Esc>ui
@@ -223,6 +233,9 @@ nnoremap <leader>tt :TagbarToggle<CR>
 " Force redraw
 nnoremap <silent> <leader>r :redraw!<CR>
 
+" Force formatting
+nnoremap <leader>d magg=G`a
+
 " TAGS
 " Notes:
 " 1. use of `;` makes it recursive
@@ -245,8 +258,6 @@ inoremap <c-p> <c-r>*
 " Note: Ctrp uses <leader>p_
 nnoremap <leader>y "*y
 vnoremap <leader>y "*y
-" nnoremap <leader>d "*d
-" vnoremap <leader>d "*d
 nnoremap <leader>p "*p
 vnoremap <leader>p "*p
 
@@ -357,7 +368,7 @@ nnoremap <Leader>po :CtrlP<CR>
 nnoremap <Leader>pb :CtrlPBuffer<CR>
 
 " Open most recently used files
-nnoremap <Leader>pr :CtrlPMRUFiles<CR>
+nnoremap <leader>pr :CtrlPMRUFiles<CR>
 " Fuzzy find files
 nnoremap <silent> <Leader>pf<space> :CtrlP<CR>
 " fuzzy find buffers

@@ -2,6 +2,13 @@
 " ~/dotfiles/nvim-support.vim
 " symlinked to: ~/.config/nvim/config/nvim-support.vim
 " last updated: Dec 21, 2017
+"
+" Note on syntax:
+" Tim Pope pattern: fun! name abort
+" !       means silently replace the function definition if one already exists
+" abort   means stop the function if something goes wrong
+" finish  means stop reading the vimscript
+" if exists('variable') finish endif
 " -------------------------------------------------------------------------------
 " Support functions
 " -------------------------------------------------------------------------------
@@ -18,7 +25,6 @@ fun! GoToFrontLine()
   else
     call cursor(row_num_cursor, 1)             " go to the very front
   endif
-
 endfun
 
 " Check for .vimrc before loading
@@ -164,11 +170,19 @@ endfun
 
 " Remove whitespace
 " =================
-" Called with autocmd
+" Called with autocmd when saving or opening a buffer
+" TODO: set a global variable that sets the filetypes for which to ignore this
+" function.
+let g:user_trimwhite_off = ["mardown","pandoc"]
 fun! TrimWhitespace()
-  let l:save_cursor = getpos('.')
-  %s/\s\+$//e
-  call setpos('.', l:save_cursor)
+  if (index(g:user_trimwhite_off, &filetype) >= 0)
+    echom "cancelled: user-defined TrimWhitespace()"
+    return
+  else
+    let l:save_cursor = getpos('.')
+    %s/\s\+$//e
+    call setpos('.', l:save_cursor)
+  endif
 endfun
 
 " Auto magically Mkdir
