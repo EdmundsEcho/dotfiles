@@ -67,22 +67,6 @@ fun! ToggleVimVariables()
   redir END
 endfun
 
-
-" Deoplete activation
-fun! ToggleDeoplete()
-  call deoplete#toggle()
-  " echom "Toggled deoplete (0:disabled 1:enabled): " . deoplete#is_enabled()
-endfun
-command! -complete=command ToggleDeoplete call ToggleDeoplete()
-
-fun! EnableDeoplete()
-  if !deoplete#is_enabled()
-    call deoplete#toggle()
-  endif
-  " echom "Deoplete enabled: " . deoplete#is_enabled()
-endfun
-command! -complete=command EnableDeoplete call EnableDeoplete()
-
 " Debugging functions
 fun! GetSettingsFor (term)
   redir => message

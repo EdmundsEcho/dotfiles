@@ -41,9 +41,16 @@ let g:python3_host_prog = '/usr/local/bin/python3'
 " Note: disable by setting g:loaded_python3_provider = 1
 " -------------------------------------------------------------------------------
 
+" -------------------------------------------------------------------------------
+"  Change the underlying shell to support vim/neovim
+" -------------------------------------------------------------------------------
+" if $shell =~# 'fish$'
+  " set shell=zsh
+" endif
+set shell=zsh
+" set shell=fish
+
 " esc key with cursor moved forward
-" (faster than `ff` for instance)
-" TESTING - Before had esc twice.. not sure why.
 inoremap df <esc>l
 
 " Leader key and timeout
@@ -71,6 +78,11 @@ set guicursor=n-v-c:block-Cursor/lCursor-blinkon0,
 " Note: ALE may also set this option
 set formatprg=par
 let $PARINIT = 'rTbgqR B=.,?_A_a Q=_s>|'
+
+" use autoformat plugin instead
+let g:autoformat_autoindent = 0
+let g:autoformat_retab = 0
+let g:autoformat_remove_trailing_spaces = 0
 
 " Kill the damned Ex mode (no operation).
 nnoremap Q <nop>
@@ -131,6 +143,15 @@ if &term =~ '^screen'
   execute "set <xLeft>=\e[1;*D"
 endif
 
+" CtrlP plugin
+" ============
+" set the root directory to vim's working directory
+" let g:ctrlp_cmd='CtrlP :pwd'
+let g:ctrlp_working_path_mode = 'ra'
+let g:ctrlp_custom_ignore = {
+  \ 'dir':  '\v[\/]\.(git|hg|svn)$',
+  \ 'file': '\v\.(exe|so|dll)$',
+  \ }
 
 " HTML plugin
 " ===========
@@ -141,15 +162,6 @@ let g:closetag_filenames = '*.html, *,xhtml, *.phtml'
 let g:closetag_xhtml_filenames = '*.xhtml, *.js, *,jsx'
 let g:closetag_emptyTags_caseSensitive = 1
 
-" neosnippet
-" ===========
-" accessbible with deoplete
-" Jump within a snippet with <C-k>
-" source directories must be set before initiation
-let g:neosnippet#snippets_directory="~/.config/nvim/snippets"
-let g:neosnippet#snippets_directory='~/.config/nvim/bundle/vim-snippets/snippets'
-let g:my_snippet_manager = "neosnippet"
-let g:neosnippet#enable_completed_snippet = 1
 " Do not use this compatibility feature; breaks clean use of <c-k>
 " let g:neosnippet#enable_snipmate_compatibility = 1
 
@@ -168,103 +180,85 @@ let NERDTreeAutoDeleteBuffer = 1
 " let NERDTreeMinimalUI = 1
 let NERDTreeDirArrows = 1
 
-" ALE - live linting
-" ==================
-" coordination with deoplete
-" Linter
-let g:ale_lint_on_text_changed = 'never'
-let g:ale_lint_on_insert_leave = 1
-let g:ale_lint_on_save = 0
-let g:ale_lint_on_enter = 0
+autocmd FileType json syntax match Comment +\/\/.\+$+
+
+"" ALE - live linting
+"" ==================
+"" Linter
+"" Let ALE be what is called when manually calling for a linter
+"" set omnifunc=ale#completion#OmniFunc
+"
+"" set when the linting is triggered (on change of buffer)
+"
+"" let g:ale_lint_on_text_changed = 'never'
+"" let g:ale_lint_on_insert_leave = 1
+"" let g:ale_lint_on_save = 0
+"" let g:ale_lint_on_enter = 0
 let g:ale_virtualtext_cursor = 1
+let g:ale_fix_on_save = 1
+"
 let g:ale_rust_rls_config = {
-	\ 'rust': {
-		\ 'all_targets': 1,
-		\ 'build_on_save': 1,
-		\ 'clippy_preference': 'on'
-	\ }
-	\ }
+  \ 'rust': {
+    \ 'all_targets': 1,
+    \ 'build_on_save': 1,
+    \ 'clippy_preference': 'on'
+  \ }
+\ }
 let g:ale_rust_rls_toolchain = ''
-let g:ale_linters = {'rust': ['rls']}
-highlight link ALEWarningSign Todo
-highlight link ALEErrorSign WarningMsg
-highlight link ALEVirtualTextWarning Todo
-highlight link ALEVirtualTextInfo Todo
-highlight link ALEVirtualTextError WarningMsg
-highlight ALEError guibg=None
-highlight ALEWarning guibg=None
 let g:ale_sign_error = ">>"
 let g:ale_sign_warning = "->"
 let g:ale_sign_info = "i"
 let g:ale_sign_hint = "➤"
-
-nnoremap <silent> K :ALEHover<CR>
-nnoremap <silent> gd :ALEGoToDefinition<CR>
-"nnoremap <silent> <F2> :call LanguageClient_textDocument_rename()<CR>
-" TEST
-let g:ale_completion_enabled = 1
+"
+"nnoremap <silent> K :ALEHover<CR>
+"nnoremap <silent> gd :ALEGoToDefinition<CR>
+"let g:ale_completion_enabled = 1
 let g:ale_rust_cargo_use_clippy = 1         "improves code syntax
 let g:ale_rust_cargo_clippy_options =
       \'-- -W clippy::nursery -W clippy::pedantic'
-" live piping of eslint and prettier linting
-" information to my file
-" let g:ale_set_loclist = 1
-let g:ale_set_quickfix = 1
-" let g:ale_open_list = 1              " open the quickfix window
-" let g:ale_keep_list_window_open = 1  " keep it open
-let g:ale_sign_column_always = 0
-let g:airline#extensions#ale#enabled = 1
-let g:ale_fix_on_save = 1
-" JS specific Notes:
-" 1. jscs merged with eslint (jscs is not jspc)
-" 2. I'm chosing to run prettier through eslint
-"    (so where I see eslint, think eslint and prettier)
-"    .eslint.json include:  extends: ["prettier"] to unify formatting
-" 3. see .prettierrc for other options
-" 4. prettier only needs ALE to work
-" 5. add the following to package.json
-"    eslint-check: eslint --print-config .eslintrc.js | eslint-config-prettier-check
-let g:ale_linters = {
-      \'jsx': ['prettier','eslint','flow'],
-      \'javascript': ['eslint','flow','flow-language-server'],
+
+"" live piping of eslint and prettier linting
+"" information to my file
+"let g:ale_set_loclist = 0
+"let g:ale_set_quickfix = 0
+"let g:ale_open_list = 0                " open the quickfix window
+"let g:ale_sign_column_always = 0
+"" let g:airline#extensions#ale#enabled = 1
+"" JS specific Notes:
+"" 1. jscs merged with eslint (jscs is not jspc)
+"" 2. I'm chosing to run prettier through eslint
+""    (so where I see eslint, think eslint and prettier)
+""    .eslint.json include:  extends: ["prettier"] to unify formatting
+"" 3. prettier only needs ALE to work
+"" 4. add the following to package.json
+""    eslint-check: eslint --print-config .eslintrc.js | eslint-config-prettier-check
+"" 5. eslint should be installed locally (not global)
+let b:ale_linters = {}
+let b:ale_linters = {
+      \'javascript': ['eslint'],
+      \'javascript.jsx': ['eslint'],
+      \'jsx': ['eslint'],
       \'json': ['jsonlint','prettier'],
       \'css': ['csslint','prettier'],
       \'haskell': ['stack-ghc-mod','hdevtools'],
-      \'rust': ['rls','cargo'],
+      \'rust': ['rls'],
+      \'python': ['flake8'],
       \}
-" \'haskell': ['hlint','stack-ghc-mod','stack-build','stack-ghc','hdevtools'],
-" : ['eslint', 'flow', 'flow-language-server', 'jscs', 'jshint', 'standard', 'tsserver', 'xo']
+"" \'rust': ['rustc', 'rls'],
+"" \'haskell': ['hlint','stack-ghc-mod','stack-build','stack-ghc','hdevtools'],
+"" : ['eslint', 'flow', 'flow-language-server', 'jscs', 'jshint', 'standard', 'tsserver', 'xo']
+"" let g:ale_fixers['javascript'] = ['eslint', 'importjs']
 let g:ale_fixers = {}
-let g:ale_fixers['javascript'] = ['eslint', 'importjs']
+let g:ale_fixers['javascript'] = ['eslint']
+let g:ale_fixers['javascript.jsx'] = ['eslint']
+let g:ale_fixers['jsx'] = ['eslint']
 let g:ale_fixers['css'] = ['prettier']
 let g:ale_fixers['rust'] = ['rustfmt']
 let g:ale_fixers['python'] = ['yapf']
-let g:ale_javascript_prettier_use_local_config = 1
-" let g:ale_linter_aliases = {'jsx': 'css'}
-" " requires npm installs e.g., of prettier-eslint and config
-" " autocmd FileType javascript set formatprg=prettier-eslint\ --stdin
-
-" language server commands
-"\ 'cpp': ['ccls', '--log-file=/tmp/ccls.log'],
-let g:LanguageClient_serverCommands = {
-            \ 'cpp': ['ccls'],
-            \ 'c': ['ccls'],
-            \ 'python': ['pyls'],
-            \ 'rust': ['rls'],
-            \ 'haskell': ['hie-wrapper'],
-            \ 'javascript': ['javascript-typescript-stdio'],
-            \ 'typescript': ['javascript-typescript-stdio'],
-            \ }
-            " \ 'javascript.jsx': ['tcp://127.0.0.1:2089'],
-let g:LanguageClient_autoStart = 1
-let g:LanguageClient_rootMarkers = {
-            \ 'cpp': ['compile_commands.json', 'build', '.ccls', '.git'],
-            \ 'c': ['compile_commands.json', 'build', '.ccls', '.git'],
-            \ 'haskell': ['*.cabal', 'stack.yaml'],
-            \ 'rust': ['Cargo.toml', '.git'],
-            \ }
-
-set completefunc=LanguageClient#complete
+"" let g:ale_javascript_prettier_use_local_config = 1
+"" let g:ale_linter_aliases = {'jsx': 'css'}
+"" " requires npm installs e.g., of prettier-eslint and config
+"" " autocmd FileType javascript set formatprg=prettier-eslint\ --stdin
 
 " ctags gutentags -- <C-[>
 " ========================
@@ -280,6 +274,8 @@ let g:gutentags_debug = 0
 " FileType (mostly) autocmd
 " Note: vim puts these commands in a command group already.
 " Miscellaneous file types to augment vim's default
+augroup FiletypeGroup
+    autocmd!
 au BufNewFile,BufRead .babelrc      setf javascript
 au BufNewFile,BufRead .eslintrc     setf json
 au BufNewFile,BufRead *.reduxrc     setf json
@@ -288,11 +284,15 @@ au BufNewFile,BufRead .tern-project setf json
 au BufNewFile,BufRead gitconfig     setf gitconfig
 au BufNewFile,BufRead *.hs          setf haskell
 au BufNewFile,BufRead *.yaml        setf yaml
+au BufNewFile,BufRead *.toml        setf toml
+au BufNewFile,BufRead *.fish        setf fish
 au BufNewFile,BufRead *.md          setf markdown.pandoc
-au BufNewFile,BufRead *.jsx         setf javascript
+au BufNewFile,BufRead *.jsx         setf javascript.jsx
+au Filetype fish :compiler fish
 " oh-my-zsh file types
 au BufNewFile,BufRead *.zsh-theme   setfiletype sh
 au BufNewFile,BufRead *.zsh         setfiletype sh
+augroup END
 
 augroup misc
   au!
@@ -356,8 +356,6 @@ let g:necoghc_use_stack = 1
 let g:necoghc_enable_detailed_browse = 1
 " Disable hlint-refactor-vim's default keybindings
 let g:hlintRefactor#disableDefaultKeybindings = 1
-" FYI - set in teh file: deoplete source
-" let g:deoplete#omni#functions.haskell = ['necoghc#omnifunc']
 
 nnoremap <silent> <leader>hz :HoogleClose<CR>
 " END HASKELL specific
@@ -365,10 +363,14 @@ nnoremap <silent> <leader>hz :HoogleClose<CR>
 
 " TODO: Find a better place for these settings
 let g:jsx_ext_required = 0          " Enable jsx for *.js files
+
+" vim-javascript
+" ==============
+let g:javascript_plugin_jsdoc = 1   " syntax highlighting for jsdoc
+
 let g:vim_json_syntax_conceal = 0   " Don't hide Json syntax.
 let g:plug_timeout = 5              " Low vim-plug timeout to prevent long freeze
 
-set shell=zsh
 set hidden                      " Allow buffer change w/o saving/don't close when not visible
 set history=1000                " Remember last 1000 commands
 set viminfo='100,f1             " save marks and jumps for 100 files
@@ -392,7 +394,7 @@ set encoding=UTF-8
 set showmode                    " Toggle this to noshowmode to enable echodoc
 set wildignore+=*\\tmp\\*,*.swp,*.swo,*.zip,.git,.cabal-sandbox
 
-set ut=1000                     " Change updatetime to faster than default 4 sec
+set updatetime=300              " Change updatetime to faster than default 4 sec
 set lazyredraw                  " Don't redraw while executing macros (good performance config)
 " set ruler                       " Always show current position
 set number
@@ -451,9 +453,9 @@ let g:indentLine_bgcolor_gui='NONE'
 " ===================================
 " settings that nvim runs by default
 "syntax on
-"filetype on
-"filetype plugin on
-"filetype plugin indent on
+filetype on
+filetype plugin on
+filetype plugin indent on
 "filetype indent on
 "if !exists("g:syntax_on")
 "  syntax enable
@@ -479,9 +481,16 @@ set linebreak
 set foldmethod=marker
 set foldnestmax=5
 set nofoldenable
+"set foldlevelstart
+set foldminlines=5
 " Note: nofoldenable gets toggled with the first use of zc
 "       setting the value here now as `no` prevents folds
 "       being closed upon opening the buffer.
+
+" Use this in combination with zm or zr to sequentially increase
+" the fold levels.
+autocmd BufWinEnter *
+      \ let &foldlevel = max(map(range(1, line('$')), 'foldlevel(v:val)'))
 
 " Real programmers don't use TABs
 " ===============================
@@ -709,7 +718,18 @@ hi Comment       ctermfg=72   guifg=#83A8C1
 hi Todo          ctermfg=234  guifg=#1C1C1C ctermbg=227 guibg=#FFFF5F gui=NONE
 hi! link Visual Search
 
+" Coc
+hi! link CocErrorSign DiffText
+hi! link CocWarningSign WarningMsg
+hi! link CocInfoSign WarningMsg
+hi! link CocHintSign Comment
+
 " ALE
+hi ALEVirtualTextWarning guifg=#00FFFF
+hi ALEVirtualTextInfo    guifg=#00FFFF
+hi ALEVirtualTextError   guifg=#00FFFF
+hi ALEError guibg=None
+hi ALEWarning guibg=None
 hi! link ALEErrorSign DiffText
 hi! link ALEWarningSign WarningMsg
 hi! link ALEStyleErrorSign Search

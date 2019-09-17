@@ -14,8 +14,6 @@
 " buffer, "
 " -------------------------------------------------------------------------------
 
-" A fix for when using deoplete
-inoremap <expr> <CR> (pumvisible() ? "\<c-y>\<cr>" : "\<CR>")
 
 " Additional options to engage cmd mode from normal-mode
 nnoremap <leader>c :
@@ -95,6 +93,11 @@ nnoremap <silent> <leader>f <ESC>:call ToggleFindNerd()<CR>
 nnoremap <silent> <leader>F <ESC>:NERDTreeToggle<CR>
 
 
+" ALE map binding
+" ===============
+nnoremap <silent><leader>k :ALENext<CR>
+nnoremap <silent><leader>j :ALEPrevious<CR>
+
 " Operator-pending maps
 " =====================
 " d[elete] c[hange] y[ank]
@@ -120,7 +123,8 @@ onoremap pb :<c-u>normal! F[lvi[<cr>
 "
 " From normal, without insert mode
 noremap <Enter> O<esc>j
-noremap <Tab> i<space><space><esc>l
+" The line that follows prevents use of C-I to compliment C-O
+" noremap <Tab> i<space><space><esc>l
 
 " above the cursor
 nnoremap [<space> :call append(line('.')-1,'')<cr>
@@ -179,7 +183,10 @@ inoremap <C-L> <Del>
 nnoremap <leader>z :wincmd _<cr>:wincmd \|<cr>
 nnoremap <leader>Z :wincmd =<cr><Paste>
 
-" BUFFERS vim-bby & fugitive
+" close a buffer without changing the window splits
+noremap <leader>q :bp<bar>vsp<bar>bn<bar>bd<CR>
+"
+"" BUFFERS vim-bby & fugitive
 " ===========================
 " close buffers, not windows
 nnoremap <Leader>q  :Bdelete<CR>
@@ -307,6 +314,15 @@ augroup END
 " Remember info about open buffers on close
 set viminfo^=%
 
+" settings for fish
+autocmd BufRead fish try | execute "compiler ".&filetype | catch /./ | endtry
+augroup fish
+  autocmd!
+  autocmd FileType fish
+        \ set textwidth=79 |
+        \ set foldmethod=expr
+augroup END
+
 " VIMUX - a new Slime
 " ====================
 nnoremap <Leader>rb :call VimuxRunCommand("clear; rspec " . bufname("%"))<CR>
@@ -325,23 +341,6 @@ nnoremap <LocalLeader>vs vip<LocalLeader>vs<CR>
 " NerdTree
 " ========
 " Usage: <leader>f OR <leader>F
-
-" Git
-" =====
-nnoremap <leader>gs :Gstatus<CR>
-nnoremap <leader>gg :copen<CR>:GGrep
-nnoremap <leader>gl :Extradite!<CR>
-nnoremap <leader>gd :Gdiff<CR>
-nnoremap <leader>gb :Gblame<CR>
-
-" Show list of last-committed files
-nnoremap <silent> <leader>g? :call CommittedFiles()<CR>:copen<CR>
-
-" DashSearch
-" ===========
-" Send a search term to Dash (documentation viewer)
-nnoremap <silent> <leader>da <Plug>DashSearch
-let g:dash_activate = 0
 
 " tabularize
 " ===========
@@ -374,16 +373,6 @@ nnoremap <silent> <Leader>pf<space> :CtrlP<CR>
 " fuzzy find buffers
 nnoremap <silent> <leader>pb<space> :CtrlPBuffer<cr>
 
-" Deoplete
-" ========
-" Toggle off/on
-let g:deoplete#enable_at_startup = 1
-augroup deo
-  au!
-"   au InsertEnter * :call EnableDeoplete()
-augroup END
-nnoremap <leader>dx :call ToggleDeoplete()<CR>
-
 " hlint-refactor-vim keybindings
 nnoremap <silent> <leader>hr :call ApplyOneSuggestion()<CR>
 nnoremap <silent> <leader>hR :call ApplyOneSuggestion()<CR>
@@ -405,13 +394,9 @@ nnoremap <silent> <leader>hi :HoogleInfo<CR>
 " detailed documentation and prompt for input
 nnoremap <leader>hI :HoogleInfo
 " close the Hoogle window
-" ALE map binding
-nnoremap <silent><leader>k :ALENext<CR>
-nnoremap <silent><leader>j :ALEPrevious<CR>
 
 " Haskell specific TODO: fix the bindings
 vnoremap <silent> <leader>h. :call Pointfree()<CR>
 vnoremap <silent> <leader>h> :call Pointful()<CR>
-
 
 " ------------------------------------------------------------------------------
