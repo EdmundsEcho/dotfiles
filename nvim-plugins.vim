@@ -25,6 +25,7 @@ Plug 'haya14busa/incsearch.vim'          " Better search highlighting
 " Plug 'Shougo/echodoc.vim'                " Show function signature in insert mode
 " Plug 'haya14busa/vim-debugger'           " Debugg vimscript
 Plug 'jiangmiao/auto-pairs'              " Redundant with neopairs? closes pair of brackets etc.
+Plug 'neomake/neomake'                   " replacement for :make; see automake setting for when it fires
 
 " Generates menus - works with oh-my-vim
 Plug 'Shougo/unite.vim'                  " TESTING can source a search using multiple sources
@@ -37,18 +38,26 @@ Plug 'christoomey/vim-tmux-navigator'     " Allow pane movement to jump out of v
 Plug 'benmills/vimux'                     " Send commands to tmux and vice versa
 Plug 'tmux-plugins/vim-tmux-focus-events' " Captures active/inactive pane events
      Plug 'blueyed/vim-diminactive'       " dims inactive window; depends on tmux-focus events
+"Plug 'roxma/vim-tmux-clipboard'            " nvim clipboard to tmux to separate nvim
 
 " Linting
 Plug 'w0rp/ale'                          " Live linting that uses eslint and prettier
 
 " Auto-completion related
-Plug 'ncm2/ncm2'
-Plug 'roxma/nvim-yarp'
+" Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
+" Plug 'ncm2/ncm2'
+" Plug 'roxma/nvim-yarp'
+
 " Completion plugins
-Plug 'ncm2/ncm2-bufword'
-Plug 'ncm2/ncm2-tmux'
-Plug 'ncm2/ncm2-path'
-"
+" Plug 'ncm2/ncm2-bufword'
+" Plug 'ncm2/ncm2-jedi'
+" Plug 'ncm2/ncm2-path'
+" Plug 'ncm2/ncm2-tmux'
+
+" Formater (TEST)
+Plug 'Chiel92/vim-autoformat'            " Uses external programs to format code
+
 " Plug 'ervandew/supertab'               " Functionality mostly accomplished with deoplete
 " Plug 'Shougo/deoplete.nvim',             { 'do': ':UpdateRemotePlugins' } " neocomplete for neovim
 Plug 'Shougo/context_filetype.vim'       " adds the context filetype feature
@@ -63,7 +72,12 @@ Plug 'Shougo/neoinclude.vim'             " source completions from the included 
 Plug 'Shougo/neco-syntax'                " enables source completions from syntax files
 Plug 'Shougo/neco-vim'                   " source completions for vimscript
 " Plug 'sebastianmarkow/deoplete-rust',    { 'for': 'rust' }
-Plug 'autozimu/LanguageClient-neovim',   { 'do': ':UpdateRemotePlugins' }
+Plug 'autozimu/LanguageClient-neovim',   {
+      \ 'for': 'rust',
+      \ 'branch': 'next',
+      \ 'do': './install.sh',
+\ }
+
 Plug 'HerringtonDarkholme/yats.vim'      " REQUIRED syntax file
 Plug 'mhartington/nvim-typescript',      {'do': './install.sh'}
 
@@ -105,6 +119,12 @@ Plug 'junegunn/goyo.vim'                 " :Goyo to activate :Goyo! to deactivat
 " GraphQL
 Plug 'jparise/vim-graphql'               " .gql .graphql .graphqls syntax highlighting
 
+" Toml (used by rust)
+Plug 'cespare/vim-toml'
+
+" fish scripts
+Plug 'Stautob/vim-fish'
+
 " Haskell
 Plug 'neovimhaskell/haskell-vim',     { 'for': [ 'haskell', 'cabal' ] }
 Plug 'enomsg/vim-haskellConcealPlus', { 'for': 'haskell' } " does not work with indentLine
@@ -112,7 +132,8 @@ Plug 'eagletmt/ghcmod-vim',           { 'for': 'haskell' }
 Plug 'eagletmt/neco-ghc',             { 'for': 'haskell' }
 Plug 'Twinside/vim-hoogle',           { 'for': 'haskell' }
 Plug 'mpickering/hlint-refactor-vim', { 'for': 'haskell' }
-Plug 'Shougo/vimproc.vim',            { 'for': 'haskell', 'do': 'make' } " not required for asynch in neovim
+"
+"Plug 'Shougo/vimproc.vim',            { 'for': 'haskell', 'do': 'make' } " not required for asynch in neovim
 " TESTING
 Plug 'bitc/vim-hdevtools',            { 'for': 'haskell' }
 
@@ -151,10 +172,10 @@ Plug 'othree/html5.vim',             { 'for': 'html' }
 
 " Javascript
 " Dialogue to generate jsdoc required comments
-Plug 'heavenshell/vim-jsdoc',          { 'for': ['javascript', 'javascript.jsx'] }
+Plug 'heavenshell/vim-jsdoc',           { 'for': ['javascript', 'javascript.jsx'] }
 Plug 'moll/vim-node'                    " TESTING: enables jumps between CommonJS modules
 Plug 'wokalski/autocomplete-flow'       " Include flow-type in my autocomplete
-Plug 'kristijanhusak/vim-js-file-import', {'do': 'npm install'}
+" Plug 'kristijanhusak/vim-js-file-import', {'do': 'npm install'}
 
 " JS syntax highlighting
 Plug 'pangloss/vim-javascript'          " Disabled to enable vim-jsx-improve
@@ -162,8 +183,8 @@ Plug 'pangloss/vim-javascript'          " Disabled to enable vim-jsx-improve
 Plug 'mxw/vim-jsx',                       { 'for': ['javascript', 'javascript.jsx'] } " may be redundant
 " Plug 'othree/yajs.vim',                   { 'for': ['javascript', 'javascript.jsx'] } " vim-javascript alternative
 Plug 'othree/es.next.syntax.vim',         { 'for': ['javascript', 'javascript.jsx'] }
-" Plug 'maxmellon/vim-jsx-pretty',          { 'for': ['javascript', 'javascript.jsx'] } " may be redundant
-" Plug 'chemzqm/vim-jsx-improve',           { 'for': ['javascript', 'javascript.jsx'] }
+Plug 'maxmellon/vim-jsx-pretty',          { 'for': ['javascript', 'javascript.jsx'] } " may be redundant
+Plug 'chemzqm/vim-jsx-improve',           { 'for': ['javascript', 'javascript.jsx'] }
 Plug 'styled-components/vim-styled-components',  { 'for': ['javascript', 'javascript.jsx'] }
 Plug 'othree/jsdoc-syntax.vim',           { 'for': ['javascript', 'javascript.jsx'] }
 " Plug 'othree/javascript-libraries-syntax.vim',   { 'for': ['javascript', 'javascript.jsx'] }
