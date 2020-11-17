@@ -38,7 +38,7 @@ ZSH_THEME="robbyrussell"
 
 # Nov 7, 2017; to enable use of tmuxp (see tmux online book)
 # Uncomment the following line to disable auto-setting terminal title.
-export DISABLE_AUTO_TITLE="true"
+## export DISABLE_AUTO_TITLE="true"
 
 # Uncomment the following line to enable command auto-correction.
 # ENABLE_CORRECTION="true"
@@ -115,13 +115,13 @@ ulimit -n 2048
 
 # Required for Tern to access webpack (where webpack requires
 # process.env.NODE_ENV be defined with terminal scope (not just Node)
-export NODE_ENV='development'
+## export NODE_ENV='development'
 
 # You may need to manually set your language environment
-export LANG=en_US.UTF-8
+## export LANG=en_US.UTF-8
 
 # Preferred editor for local and remote sessions
-export EDITOR='nvim'
+## export EDITOR='nvim'
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
@@ -175,8 +175,8 @@ alias mongod="mongod --config /usr/local/etc/mongod.conf"
 alias node-es6="NODE_NO_READLINE=1 npx rlwrap --always-readline babel-node"
 
 # Variables for editing brew formula
-export HOMEBREW_EDITOR=nvim
-export VISUAL=nvim
+## export HOMEBREW_EDITOR=nvim
+## export VISUAL=nvim
 
 # Jul 12th, 2016
 bat() {
@@ -191,28 +191,27 @@ END{if (max>0) {printf "%.0f%%\n",cur/max*100} else {print "?"}}'
 # Note: edit /etc/paths - it manages sequence of PATH
 # Warning: do not forget to export the final path
 # (for child processes)
-PATH="/usr/local/bin:"
-PATH+="/usr/bin:/bin:"
-PATH+="/usr/sbin:/sbin:"
-# ---------------------------------------------------------
-# Other path settings
-# ---------------------------------------------------------
-PATH+="/usr/local/opt/python/libexec/bin:"
-PATH+="/usr/local/opt/sqlite/bin:"
-PATH+="/usr/local/opt/qt/bin:"
-PATH+="/usr/local/opt/texinfo/bin:"
-PATH+="/usr/local/CrossPack-AVR/bin:"
-
-# User - defined code
-PATH+="/Users/${USER}/.local/bin:"
-PATH+="/Users/${USER}/Library/Haskell/bin:"
-PATH+="/Users/${USER}/Code/bin:"
-PATH+="/Users/${USER}/.cargo/bin:"
-
-# ---------------------------------------------------------
-# End with system paths
-# ---------------------------------------------------------
-export PATH
+##PATH="/usr/local/bin:"
+##PATH+="/usr/bin:/bin:"
+##PATH+="/usr/sbin:/sbin:"
+### ---------------------------------------------------------
+### Other path settings
+### ---------------------------------------------------------
+##PATH+="/usr/local/opt/python/libexec/bin:"
+##PATH+="/usr/local/opt/sqlite/bin:"
+##PATH+="/usr/local/opt/qt/bin:"
+##PATH+="/usr/local/opt/texinfo/bin:"
+##
+### User - defined code
+##PATH+="/Users/${USER}/.local/bin:"
+##PATH+="/Users/${USER}/Library/Haskell/bin:"
+##PATH+="/Users/${USER}/Code/bin:"
+##PATH+="/Users/${USER}/.cargo/bin:"
+##
+### ---------------------------------------------------------
+### End with system paths
+### ---------------------------------------------------------
+##export PATH
 
 # node related
 export NVM_DIR="$HOME/.nvm"
@@ -235,4 +234,3 @@ test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell
 
 # Ruby - version manager to avoid overwriting system
 if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
-alias scratch='cd ~/scratch'

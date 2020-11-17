@@ -32,6 +32,20 @@ fun! HasVimrc()
   return findfile(".vimrc", ".")
 endfun
 
+" folding for javascript; considers imports
+function! JSFolds()
+  let thisline = getline(v:lnum)
+  if thisline =~? '\v^\s*$'
+    return '-1'
+  endif
+
+  if thisline =~ '^import.*$'
+    return 1
+  else
+    return indent(v:lnum) / &shiftwidth
+  endif
+endfunction
+
 " Speed up searches by inserting the current directory at the top
 let s:default_path = escape(&path, '\ ') " store default value of 'path'
 augroup insertdir
@@ -220,6 +234,10 @@ endfun
 " Usage: :set statusline+=%{HiGroup()}
 fun! HiGroup()
   return synIDattr(synID(line("."),col("."),1),"name")
+endfun
+fun! HiGroupEnable()
+  set statusline+=%{HiGroup()}
+  echom  ":set statusline+=%{HiGroup()}"
 endfun
 
 " Haskell
