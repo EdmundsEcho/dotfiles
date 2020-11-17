@@ -50,15 +50,15 @@ end
 
 function _cmd_duration -d 'Displays the elapsed time of last command and show notification for long lasting commands'
   set -l days ''; set -l hours ''; set -l minutes ''; set -l seconds ''
-  set -l duration (expr $CMD_DURATION / 1000)
+  set -l duration (math $CMD_DURATION / 1000)
   if [ $duration -gt 0 ]
-    set seconds (expr $duration \% 68400 \% 3600 \% 60)'s'
+    set seconds (math $duration \% 68400 \% 3600 \% 60)'s'
     if [ $duration -ge 60 ]
-      set minutes (expr $duration \% 68400 \% 3600 / 60)'m'
+      set minutes (math $duration \% 68400 \% 3600 / 60)'m'
       if [ $duration -ge 3600 ]
-        set hours (expr $duration \% 68400 / 3600)'h'
+        set hours (math $duration \% 68400 / 3600)'h'
         if [ $duration -ge 68400 ]
-          set days (expr $duration / 68400)'d'
+          set days (math $duration / 68400)'d'
         end
       end
     end

@@ -1,7 +1,10 @@
 " -------------------------------------------------------------------------------
 " ~/.config/nvim/init.vim
-" last updated: Dec 21, 2017
+" last updated: Mar 31, 2020
 " -------------------------------------------------------------------------------
+" Next: Keep an eye on nvim-lsp; it is going to be the built-in lsp. It would
+" obviate the need for coc
+"
 " Debugging tips
 " insert :finish anywhere where you want the script to stop
 "         use a binary search to split in half the source of the problem
@@ -32,23 +35,20 @@ set autoread     " Detect file changes outside vim
 set autochdir    " change working dir to current buffer
 
 " -------------------------------------------------------------------------------
-" Neovim's Python provider(s)
+" Neovim's Python and Ruby provider(s)
 " -------------------------------------------------------------------------------
-let g:loaded_python_provider = 1
-let g:python_host_prog  = '/usr/local/bin/python2'
-let g:python3_host_prog = '/usr/local/bin/python3'
-" Note: disable by setting g:loaded_python_provider = 1
-" Note: disable by setting g:loaded_python3_provider = 1
+let g:python3_host_prog = '/Users/edmund/.pyenv/shims/python'
+
 " -------------------------------------------------------------------------------
 
 " -------------------------------------------------------------------------------
 "  Change the underlying shell to support vim/neovim
 " -------------------------------------------------------------------------------
 " if $shell =~# 'fish$'
-  " set shell=zsh
+" set shell=zsh
 " endif
-set shell=zsh
-" set shell=fish
+" set shell=zsh
+set shell=fish
 
 " esc key with cursor moved forward
 inoremap df <esc>l
@@ -69,20 +69,34 @@ let g:submode_timeout = 500
 " don't consume submode-leaving key
 let g:submode_keep_leaving_key = 1
 
-set guicursor=n-v-c:block-Cursor/lCursor-blinkon0,
-      \i-ci:ver25-Cursor/lCursor,
-      \r:hor50-Cursor
+" vim cursor settings
+" set guicursor=n-v-c:block-Cursor/lCursor-blinkon0,
+"       \i-ci:ver25-Cursor/lCursor,
+"       \r:hor50-Cursor
 
 " Line formatting
 " TODO: how does it work with syntax based formatting
 " Note: ALE may also set this option
 set formatprg=par
 let $PARINIT = 'rTbgqR B=.,?_A_a Q=_s>|'
+let g:neoformat_try_formatprg = 1
 
+" vim-autoformat
+" ==============
 " use autoformat plugin instead
+" augment pointers to formatters
+let g:formatterpath = ['/Users/edmund/.local/bin/ormolu', '/Users/edmund/.local/bin/stylish-haskell']
+" let g:formatterpath = ['/Users/edmund/.local/bin/hindent']
 let g:autoformat_autoindent = 0
 let g:autoformat_retab = 0
 let g:autoformat_remove_trailing_spaces = 0
+" set the formatter for haskell (default is p)
+" formatters_<filetype>
+" let g:formatdef_custom_haskell = '"ormolu"'
+let g:formatdef_custom_haskell = '"stylish-haskell"'
+let g:formatters_haskell = ['custom_haskell']
+" debug
+" let g:autoformat_verbosemode=1
 
 " Kill the damned Ex mode (no operation).
 nnoremap Q <nop>
@@ -94,8 +108,8 @@ nnoremap <BS> <C-w>h
 " Recall using bang silences errors not finding .vim
 augroup SaveView
   au!
-  au BufWinLeave *.* mkview
-  au BufWinEnter *.* silent! loadview
+  au BufWinLeave * mkview
+  au BufWinEnter * silent! loadview
 augroup END
 
 " ---------------------------
@@ -104,14 +118,6 @@ augroup END
 " TESTING to solve the problem that EasyMotion does not trigger
 " TODO: Update with noremap
 " <Leader>f{char} to move to {char}
-
-" echodoc
-" =======
-" toggle set noshowmode || set cmdheight=2 (see elsewhere)
-" toggle activation: :EchoDocEnable
-let g:echodoc_enable_at_startup = 1
-let g:echodoc#enable_force_overwrite = 1
-
 
 " Improve Vim capacity to capture tmux active/inactive events
 " vim-tmux-focus-events
@@ -143,15 +149,19 @@ if &term =~ '^screen'
   execute "set <xLeft>=\e[1;*D"
 endif
 
+" SimpylFold fold plugin (Python focus)
+" =====================================
+let g:SimpylFold_docstring_preview=1
+
 " CtrlP plugin
 " ============
 " set the root directory to vim's working directory
 " let g:ctrlp_cmd='CtrlP :pwd'
 let g:ctrlp_working_path_mode = 'ra'
 let g:ctrlp_custom_ignore = {
-  \ 'dir':  '\v[\/]\.(git|hg|svn)$',
-  \ 'file': '\v\.(exe|so|dll)$',
-  \ }
+      \ 'dir':  '\v[\/]\.(git|hg|svn)$',
+      \ 'file': '\v\.(exe|so|dll)$',
+      \ }
 
 " HTML plugin
 " ===========
@@ -182,90 +192,37 @@ let NERDTreeDirArrows = 1
 
 autocmd FileType json syntax match Comment +\/\/.\+$+
 
-"" ALE - live linting
-"" ==================
-"" Linter
-"" Let ALE be what is called when manually calling for a linter
-"" set omnifunc=ale#completion#OmniFunc
-"
-"" set when the linting is triggered (on change of buffer)
-"
-"" let g:ale_lint_on_text_changed = 'never'
-"" let g:ale_lint_on_insert_leave = 1
-"" let g:ale_lint_on_save = 0
-"" let g:ale_lint_on_enter = 0
-let g:ale_virtualtext_cursor = 1
-let g:ale_fix_on_save = 1
-"
-let g:ale_rust_rls_config = {
-  \ 'rust': {
-    \ 'all_targets': 1,
-    \ 'build_on_save': 1,
-    \ 'clippy_preference': 'on'
-  \ }
-\ }
-let g:ale_rust_rls_toolchain = ''
-let g:ale_sign_error = ">>"
-let g:ale_sign_warning = "->"
-let g:ale_sign_info = "i"
-let g:ale_sign_hint = "➤"
-"
-"nnoremap <silent> K :ALEHover<CR>
-"nnoremap <silent> gd :ALEGoToDefinition<CR>
-"let g:ale_completion_enabled = 1
-let g:ale_rust_cargo_use_clippy = 1         "improves code syntax
-let g:ale_rust_cargo_clippy_options =
-      \'-- -W clippy::nursery -W clippy::pedantic'
+" Linting
+set shortmess+=c
+" let g:coc_enable_locationlist = 1
 
-"" live piping of eslint and prettier linting
-"" information to my file
-"let g:ale_set_loclist = 0
-"let g:ale_set_quickfix = 0
-"let g:ale_open_list = 0                " open the quickfix window
-"let g:ale_sign_column_always = 0
-"" let g:airline#extensions#ale#enabled = 1
-"" JS specific Notes:
-"" 1. jscs merged with eslint (jscs is not jspc)
-"" 2. I'm chosing to run prettier through eslint
-""    (so where I see eslint, think eslint and prettier)
-""    .eslint.json include:  extends: ["prettier"] to unify formatting
-"" 3. prettier only needs ALE to work
-"" 4. add the following to package.json
-""    eslint-check: eslint --print-config .eslintrc.js | eslint-config-prettier-check
-"" 5. eslint should be installed locally (not global)
-let b:ale_linters = {}
-let b:ale_linters = {
-      \'javascript': ['eslint'],
-      \'javascript.jsx': ['eslint'],
-      \'jsx': ['eslint'],
-      \'json': ['jsonlint','prettier'],
-      \'css': ['csslint','prettier'],
-      \'haskell': ['stack-ghc-mod','hdevtools'],
-      \'rust': ['rls'],
-      \'python': ['flake8'],
-      \}
-"" \'rust': ['rustc', 'rls'],
-"" \'haskell': ['hlint','stack-ghc-mod','stack-build','stack-ghc','hdevtools'],
-"" : ['eslint', 'flow', 'flow-language-server', 'jscs', 'jshint', 'standard', 'tsserver', 'xo']
-"" let g:ale_fixers['javascript'] = ['eslint', 'importjs']
-let g:ale_fixers = {}
-let g:ale_fixers['javascript'] = ['eslint']
-let g:ale_fixers['javascript.jsx'] = ['eslint']
-let g:ale_fixers['jsx'] = ['eslint']
-let g:ale_fixers['css'] = ['prettier']
-let g:ale_fixers['rust'] = ['rustfmt']
-let g:ale_fixers['python'] = ['yapf']
-"" let g:ale_javascript_prettier_use_local_config = 1
-"" let g:ale_linter_aliases = {'jsx': 'css'}
-"" " requires npm installs e.g., of prettier-eslint and config
-"" " autocmd FileType javascript set formatprg=prettier-eslint\ --stdin
+" language server
+" =================
+" let g:LanguageClient_serverCommands = {
+" \ 'rust': ['~/.cargo/bin/rustup', 'run', 'stable', 'rls'],
+" \ }
+" \ 'javascript': ['/usr/local/bin/javascript-typescript-stdio'],
+" \ 'javascript.jsx': ['tcp://127.0.0.1:2089'],
+" \ 'python': ['/usr/local/bin/pyls'],
 
 " ctags gutentags -- <C-[>
 " ========================
 let g:gutentags_enabled = 1
+let g:gutentags_add_default_project_roots = 0
+let g:gutentags_project_root = ['package.json', '.git']
+
 let g:gutentags_resolve_symlinks = 1
-let g:gutentags_generate_on_missing = 1   " default = 1
-" let g:gutentags_generate_on_new = 0       " default
+let g:gutentags_generate_on_new = 1
+let g:gutentags_generate_on_missing = 1
+let g:gutentags_generate_on_write = 1
+let g:gutentags_generate_on_empty_buffer = 0
+let g:gutentags_ctags_extra_args = [
+      \ '--tag-relative=yes',
+      \ '--fields=+ailmnS',
+      \ ]
+" put the ctags into a single cache
+let g:gutentags_cache_dir = expand('~/.cache/ctags/')
+set tags=./tags;,tags;
 
 " DEBUG set to 1
 let g:gutentags_trace = 0
@@ -275,23 +232,32 @@ let g:gutentags_debug = 0
 " Note: vim puts these commands in a command group already.
 " Miscellaneous file types to augment vim's default
 augroup FiletypeGroup
-    autocmd!
-au BufNewFile,BufRead .babelrc      setf javascript
-au BufNewFile,BufRead .eslintrc     setf json
-au BufNewFile,BufRead *.reduxrc     setf json
-au BufNewFile,BufRead .tern-config  setf json
-au BufNewFile,BufRead .tern-project setf json
-au BufNewFile,BufRead gitconfig     setf gitconfig
-au BufNewFile,BufRead *.hs          setf haskell
-au BufNewFile,BufRead *.yaml        setf yaml
-au BufNewFile,BufRead *.toml        setf toml
-au BufNewFile,BufRead *.fish        setf fish
-au BufNewFile,BufRead *.md          setf markdown.pandoc
-au BufNewFile,BufRead *.jsx         setf javascript.jsx
-au Filetype fish :compiler fish
-" oh-my-zsh file types
-au BufNewFile,BufRead *.zsh-theme   setfiletype sh
-au BufNewFile,BufRead *.zsh         setfiletype sh
+  autocmd!
+  au BufNewFile,BufRead .babelrc      setf javascript
+  au BufNewFile,BufRead .eslintrc     setf json
+  au BufNewFile,BufRead *.reduxrc     setf json
+  au BufNewFile,BufRead .tern-config  setf json
+  au BufNewFile,BufRead .tern-project setf json
+  au BufNewFile,BufRead gitconfig     setf gitconfig
+  au BufNewFile,BufRead *.hs          setf haskell
+  au BufNewFile,BufRead *.yaml        setf yaml
+  au BufNewFile,BufRead *.toml        setf toml
+  au BufNewFile,BufRead *.fish        setf fish
+  au BufNewFile,BufRead *.md          setf markdown.pandoc
+  au BufNewFile,BufRead *.jsx         setf javascript.jsx
+  au Filetype fish :compiler fish
+  " oh-my-zsh file types
+  au BufNewFile,BufRead *.zsh-theme   setfiletype sh
+  au BufNewFile,BufRead *.zsh         setfiletype sh
+augroup END
+
+" javascript
+augroup JavaScript
+  autocmd!
+  au FileType javascript setlocal foldmethod=syntax
+  " au FileType javascript setlocal foldexpr=JSFolds()
+  " au FileType javascript.jsx setlocal foldmethod=expr
+  " au FileType javascript.jsx setlocal foldexpr=JSFolds()
 augroup END
 
 augroup misc
@@ -321,6 +287,9 @@ augroup misc
 
   " Resize panes whenever containing window resized.
   au VimResized * wincmd =
+
+  " TEST formatting on save
+  " au BufWrite * :Autoformat
 augroup END
 
 augroup previewWindow
@@ -332,33 +301,7 @@ augroup previewWindow
 augroup END
 
 " HASKELL specific
-" SOURCE
 source $HOME/dotfiles/nvim-haskell-extras.vim
-
-" Must be set when first loaded
-" TODO: figure out impact on Haskell versus JS
-set csprg=hscope   " cscope for haskell
-set cscoperelative " this generates a full path
-
-" Linting
-" au FileType haskell let g:hdevtools_options = '-g -isrc -g -Wall -g -hide-package -g transformers -g -v'
-let g:hdevtools_options = '-g -isrc -g -Wall -g -hide-package -g transformers -g -v'
-" let g:ale_haskell_hdevtools_options = '-g -isrc -g -Wall -g -hide-package -g transformers -g -v'
-" let g:ale_haskell_ghc_options = '-g -isrc -g -Wall -g -hide-package -g transformers -g -v'
-
-" neco-ghc
-" ========
-" disable vim default (necoghc set in haskell filetype)
-let g:haskellmode_completion_ghc = 0
-" Use stack
-let g:necoghc_use_stack = 1
-" Show types in completion suggestions
-let g:necoghc_enable_detailed_browse = 1
-" Disable hlint-refactor-vim's default keybindings
-let g:hlintRefactor#disableDefaultKeybindings = 1
-
-nnoremap <silent> <leader>hz :HoogleClose<CR>
-" END HASKELL specific
 
 
 " TODO: Find a better place for these settings
@@ -382,6 +325,7 @@ set mouse=a                     " Default to mouse mode on
 set ffs=unix,dos,mac            " Use Unix as the standard file type
 
 set nobackup                    " No backup, since most stuff is in Git anyway...
+set nowritebackup               " Request from coc
 set nowb
 set noswapfile
 
@@ -423,7 +367,7 @@ set whichwrap+=<,>,h,l
 
 " Autoscroll
 " ==========
-set scrolloff=20                " Keep at least X lines below cursor
+set scrolloff=10                " Keep at least X lines below cursor
 set sidescrolloff=5
 set sidescroll=1
 
@@ -435,7 +379,7 @@ let g:indentLine_char = '┊'
 let g:indentLine_fileTypeExclude =
       \ ['haskell','haskellstack','cabal','haskellhpack',
       \  'json','yaml','markdown','pandoc','text','txt',
-      \  'sh','vim','tmux','help']
+      \  'sh','vim','tmux','help', 'html']
 
 let g:indentLine_setConceal=1
 let g:indentLine_concealcursor = 'inc'
@@ -478,19 +422,19 @@ set linebreak
 
 " Folding
 " =======
-set foldmethod=marker
-set foldnestmax=5
+set foldmethod=indent
+set foldnestmax=10
 set nofoldenable
 "set foldlevelstart
-set foldminlines=5
+set foldminlines=1
 " Note: nofoldenable gets toggled with the first use of zc
 "       setting the value here now as `no` prevents folds
 "       being closed upon opening the buffer.
 
 " Use this in combination with zm or zr to sequentially increase
 " the fold levels.
-autocmd BufWinEnter *
-      \ let &foldlevel = max(map(range(1, line('$')), 'foldlevel(v:val)'))
+" autocmd BufWinEnter *
+" \ let &foldlevel = max(map(range(1, line('$')), 'foldlevel(v:val)'))
 
 " Real programmers don't use TABs
 " ===============================
@@ -511,8 +455,9 @@ endif
 
 " vim-jsx-pretty
 " ==============
-let g:vim_jsx_pretty_colorful_config = 1      " default 0
-let g:vim_jsx_pretty_enable_jsx_highlight = 0 " default 1
+let g:vim_jsx_pretty_colorful_config = 1              " default 0
+let g:vim_jsx_pretty_template_tags = ['html', 'jsx']  " default
+let g:vim_jsx_pretty_enable_jsx_highlight = 0         " default 1
 
 " rustfmt
 let g:rustfmt_autosave = 1
@@ -520,95 +465,66 @@ let g:rustfmt_autosave = 1
 " typescript
 let g:yats_host_keyword = 1  " syntax config file for yats
 
-" HASKELL specific
-" More Haskell
-" stack bin path
-let haskell_config_dir = $HOME
-" let haskell_stack_bin = expand(resolve(haskell_config_dir . "/.stack-bin"))
-let haskell_stack_bin = expand(resolve(haskell_config_dir . "/.local/bin"))
-let $PATH = $PATH . expand(haskell_stack_bin) . ':'
+" Limit the use of devicon fonts
+let g:webdevicons_enable_airline_tabline = 0
+let g:WebDevIconsUnicodeDecorateFileNodes = 0
 
-" Pretty unicode haskell symbols
-let g:haskell_conceal_wide = 1
-let g:haskell_conceal_enumerations = 1
-let hscoptions="𝐒𝐓𝐄𝐌xRtB𝔻w"
+" vim-airline banners
+" ====================
+set laststatus=2   " `always` display a statusline
+" Testing coc-specific
+set statusline^=%{coc#status()}
 
-let g:tagbar_type_haskell = {
-      \ 'ctagsbin'  : 'hasktags',
-      \ 'ctagsargs' : '-x -c -o-',
-      \ 'kinds'     : [
-      \  'm:modules:0:1',
-      \  'd:data: 0:1',
-      \  'd_gadt: data gadt:0:1',
-      \  't:type names:0:1',
-      \  'nt:new types:0:1',
-      \  'c:classes:0:1',
-      \  'cons:constructors:1:1',
-      \  'c_gadt:constructor gadt:1:1',
-      \  'c_a:constructor accessors:1:1',
-      \  'ft:function types:1:1',
-      \  'fi:function implementations:0:1',
-      \  'o:others:0:1'
-      \ ],
-      \ 'sro'        : '.',
-      \ 'kind2scope' : {
-      \ 'm' : 'module',
-      \ 'c' : 'class',
-      \ 'd' : 'data',
-      \ 't' : 'type'
-      \ },
-      \ 'scope2kind' : {
-      \ 'module' : 'm',
-      \ 'class'  : 'c',
-      \ 'data'   : 'd',
-      \ 'type'   : 't'
-      \ }
-      \ }
+" show open buffer names at the top of the screen
+let g:airline#extensions#tabline#enabled = 1
+" format buffer source; top right
+" default | jsformatter | unique_tail | unique_tail_improved
+let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
+let g:airline_powerline_fonts = 1
+let g:airline_theme='badwolf'
 
-if executable('lushtags')
-  let g:tagbar_type_haskell = {
-        \ 'ctagsbin' : 'lushtags',
-        \ 'ctagsargs' : '--ignore-parse-error --',
-        \ 'kinds' : [
-        \ 'm:module:0',
-        \ 'e:exports:1',
-        \ 'i:imports:1',
-        \ 't:declarations:0',
-        \ 'F:fields:1',
-        \ 'd:declarations:1',
-        \ 'n:declarations:1',
-        \ 'f:functions:0',
-        \ 'c:constructors:0'
-        \ ],
-        \ 'sro' : '.',
-        \ 'kind2scope' : {
-        \ 'd' : 'data',
-        \ 'n' : 'newtype',
-        \ 'c' : 'constructor',
-        \ 't' : 'type',
-        \ 'F' : 'field'
-        \ },
-        \ 'scope2kind' : {
-        \ 'data' : 'd',
-        \ 'newtype' : 'n',
-        \ 'constructor' : 'c',
-        \ 'type' : 't',
-        \ 'field' : 'F'
-        \ }
-        \ }
-endif
-" END HASKELL
+" testing extra-powerline-symbols
+autocmd FileType nerdtree setlocal nolist
 
-" Enable some tabular presets for Haskell
-let g:haskell_tabular = 1
+" set font terminal font or set gui vim font
+" to a Nerd Font (https://github.com/ryanoasis/nerd-fonts):
+set guifont=DroidSansMono\ Nerd\ Font\ 12
 
-func! Pointfree()
-  call setline('.', split(system('pointfree '.shellescape(join(getline(a:firstline, a:lastline), "\n"))), "\n"))
-endfunc
+" testing rounded separators (extra-powerline-symbols):
+let g:airline_left_sep = "\uE0B4"
+let g:airline_right_sep = "\uE0B6"
 
-func! Pointful()
-  call setline('.', split(system('pointful '.shellescape(join(getline(a:firstline, a:lastline), "\n"))), "\n"))
-endfunc
+" set the CN (column number) symbol:
+let g:airline_section_z = airline#section#create(["\uE0A1" . '%{line(".")}' . "\uE0A3" . '%{col(".")}'])
+
+"-----------------------
+" integration with coc
+"-----------------------
+let g:airline#extensions#coc#enabled = 1
+" change error symbol: >
+let airline#extensions#coc#error_symbol = 'E:'
+" change warning symbol: >
+let airline#extensions#coc#warning_symbol = 'W:'
+" change error format: >
+let airline#extensions#coc#stl_format_err = '%E{[%e(#%fe)]}'
+" change warning format: >
+let airline#extensions#coc#stl_format_warn = '%W{[%w(#%fw)]}'
+"-----------------------
+
+"-----------------------
+" go to tab number
+" index tabs 1..n
+"-----------------------
+let g:airline#extensions#tabline#buffer_idx_mode = 1
+nnoremap <leader>1 :exe "normal \<Plug>AirlineSelectTab1"<CR>
+nnoremap <leader>2 :exe "normal \<Plug>AirlineSelectTab2"<CR>
+nnoremap <leader>3 :exe "normal \<Plug>AirlineSelectTab3"<CR>
+nnoremap <leader>4 :exe "normal \<Plug>AirlineSelectTab4"<CR>
+nnoremap <leader>5 :exe "normal \<Plug>AirlineSelectTab5"<CR>
+nnoremap <leader>6 :exe "normal \<Plug>AirlineSelectTab6"<CR>
+nnoremap <leader>7 :exe "normal \<Plug>AirlineSelectTab7"<CR>
+nnoremap <leader>8 :exe "normal \<Plug>AirlineSelectTab8"<CR>
+nnoremap <leader>9 :exe "normal \<Plug>AirlineSelectTab9"<CR>
 
 " Color Themes
 " ============
@@ -634,33 +550,6 @@ catch
   echom 'error with colorscheme'
 endtry
 
-" Limit the use of devicon fonts
-let g:webdevicons_enable_airline_tabline = 0
-let g:WebDevIconsUnicodeDecorateFileNodes = 0
-
-" vim-airline banners
-" ====================
-set laststatus=2   " `always` display a statusline
-let g:airline#extensions#tabline#enabled = 1
-let g:airline_powerline_fonts = 1
-let g:airline_theme='badwolf'
-" index tabs 1..n
-let g:airline#extensions#tabline#buffer_idx_mode = 1
-nnoremap <leader>1 :exe "normal \<Plug>AirlineSelectTab1"<CR>
-nnoremap <leader>2 :exe "normal \<Plug>AirlineSelectTab2"<CR>
-nnoremap <leader>3 :exe "normal \<Plug>AirlineSelectTab3"<CR>
-nnoremap <leader>4 :exe "normal \<Plug>AirlineSelectTab4"<CR>
-nnoremap <leader>5 :exe "normal \<Plug>AirlineSelectTab5"<CR>
-nnoremap <leader>6 :exe "normal \<Plug>AirlineSelectTab6"<CR>
-nnoremap <leader>7 :exe "normal \<Plug>AirlineSelectTab7"<CR>
-nnoremap <leader>8 :exe "normal \<Plug>AirlineSelectTab8"<CR>
-nnoremap <leader>9 :exe "normal \<Plug>AirlineSelectTab9"<CR>
-" TODO: Create a function that works in combination with
-"       a command to increment to the next tab.
-" if !exists('g:airline_symbols')
-"   let g:airline_symbols = {}
-" endif
-
 " Custom colors
 " =============
 " Notes:
@@ -672,7 +561,7 @@ nnoremap <leader>9 :exe "normal \<Plug>AirlineSelectTab9"<CR>
 " Use same color behind concealed unicode characters
 hi clear Conceal
 
-" vim-airline customization
+" vim-airline custom colors
 " =========================
 " colors[guifg, guibg, ctermfg, ctermbg]
 let g:airline_theme_patch_func = 'AirlineThemePatch'
@@ -695,28 +584,37 @@ hi Normal        ctermbg=NONE guibg=NONE cterm=NONE gui=NONE
 hi Error         ctermbg=NONE guibg=NONE cterm=bold gui=bold
 hi ErrorMsg      ctermbg=NONE guibg=NONE cterm=NONE gui=NONE
 
-" Inactive vim window (plugin vim-diminactive)
+" Inactive vim window (plugin vimade-diminactive)
 hi ColorColumn   ctermbg=235 guibg=#212121  " 1E1E1E is also good
+" vimade
+" ======
+let g:vimade = {}
+let g:vimade.fadelevel = 0.85
+" let g:vimade.enablesigns = 1
+
 " Match with Tmux inactive and Airline
 
 " Search - improve contrast and match Airline Theme
-" may want to link to Visual
+" Visual - used by Coc
+" hi Search        ctermfg=214 ctermbg=238 guifg=#ffa724 guibg=#45413b
 hi Search        ctermfg=214 ctermbg=238 guifg=#ffa724 guibg=#45413b
+" hi Visual        ctermfg=51 ctermbg=238 guifg=#ACFFFF guibg=#002A2A
+hi Visual        ctermfg=51 ctermbg=238 guifg=#ACFFFF guibg=#002222
 
 " White space and related
 " [link undefined to defined]
-hi NonText       ctermfg=244  guifg=#808080 cterm=NONE gui=NONE
+hi NonText            ctermfg=244  guifg=#808080 cterm=NONE gui=NONE
 hi! link SpecialKey   NonText
 hi! link LineNr       NonText
-hi CursorLineNR ctermfg=227  guifg=#FFFF5F cterm=NONE gui=NONE
+hi CursorLineNR       ctermfg=227  guifg=#FFFF5F cterm=NONE gui=NONE
+
 " Messages
-hi ErrorMsg      ctermfg=203  guifg=#FF5F55
+hi ErrorMsg           ctermfg=203  guifg=#FF5F55
 hi! link Error ErrorMsg
-hi WarningMsg    ctermfg=192  guifg=#CAE982
+hi WarningMsg         ctermfg=192  guifg=#CAE982
 hi! link MoreMsg Question
-hi Comment       ctermfg=72   guifg=#83A8C1
-hi Todo          ctermfg=234  guifg=#1C1C1C ctermbg=227 guibg=#FFFF5F gui=NONE
-hi! link Visual Search
+hi Comment            ctermfg=72   guifg=#83A8C1
+hi Todo               ctermfg=234  guifg=#1C1C1C ctermbg=227 guibg=#FFFF5F gui=NONE
 
 " Coc
 hi! link CocErrorSign DiffText
@@ -724,17 +622,20 @@ hi! link CocWarningSign WarningMsg
 hi! link CocInfoSign WarningMsg
 hi! link CocHintSign Comment
 
-" ALE
-hi ALEVirtualTextWarning guifg=#00FFFF
-hi ALEVirtualTextInfo    guifg=#00FFFF
-hi ALEVirtualTextError   guifg=#00FFFF
-hi ALEError guibg=None
-hi ALEWarning guibg=None
-hi! link ALEErrorSign DiffText
-hi! link ALEWarningSign WarningMsg
-hi! link ALEStyleErrorSign Search
+"" ALE
+"hi ALEVirtualTextWarning guifg=#00FFFF
+"hi ALEVirtualTextInfo    guifg=#00FFFF
+"hi ALEVirtualTextError   guifg=#00FFFF
+"hi ALEError guibg=None
+"hi ALEWarning guibg=None
+"hi! link ALEErrorSign DiffText
+"hi! link ALEWarningSign WarningMsg
+"hi! link ALEStyleErrorSign Search
 " Note: SpellBad, SpellCap, Error and Todo can be
 " used depending on what the linters produce
+hi link CocErrorHighlight   Visual
+hi CocErrorSign  ctermfg=Red guifg=#00FFFF
+hi link CocWarningSign  WarningMsg
 
 " Window and folds
 hi VertSplit    ctermfg=51   guifg=#00FFFF " turquoise
@@ -744,21 +645,53 @@ hi Folded       ctermfg=250  ctermbg=235 guifg=#A8A8A8 guibg=#262626
 hi FoldedColumn ctermfg=250  ctermbg=235 guifg=#A8A8A8 guibg=#262626
 hi! link SignColumn LineNr
 
+" useful: https://colorhex.net/78b830
 " jsx pretty syntax highlighting
-hi def link  jsxTag          Function
-hi def link  jsxTagName      Function
-hi def link  jsxString       String
-hi def link  jsxNameSpace    Function
-hi def link  jsxComment      Error
-hi def link  jsxAttrib       Type
-hi def link  jsxEscapeJs     jsxEscapeJs
-hi def link  jsxCloseTag     Identifier
-hi def link  jsxCloseString  Identifier
-hi jsxClass  ctermfg=100 guifg=#D4AC0D
-hi def link  xmlTagName      jsxClass
+" scheme:
+hi YELLOW       guifg=#d0c050
+hi RED          guifg=#c04888
+hi ORANGE       guifg=#D4AC0D
+hi TURQUOISE    guifg=#78c0b0
+hi PURPLE       guifg=#8048b0
+hi GREEN        guifg=#78b830
+hi MUTED_YELLOW guifg=#A79414
+hi MUTED_GREEN  guifg=#609326
+
+hi def link  jsxElement        YELLOW
+hi def link  jsxAttrib         PURPLE
+hi def link  jsxComponentName  ORANGE
+hi def link  jsxTag            TURQUOISE
+hi def link  jsxTagName        TURQUOISE
+hi def link  jsxCloseString    YELLOW
+hi def link  jsxCloseTag       YELLOW
+hi def link  jsxComment        Comment
+hi def link  jsxDot            Identifier
+hi def link  jsxEqual          Type
+hi def link  jsxEscapeJs       jsxEscapeJs
+hi def link  jsxNameSpace      RED
+hi def link  jsxString         String
+hi def link  jsxPunct          YELLOW
+
+hi def link  TSCjsxBraces      GREEN
+hi def link  jsFuncName        GREEN
+hi def link  jsFunction        MUTED_YELLOW
+hi def link  jsBraces          MUTED_GREEN
+
+hi def link  jsxClass          ORANGE
 hi def link  jsxCloseClass     jsxClass
+hi def link  xmlTagName        jsxClass
+hi def link  xmlEndTag         jsxClass
 hi def link  jsClassDefinition jsxClass
 hi def link  jsObjectKey       Identifier
-hi xmlAttrib  ctermfg=100 guifg=#873DA0
-hi jsBraces   ctermfg=100 guifg=#9AA436
-" hi jsxClass  ctermfg=72 guifg=#5FAF87
+hi def link  xmlAttrib         PURPLE
+
+" Rust tags
+hi rustModPath     ctermfg=100 guifg=#A270A7
+hi rustModPathSep  ctermfg=100 guifg=#BA5D7E
+hi rustEnumVariant ctermfg=100 guifg=#DF95AF
+hi rustAttribute   ctermfg=100 guifg=#85478B
+hi rustString      ctermfg=100 guifg=#679933
+hi RLSRLS          ctermfg=100 guifg=#FFBEAA
+hi RLS             ctermfg=100 guifg=#FFBEAA
+hi def link rustStringDelimiter rustString
+

@@ -1,23 +1,26 @@
 " -------------------------------------------------------------------------------
 " ~/.config/nvim/nvim-bindings.vim
-" last substantial change: Apr 28, 2018
+" last change: Jul 6, 2020
 " -------------------------------------------------------------------------------
 " -------------------------------------------------------------------------------
 " Tweaks to default mappings
 " Capture most of the keybindings. Excludes bindings that don't often
 " change e.g., <leader>, esc etc. see nvim-other and nvim-deoplete
 "
-" Debugging tips: to use yanked content in command mode <C-R><C-O>"
+" Debugging tips:
+" 1. use :verbose nmap <leader>d to see sequence of setters
+" 2. to use yanked content in command mode <C-R><C-O>"
 " use :registers to see the full contents of registers
 " in normal mode, hit " : p to print the previous command (a cmd)
 " from normal mode, y j : @ " <Enter> will execute the contents of the unamed
 " buffer, "
 " -------------------------------------------------------------------------------
 
+nnoremap <leader>n :call HiGroupEnable()<CR>
 
 " Additional options to engage cmd mode from normal-mode
-nnoremap <leader>c :
-nnoremap <leader>n /
+" nnoremap <leader>c :
+" nnoremap <leader>n /
 nnoremap <leader>m :%s/
 nnoremap <leader>v :@:<CR>
 " v is next to c, v is mac pasting
@@ -26,7 +29,7 @@ nnoremap <leader>v :@:<CR>
 " Remap start of the line; end of the file and EOF
 nnoremap 0 :call GoToFrontLine()<CR>
 nnoremap gg :0<CR>
-nnoremap G G$
+nnoremap G G0
 
 " Writing to file with <ctr-a>
 nnoremap <C-a> :w<CR>
@@ -34,7 +37,7 @@ inoremap <C-a> <Esc>:w<CR>l
 vnoremap <C-a> <Esc>:w<CR>
 
 " Copy filename and filepath
-nnoremap <Leader>fc :let @+=expand("%")<CR>
+nnoremap <leader>fc :let @+=expand("%")<CR>
 nnoremap <leader>fn :let @*=expand("%")<CR>
 nnoremap <leader>fp :let @*=expand("%:p")<CR>
 
@@ -70,6 +73,11 @@ augroup sourcing
   autocmd bufwritepost init.vim :source $MYVIMRC
 augroup END
 
+" coc
+" ===
+" See the coc config file
+
+"
 " EasyMotion
 " ==========
 map  <leader><leader>f <Plug>(easymotion-bd-f)
@@ -89,14 +97,19 @@ nmap <leader><leader>w <Plug>(easymotion-overwin-w)
 " NerdTree
 " ========
 " If nerd tree is closed, find current file, if open, close it
-nnoremap <silent> <leader>f <ESC>:call ToggleFindNerd()<CR>
-nnoremap <silent> <leader>F <ESC>:NERDTreeToggle<CR>
+nnoremap <silent><leader>f <ESC>:call ToggleFindNerd()<CR>
+nnoremap <silent><leader>F <ESC>:NERDTreeToggle<CR>
 
 
-" ALE map binding
+" coc map binding
 " ===============
-nnoremap <silent><leader>k :ALENext<CR>
-nnoremap <silent><leader>j :ALEPrevious<CR>
+nmap <silent><leader>k <Plug>(coc-diagnostic-next)
+nmap <silent><leader>j <Plug>(coc-diagnostic-prev)
+" Use `[g` and `]g` to navigate diagnostics
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
+" see nvim-coc for more
+
 
 " Operator-pending maps
 " =====================
@@ -218,7 +231,7 @@ nnoremap<leader>bb :buffers<CR>:buffer<Space>
 " Jump to previous edit point g; g,
 
 " Select all text in current buffer
-nnoremap <Leader>a ggVG
+nnoremap <leader>a ggVG
 
 " Neovim Terminal
 " ===============
@@ -241,7 +254,7 @@ nnoremap <leader>tt :TagbarToggle<CR>
 nnoremap <silent> <leader>r :redraw!<CR>
 
 " Force formatting
-nnoremap <leader>d magg=G`a
+" nnoremap <leader>d magg=G`a
 
 " TAGS
 " Notes:
@@ -399,4 +412,9 @@ nnoremap <leader>hI :HoogleInfo
 vnoremap <silent> <leader>h. :call Pointfree()<CR>
 vnoremap <silent> <leader>h> :call Pointful()<CR>
 
+" ------------------------------------------------------------------------------
+" call to refresh after reload
+if exists("g:loaded_webdevicons")
+  call webdevicons#refresh()
+endif
 " ------------------------------------------------------------------------------

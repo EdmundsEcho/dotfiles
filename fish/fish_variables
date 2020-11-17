@@ -1,6 +1,6 @@
 # This file contains fish universal variable definitions.
 # VERSION: 3.0
-SETUVAR --export LSCOLORS:gxfxbEaEBxxEhEhBaDaCaD
+SETUVAR --export PYENV_ROOT:/Users/edmund/\x2epyenv
 SETUVAR ZO_CMD:zo
 SETUVAR Z_CMD:z
 SETUVAR Z_DATA:/Users/edmund/\x2elocal/share/z/data
@@ -9,6 +9,7 @@ SETUVAR Z_EXCLUDE:/Users/edmund
 SETUVAR __fish_init_2_39_8:\x1d
 SETUVAR __fish_init_2_3_0:\x1d
 SETUVAR __fish_init_3_x:\x1d
+SETUVAR __fish_initialized:3100
 SETUVAR fish_color_autosuggestion:BD93F9
 SETUVAR fish_color_cancel:normal
 SETUVAR fish_color_command:8BE9FD
@@ -20,6 +21,7 @@ SETUVAR fish_color_error:FFB86C
 SETUVAR fish_color_escape:00a6b2
 SETUVAR fish_color_history_current:normal
 SETUVAR fish_color_host:normal
+SETUVAR fish_color_host_remote:yellow
 SETUVAR fish_color_match:normal
 SETUVAR fish_color_normal:normal
 SETUVAR fish_color_operator:00a6b2
