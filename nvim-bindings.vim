@@ -37,12 +37,10 @@ inoremap <C-a> <Esc>:w<CR>l
 vnoremap <C-a> <Esc>:w<CR>
 
 " Copy filename and filepath
-nnoremap <leader>fc :let @+=expand("%")<CR>
-nnoremap <leader>fn :let @*=expand("%")<CR>
+nnoremap <leader>file :let @*=expand("%")<CR>
 nnoremap <leader>fp :let @*=expand("%:p")<CR>
 
 " Open file prompt with current path
-nnoremap <leader>e :e <C-R>=expand("%:p:h") . '/'<CR>
 nnoremap <leader>o :e <C-R>=expand("%:p:h") . '/'<CR>
 
 " Ctags and Cscope (hscope for Haskell)
@@ -63,7 +61,9 @@ noremap <C-]> :cstag <C-R>=expand("<cword>")<CR><CR>
 "               git-hscope -X TemplateHaskell -> hscope.out
 
 " Map esc to remove highlighting of previous search
-nnoremap <esc> :noh<return><esc>
+" Disable in favor of using it to close the float window
+" 🔗 see nvim-coc.vim
+" nnoremap <esc> :noh<return><esc>
 
 " Display .vimrc in a new window; source when done
 " ===============================================
@@ -113,7 +113,7 @@ nmap <silent> ]g <Plug>(coc-diagnostic-next)
 
 " Operator-pending maps
 " =====================
-" d[elete] c[hange] y[ank]
+" the operators: d[elete] c[hange] y[ank]
 " p -> parentheses
 " b -> bracket
 " e.g., change contents between () with cp
@@ -231,7 +231,7 @@ nnoremap<leader>bb :buffers<CR>:buffer<Space>
 " Jump to previous edit point g; g,
 
 " Select all text in current buffer
-nnoremap <leader>a ggVG
+nnoremap <leader>aa ggVG
 
 " Neovim Terminal
 " ===============

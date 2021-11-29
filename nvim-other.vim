@@ -22,8 +22,13 @@
 " :setlocal makeprg=... , confirm: echo &makeprg
 " :$VIMRUNTIME/debugscript.vim
 
-" TODO: Coordinate any conflicts between Haskell and JS
-" TODO: map to a macro that copies the word above the cursor
+" ⬜ map to a macro that copies the word above the cursor
+"
+" 🔧 Tools to use more often
+" Send command output to the clipboard
+" :redir @*
+" :redir END
+"
 " TESTING
 " inoremap <ctr-g><ctr-f> <esc>kbywj0pA
 
@@ -35,20 +40,33 @@ set autoread     " Detect file changes outside vim
 set autochdir    " change working dir to current buffer
 
 " -------------------------------------------------------------------------------
-" Neovim's Python and Ruby provider(s)
-" -------------------------------------------------------------------------------
-let g:python3_host_prog = '/Users/edmund/.pyenv/shims/python'
-
-" -------------------------------------------------------------------------------
-
-" -------------------------------------------------------------------------------
 "  Change the underlying shell to support vim/neovim
 " -------------------------------------------------------------------------------
-" if $shell =~# 'fish$'
-" set shell=zsh
-" endif
-" set shell=zsh
-set shell=fish
+if $SHELL =~ 'bin/fish'
+  set shell=/bin/sh
+endif
+" -------------------------------------------------------------------------------
+" Neovim's Python and Ruby provider(s)
+" see https://duseev.com/articles/vim-python-pipenv/
+" -------------------------------------------------------------------------------
+let pipenv_venv_path = system('pipenv --venv') " use system call to try...
+if v:shell_error == 0
+  " parse the response and construct the setting
+  let venv_path = substitute(pipenv_venv_path, '\n', '', '')
+  let g:python3_host_prog = venv_path . '/bin/python'
+  echom 'The venv_path: ' . g:python3_host_prog
+else
+  " notify when not set (a good thing)
+  echom 'The venv_path was not set'
+  let g:python3_host_prog = '/Users/edmund/.pyenv/shims/python'
+endif
+
+" turn off python2 and python3
+let g:loaded_python_provider = 0
+" let g:loaded_python3_provider = 0
+
+" -------------------------------------------------------------------------------
+
 
 " esc key with cursor moved forward
 inoremap df <esc>l
@@ -76,10 +94,8 @@ let g:submode_keep_leaving_key = 1
 
 " Line formatting
 " TODO: how does it work with syntax based formatting
-" Note: ALE may also set this option
 set formatprg=par
 let $PARINIT = 'rTbgqR B=.,?_A_a Q=_s>|'
-let g:neoformat_try_formatprg = 1
 
 " vim-autoformat
 " ==============
@@ -107,10 +123,12 @@ nnoremap <BS> <C-w>h
 " Save and load views
 " Recall using bang silences errors not finding .vim
 augroup SaveView
-  au!
-  au BufWinLeave * mkview
-  au BufWinEnter * silent! loadview
+  autocmd!
+  autocmd BufWinLeave,BufLeave,BufWritePost,BufHidden,QuitPre ?* nested silent! mkview!
+  autocmd BufWinEnter ?* silent! loadview
 augroup END
+set viewoptions=folds,cursor
+set sessionoptions=folds
 
 " ---------------------------
 " Tweaks to default mappings
@@ -162,6 +180,8 @@ let g:ctrlp_custom_ignore = {
       \ 'dir':  '\v[\/]\.(git|hg|svn)$',
       \ 'file': '\v\.(exe|so|dll)$',
       \ }
+" list of files to hide in Explore
+let g:netrw_list_hide = {}
 
 " HTML plugin
 " ===========
@@ -184,13 +204,24 @@ imap <C-k> <Plug>(neosnippet_expand_or_jump)
 smap <C-k> <Plug>(neosnippet_expand_or_jump)
 xmap <C-k> <Plug>(neosnippet_expand_target)
 
+
+" file/buffer exploring
+" Note: :Explorer is the built-in utility
+"
 " NerdTree configuration
+"======================
 let NERDTreeQuitOnOpen = 1
 let NERDTreeAutoDeleteBuffer = 1
 " let NERDTreeMinimalUI = 1
 let NERDTreeDirArrows = 1
 
-autocmd FileType json syntax match Comment +\/\/.\+$+
+" mini buffer explorer
+"======================
+let g:miniBufExplorerAutoStart = 0 " prefer manual
+let g:miniBufExplVSplit = 40 " column width in chars
+noremap <Leader>mbe :MBEOpen<cr>
+noremap <Leader>mbc :MBEClose<cr>
+noremap <Leader>mbt :MBEToggle<cr>
 
 " Linting
 set shortmess+=c
@@ -198,12 +229,7 @@ set shortmess+=c
 
 " language server
 " =================
-" let g:LanguageClient_serverCommands = {
-" \ 'rust': ['~/.cargo/bin/rustup', 'run', 'stable', 'rls'],
-" \ }
-" \ 'javascript': ['/usr/local/bin/javascript-typescript-stdio'],
-" \ 'javascript.jsx': ['tcp://127.0.0.1:2089'],
-" \ 'python': ['/usr/local/bin/pyls'],
+" See coc-config
 
 " ctags gutentags -- <C-[>
 " ========================
@@ -254,10 +280,10 @@ augroup END
 " javascript
 augroup JavaScript
   autocmd!
-  au FileType javascript setlocal foldmethod=syntax
-  " au FileType javascript setlocal foldexpr=JSFolds()
-  " au FileType javascript.jsx setlocal foldmethod=expr
-  " au FileType javascript.jsx setlocal foldexpr=JSFolds()
+  au FileType javascript setlocal foldmethod=indent
+  au BufWritePre *.{js,jsx,ts,tsx} call CocAction('runCommand', 'eslint.executeAutoFix')
+  au BufEnter *.{js,jsx,ts,tsx} :syntax sync fromstart " prevent highlighting mistakes
+  au BufLeave *.{js,jsx,ts,tsx} :syntax sync clear
 augroup END
 
 augroup misc
@@ -270,7 +296,7 @@ augroup misc
   au BufWritePre * call MkDir()
 
   " Trim trailing white space on save
-  au BufWrite * :call TrimWhitespace()
+  au BufWrite * call TrimWhitespace()
 
   " Spellcheck for text files
   au BufNewFile,BufRead *.txt,*.md,*.mkd,*.markdown,*.rst setlocal spell
@@ -284,6 +310,7 @@ augroup misc
   " <buffer> means applies to current buffer only
   au Filetype help nnoremap <buffer> q :q<CR>
   au Filetype qf   nnoremap <buffer> q :q<CR>
+  au Filetype qf   nnoremap <buffer> <CR> <CR>
 
   " Resize panes whenever containing window resized.
   au VimResized * wincmd =
@@ -306,10 +333,12 @@ source $HOME/dotfiles/nvim-haskell-extras.vim
 
 " TODO: Find a better place for these settings
 let g:jsx_ext_required = 0          " Enable jsx for *.js files
+autocmd FileType json syntax match Comment +\/\/.\+$+
 
 " vim-javascript
 " ==============
 let g:javascript_plugin_jsdoc = 1   " syntax highlighting for jsdoc
+let g:javascript_plugin_flow = 1    " integrate flow
 
 let g:vim_json_syntax_conceal = 0   " Don't hide Json syntax.
 let g:plug_timeout = 5              " Low vim-plug timeout to prevent long freeze
@@ -336,7 +365,6 @@ set relativenumber              " Combined with number; line number preference
 set clipboard=unnamed           " Copy/paste in vi with Sierra OS
 set encoding=UTF-8
 set showmode                    " Toggle this to noshowmode to enable echodoc
-set wildignore+=*\\tmp\\*,*.swp,*.swo,*.zip,.git,.cabal-sandbox
 
 set updatetime=300              " Change updatetime to faster than default 4 sec
 set lazyredraw                  " Don't redraw while executing macros (good performance config)
@@ -371,6 +399,8 @@ set scrolloff=10                " Keep at least X lines below cursor
 set sidescrolloff=5
 set sidescroll=1
 
+
+
 " indentLine
 " ===========
 " Note: not compatible with Haskell
@@ -379,7 +409,7 @@ let g:indentLine_char = '┊'
 let g:indentLine_fileTypeExclude =
       \ ['haskell','haskellstack','cabal','haskellhpack',
       \  'json','yaml','markdown','pandoc','text','txt',
-      \  'sh','vim','tmux','help', 'html']
+      \  'sh','vim','tmux','help' ]
 
 let g:indentLine_setConceal=1
 let g:indentLine_concealcursor = 'inc'
@@ -409,8 +439,14 @@ filetype plugin indent on
 " ========================
 " tab-complete up to longest unambiguous prefix
 set wildmenu
-set wildmode=list:longest,full
+set wildmode=list:longest
+" set wildmode=list:longest,full
+
+set wildignore=.hg,.svn,*~,*.png,*.jpg,*.gif,*.settings,Thumbs.db
+set wildignore+=*.min.js,*.swp,publish/*,intermediate/*,*.o
 set wildignore+=build,cache,dist,coverage,node_modules
+set wildignore+=release,rls,debug
+set wildignore+=*\\tmp\\*,*.swp,*.swo,*.zip,.git,.cabal-sandbox
 
 " Visual tweaks
 " =============
@@ -419,28 +455,26 @@ set textwidth=80
 set colorcolumn=+1
 set nowrap
 set linebreak
+set ttyfast     " faster rendering
 
 " Folding
 " =======
-set foldmethod=indent
+set foldmethod=syntax
 set foldnestmax=10
 set nofoldenable
 "set foldlevelstart
 set foldminlines=1
+set foldlevel=1
 " Note: nofoldenable gets toggled with the first use of zc
 "       setting the value here now as `no` prevents folds
 "       being closed upon opening the buffer.
 
-" Use this in combination with zm or zr to sequentially increase
-" the fold levels.
-" autocmd BufWinEnter *
-" \ let &foldlevel = max(map(range(1, line('$')), 'foldlevel(v:val)'))
-
 " Real programmers don't use TABs
 " ===============================
-set tabstop=2
-set softtabstop=2
-set shiftwidth=2
+set shiftwidth=4
+set softtabstop=4
+set tabstop=4
+set noexpandtab
 set expandtab
 set autoindent
 set smartindent
@@ -459,8 +493,12 @@ let g:vim_jsx_pretty_colorful_config = 1              " default 0
 let g:vim_jsx_pretty_template_tags = ['html', 'jsx']  " default
 let g:vim_jsx_pretty_enable_jsx_highlight = 0         " default 1
 
-" rustfmt
-let g:rustfmt_autosave = 1
+" ⚠️  rust.vim
+" ===========
+" let g:rustfmt_autosave = 1
+"let g:rustfmt_emit_files = 1
+"let g:rustfmt_fail_silently = 0
+"let g:rust_clip_command = 'pbcopy' " take code to PlayPen
 
 " typescript
 let g:yats_host_keyword = 1  " syntax config file for yats
@@ -472,8 +510,9 @@ let g:WebDevIconsUnicodeDecorateFileNodes = 0
 " vim-airline banners
 " ====================
 set laststatus=2   " `always` display a statusline
-" Testing coc-specific
-set statusline^=%{coc#status()}
+" Testing coc-specific vs airline
+" set statusline^=%{coc#status()}
+let g:airline#extensions#coc#enabled = 1
 
 " show open buffer names at the top of the screen
 let g:airline#extensions#tabline#enabled = 1
@@ -589,7 +628,9 @@ hi ColorColumn   ctermbg=235 guibg=#212121  " 1E1E1E is also good
 " vimade
 " ======
 let g:vimade = {}
-let g:vimade.fadelevel = 0.85
+let g:vimade.basebg=[128,128,128] " either rgb array or hex string
+let g:vimade.fadelevel = 0.7
+let g:vimade.fadepriority=0
 " let g:vimade.enablesigns = 1
 
 " Match with Tmux inactive and Airline
@@ -656,6 +697,8 @@ hi PURPLE       guifg=#8048b0
 hi GREEN        guifg=#78b830
 hi MUTED_YELLOW guifg=#A79414
 hi MUTED_GREEN  guifg=#609326
+hi MUTED_GOLD   guifg=#D2BD7F
+hi MUTED_BROWN  guifg=#745600
 
 hi def link  jsxElement        YELLOW
 hi def link  jsxAttrib         PURPLE
@@ -686,12 +729,15 @@ hi def link  jsObjectKey       Identifier
 hi def link  xmlAttrib         PURPLE
 
 " Rust tags
-hi rustModPath     ctermfg=100 guifg=#A270A7
-hi rustModPathSep  ctermfg=100 guifg=#BA5D7E
-hi rustEnumVariant ctermfg=100 guifg=#DF95AF
-hi rustAttribute   ctermfg=100 guifg=#85478B
-hi rustString      ctermfg=100 guifg=#679933
-hi RLSRLS          ctermfg=100 guifg=#FFBEAA
-hi RLS             ctermfg=100 guifg=#FFBEAA
+" hi rustCommentLineDoc ctermfg=100 guifg=#A67C00
+" hi rustCommentLineDoc ctermfg=100 guifg=#B79632
+hi def link rustCommentLineDoc MUTED_BROWN
+hi rustModPath        ctermfg=100 guifg=#A270A7
+hi rustModPathSep     ctermfg=100 guifg=#BA5D7E
+hi rustEnumVariant    ctermfg=100 guifg=#DF95AF
+hi rustAttribute      ctermfg=100 guifg=#85478B
+hi rustString         ctermfg=100 guifg=#679933
+hi RLSRLS             ctermfg=100 guifg=#FFBEAA
+hi RLS                ctermfg=100 guifg=#FFBEAA
 hi def link rustStringDelimiter rustString
 
