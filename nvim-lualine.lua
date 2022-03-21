@@ -133,7 +133,7 @@ ins_left({
 ins_left({
     "filename",
     cond = conditions.buffer_not_empty,
-    color = { fg = colors.magenta },
+    color = { fg = "#00ffff" },
     padding = { left = 2, right = 2 },
 })
 
@@ -156,6 +156,7 @@ ins_left({
         color_warn = { fg = colors.yellow },
         color_info = { fg = colors.cyan },
     },
+    padding = { left = 3, right = 3 },
 })
 
 -- Insert mid section. You can make any number of sections in neovim :)
@@ -184,7 +185,7 @@ ins_left({
         return msg
     end,
     icon = " LSP:",
-    color = { fg = "#ffffff" },
+    color = { fg = colors.fg },
 })
 
 -- Add components to right sections
@@ -192,20 +193,20 @@ ins_right({
     "o:encoding", -- option component same as &encoding in viml
     fmt = string.upper, -- I'm not sure why it's upper case either ;)
     cond = conditions.hide_in_width,
-    color = { fg = colors.green },
+    color = { fg = colors.fg },
 })
 
 ins_right({
     "fileformat",
     fmt = string.upper,
     icons_enabled = false, -- I think icons are cool but Eviline doesn't have them. sigh
-    color = { fg = colors.green, gui = "bold" },
+    color = { fg = colors.fg },
 })
 
 ins_right({
     "branch",
-    icon = "",
-    color = { fg = colors.violet },
+    icon = "",
+    color = { fg = colors.fg },
 })
 
 ins_right({
