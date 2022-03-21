@@ -1,6 +1,6 @@
 " -------------------------------------------------------------------------------
 " ~/.config/nvim/nvim-bindings.vim
-" last change: Jul 6, 2020
+" last change: Feb 9, 2022
 " -------------------------------------------------------------------------------
 " -------------------------------------------------------------------------------
 " Tweaks to default mappings
@@ -42,6 +42,14 @@ nnoremap <leader>fp :let @*=expand("%:p")<CR>
 
 " Open file prompt with current path
 nnoremap <leader>o :e <C-R>=expand("%:p:h") . '/'<CR>
+
+" Write to file with sudo privileges
+cnoremap w!! execute 'silent! write !SUDO_ASKPASS=`which ssh-askpass` sudo tee % >/dev/null' <bar> edit!
+
+" run curl under cursor
+nnoremap <leader>c :lua require("rest-nvim").run()<CR>
+" <Plug>RestNvimPreview, preview the request cURL command
+" <Plug>RestNvimLast, re-run the last request
 
 " Ctags and Cscope (hscope for Haskell)
 " =====================================
@@ -97,19 +105,12 @@ nmap <leader><leader>w <Plug>(easymotion-overwin-w)
 " NerdTree
 " ========
 " If nerd tree is closed, find current file, if open, close it
-nnoremap <silent><leader>f <ESC>:call ToggleFindNerd()<CR>
 nnoremap <silent><leader>F <ESC>:NERDTreeToggle<CR>
 
-
-" coc map binding
-" ===============
-nmap <silent><leader>k <Plug>(coc-diagnostic-next)
-nmap <silent><leader>j <Plug>(coc-diagnostic-prev)
-" Use `[g` and `]g` to navigate diagnostics
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
-nmap <silent> ]g <Plug>(coc-diagnostic-next)
-" see nvim-coc for more
-
+" Jan 2022 NEW 🦀 ?
+command! Fix lua require'lsp_fixcurrent'()
+command! FixAll mF:%!eslint_d --stdin --fix-to-stdout<CR>`F
+nnoremap <leader>f mF:%!eslint_d --stdin --fix-to-stdout<CR>`F
 
 " Operator-pending maps
 " =====================
@@ -328,7 +329,6 @@ augroup END
 set viminfo^=%
 
 " settings for fish
-autocmd BufRead fish try | execute "compiler ".&filetype | catch /./ | endtry
 augroup fish
   autocmd!
   autocmd FileType fish

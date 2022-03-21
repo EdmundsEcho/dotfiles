@@ -1,6 +1,6 @@
 " -------------------------------------------------------------------------------
 " ~/.config/nvim/init.vim
-" last updated: Mar 31, 2020
+" last updated: Mar 20, 2022
 " -------------------------------------------------------------------------------
 " Next: Keep an eye on nvim-lsp; it is going to be the built-in lsp. It would
 " obviate the need for coc
@@ -37,6 +37,7 @@ set autoread     " Detect file changes outside vim
 
 " Improves how C-x C-f works
 " use set noautochdir to turn it off
+" manually :lcd %:p:h
 set autochdir    " change working dir to current buffer
 
 " -------------------------------------------------------------------------------
@@ -63,11 +64,9 @@ endif
 
 " turn off python2 and python3
 let g:loaded_python_provider = 0
-" let g:loaded_python3_provider = 0
+let g:loaded_python3_provider = 0
 
 " -------------------------------------------------------------------------------
-
-
 " esc key with cursor moved forward
 inoremap df <esc>l
 
@@ -96,6 +95,20 @@ let g:submode_keep_leaving_key = 1
 " TODO: how does it work with syntax based formatting
 set formatprg=par
 let $PARINIT = 'rTbgqR B=.,?_A_a Q=_s>|'
+
+" ripgrep
+" =======
+" Make sure rg is in the PATH
+" Usage
+" Search for foo in current working directory: :grep foo.
+" Search for foo in files under src/: :grep foo src.
+" Search for foo in current file directory: :grep foo %:h1.
+" Search for foo in current file directory’s parent directory: :grep foo %:h:h (and so on).
+" :grep foo `git ls-files --modified`
+if executable("rg")
+  set grepprg=rg\ --vimgrep\ --smart-case\ --hidden
+  set grepformat=%f:%l:%c:%m
+endif
 
 " vim-autoformat
 " ==============
@@ -225,17 +238,24 @@ noremap <Leader>mbt :MBEToggle<cr>
 
 " Linting
 set shortmess+=c
-" let g:coc_enable_locationlist = 1
 
-" language server
+" lspconfig
+" format on save
 " =================
-" See coc-config
+" rust
+autocmd BufWritePre *.rs lua vim.lsp.buf.formatting_sync(nil, 200)
+" lua
+autocmd BufWritePre *.lua lua vim.lsp.buf.formatting_sync(nil, 100)
+" yaml
+autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
+" Show diagnostic popup on cursor hold
+autocmd CursorHold * lua vim.diagnostic.open_float({focusable = false})
 
 " ctags gutentags -- <C-[>
 " ========================
 let g:gutentags_enabled = 1
 let g:gutentags_add_default_project_roots = 0
-let g:gutentags_project_root = ['package.json', '.git']
+let g:gutentags_project_root = ['package.json', 'Cargo.toml', '.git', '.gitignore']
 
 let g:gutentags_resolve_symlinks = 1
 let g:gutentags_generate_on_new = 1
@@ -271,19 +291,22 @@ augroup FiletypeGroup
   au BufNewFile,BufRead *.fish        setf fish
   au BufNewFile,BufRead *.md          setf markdown.pandoc
   au BufNewFile,BufRead *.jsx         setf javascript.jsx
-  au Filetype fish :compiler fish
   " oh-my-zsh file types
   au BufNewFile,BufRead *.zsh-theme   setfiletype sh
   au BufNewFile,BufRead *.zsh         setfiletype sh
 augroup END
 
 " javascript
+" https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#eslint
 augroup JavaScript
   autocmd!
-  au FileType javascript setlocal foldmethod=indent
-  au BufWritePre *.{js,jsx,ts,tsx} call CocAction('runCommand', 'eslint.executeAutoFix')
-  au BufEnter *.{js,jsx,ts,tsx} :syntax sync fromstart " prevent highlighting mistakes
+  " au FileType javascript setlocal foldmethod=indent
+  " au BufWritePre *.{js,jsx,ts,tsx} call CocAction('runCommand', 'eslint.executeAutoFix')
+  au BufEnter *.{js,jsx,ts,tsx} :syntax sync fromstart
+  " prevent highlighting mistakes
   au BufLeave *.{js,jsx,ts,tsx} :syntax sync clear
+  " au BufWritePre *.{js,jsx,ts,tsx} EslintFixAll
+  " NEW 🦀 ?
 augroup END
 
 augroup misc
@@ -343,6 +366,23 @@ let g:javascript_plugin_flow = 1    " integrate flow
 let g:vim_json_syntax_conceal = 0   " Don't hide Json syntax.
 let g:plug_timeout = 5              " Low vim-plug timeout to prevent long freeze
 
+" barbar tabline
+" ==============
+" NOTE: If barbar's option dict isn't created yet, create it
+let bufferline = get(g:, 'bufferline', {})
+" Enable/disable close button
+let bufferline.closable = v:false
+" Configure icons on the bufferline.
+let bufferline.icon_separator_active = ''
+let bufferline.icon_separator_inactive = ''
+let bufferline.icon_close_tab = ''
+let bufferline.icon_close_tab_modified = '●'
+let bufferline.icon_pinned = '車'
+" color of the tabs
+" let bg_current  = s:bg(['Normal'], '#000000')
+" let bg_visible  = s:bg(['TabLineSel', 'Normal'], '#000000')
+" let bg_inactive = s:bg(['TabLineFill', 'StatusLine'], '#000000')
+
 set hidden                      " Allow buffer change w/o saving/don't close when not visible
 set history=1000                " Remember last 1000 commands
 set viminfo='100,f1             " save marks and jumps for 100 files
@@ -366,7 +406,7 @@ set clipboard=unnamed           " Copy/paste in vi with Sierra OS
 set encoding=UTF-8
 set showmode                    " Toggle this to noshowmode to enable echodoc
 
-set updatetime=300              " Change updatetime to faster than default 4 sec
+set updatetime=300              " Faster cursor hold; Change updatetime to faster than default 4 sec
 set lazyredraw                  " Don't redraw while executing macros (good performance config)
 " set ruler                       " Always show current position
 set number
@@ -459,7 +499,8 @@ set ttyfast     " faster rendering
 
 " Folding
 " =======
-set foldmethod=syntax
+set foldmethod=expr
+set foldexpr=nvim_treesitter#foldexpr()
 set foldnestmax=10
 set nofoldenable
 "set foldlevelstart
@@ -504,23 +545,7 @@ let g:vim_jsx_pretty_enable_jsx_highlight = 0         " default 1
 let g:yats_host_keyword = 1  " syntax config file for yats
 
 " Limit the use of devicon fonts
-let g:webdevicons_enable_airline_tabline = 0
 let g:WebDevIconsUnicodeDecorateFileNodes = 0
-
-" vim-airline banners
-" ====================
-set laststatus=2   " `always` display a statusline
-" Testing coc-specific vs airline
-" set statusline^=%{coc#status()}
-let g:airline#extensions#coc#enabled = 1
-
-" show open buffer names at the top of the screen
-let g:airline#extensions#tabline#enabled = 1
-" format buffer source; top right
-" default | jsformatter | unique_tail | unique_tail_improved
-let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
-let g:airline_powerline_fonts = 1
-let g:airline_theme='badwolf'
 
 " testing extra-powerline-symbols
 autocmd FileType nerdtree setlocal nolist
@@ -529,41 +554,22 @@ autocmd FileType nerdtree setlocal nolist
 " to a Nerd Font (https://github.com/ryanoasis/nerd-fonts):
 set guifont=DroidSansMono\ Nerd\ Font\ 12
 
-" testing rounded separators (extra-powerline-symbols):
-let g:airline_left_sep = "\uE0B4"
-let g:airline_right_sep = "\uE0B6"
-
-" set the CN (column number) symbol:
-let g:airline_section_z = airline#section#create(["\uE0A1" . '%{line(".")}' . "\uE0A3" . '%{col(".")}'])
-
-"-----------------------
-" integration with coc
-"-----------------------
-let g:airline#extensions#coc#enabled = 1
-" change error symbol: >
-let airline#extensions#coc#error_symbol = 'E:'
-" change warning symbol: >
-let airline#extensions#coc#warning_symbol = 'W:'
-" change error format: >
-let airline#extensions#coc#stl_format_err = '%E{[%e(#%fe)]}'
-" change warning format: >
-let airline#extensions#coc#stl_format_warn = '%W{[%w(#%fw)]}'
-"-----------------------
-
 "-----------------------
 " go to tab number
 " index tabs 1..n
 "-----------------------
-let g:airline#extensions#tabline#buffer_idx_mode = 1
-nnoremap <leader>1 :exe "normal \<Plug>AirlineSelectTab1"<CR>
-nnoremap <leader>2 :exe "normal \<Plug>AirlineSelectTab2"<CR>
-nnoremap <leader>3 :exe "normal \<Plug>AirlineSelectTab3"<CR>
-nnoremap <leader>4 :exe "normal \<Plug>AirlineSelectTab4"<CR>
-nnoremap <leader>5 :exe "normal \<Plug>AirlineSelectTab5"<CR>
-nnoremap <leader>6 :exe "normal \<Plug>AirlineSelectTab6"<CR>
-nnoremap <leader>7 :exe "normal \<Plug>AirlineSelectTab7"<CR>
-nnoremap <leader>8 :exe "normal \<Plug>AirlineSelectTab8"<CR>
-nnoremap <leader>9 :exe "normal \<Plug>AirlineSelectTab9"<CR>
+lua<<EOF
+  local map = vim.api.nvim_set_keymap
+  local opts = { noremap = true, silent = true }
+  for i = 1,9,1
+  do
+     map('n',
+       string.format('<leader>%d', i),
+       string.format(':BufferGoto %d<CR>',i),
+       opts
+       )
+  end
+EOF
 
 " Color Themes
 " ============
@@ -600,47 +606,29 @@ endtry
 " Use same color behind concealed unicode characters
 hi clear Conceal
 
-" vim-airline custom colors
-" =========================
-" colors[guifg, guibg, ctermfg, ctermbg]
-let g:airline_theme_patch_func = 'AirlineThemePatch'
-fun! AirlineThemePatch(palette)
-  if g:airline_theme == 'badwolf'
-    for colors in values(a:palette.inactive)
-      let colors[0] = '#9E9E9E'
-      let colors[1] = '#212121'
-      let colors[2] = 248
-      let colors[3] = 235
-    endfor
-  endif
-endfun
-
 " Parent highlighting groups
 " ==========================
 " Note: Normal gui=NONE is required to enable the active/inactive pane
-" configuration in tmux
-hi Normal        ctermbg=NONE guibg=NONE cterm=NONE gui=NONE
-hi Error         ctermbg=NONE guibg=NONE cterm=bold gui=bold
-hi ErrorMsg      ctermbg=NONE guibg=NONE cterm=NONE gui=NONE
+" configuration in tmux (and the like)
+hi! Normal        ctermbg=NONE guibg=NONE cterm=NONE gui=NONE
+hi! NonText       ctermbg=NONE guibg=NONE cterm=NONE gui=NONE
+hi! Error         ctermbg=NONE guibg=NONE cterm=bold gui=bold
+hi! ErrorMsg      ctermbg=NONE guibg=NONE cterm=NONE gui=NONE
 
-" Inactive vim window (plugin vimade-diminactive)
-hi ColorColumn   ctermbg=235 guibg=#212121  " 1E1E1E is also good
 " vimade
 " ======
+" Inactive vim window (plugin vimade-diminactive)
+hi ColorColumn   ctermbg=235 guibg=#212121  " 1E1E1E is also good
 let g:vimade = {}
 let g:vimade.basebg=[128,128,128] " either rgb array or hex string
-let g:vimade.fadelevel = 0.7
-let g:vimade.fadepriority=0
+let g:vimade.fadelevel = 0.8
+let g:vimade.fadepriority=1
 " let g:vimade.enablesigns = 1
 
 " Match with Tmux inactive and Airline
-
 " Search - improve contrast and match Airline Theme
-" Visual - used by Coc
-" hi Search        ctermfg=214 ctermbg=238 guifg=#ffa724 guibg=#45413b
-hi Search        ctermfg=214 ctermbg=238 guifg=#ffa724 guibg=#45413b
-" hi Visual        ctermfg=51 ctermbg=238 guifg=#ACFFFF guibg=#002A2A
-hi Visual        ctermfg=51 ctermbg=238 guifg=#ACFFFF guibg=#002222
+hi Search ctermfg=214 ctermbg=238 guifg=#ffa724 guibg=#45413b
+hi Visual ctermfg=51 ctermbg=238 guifg=#ACFFFF guibg=#002222
 
 " White space and related
 " [link undefined to defined]
@@ -657,21 +645,6 @@ hi! link MoreMsg Question
 hi Comment            ctermfg=72   guifg=#83A8C1
 hi Todo               ctermfg=234  guifg=#1C1C1C ctermbg=227 guibg=#FFFF5F gui=NONE
 
-" Coc
-hi! link CocErrorSign DiffText
-hi! link CocWarningSign WarningMsg
-hi! link CocInfoSign WarningMsg
-hi! link CocHintSign Comment
-
-"" ALE
-"hi ALEVirtualTextWarning guifg=#00FFFF
-"hi ALEVirtualTextInfo    guifg=#00FFFF
-"hi ALEVirtualTextError   guifg=#00FFFF
-"hi ALEError guibg=None
-"hi ALEWarning guibg=None
-"hi! link ALEErrorSign DiffText
-"hi! link ALEWarningSign WarningMsg
-"hi! link ALEStyleErrorSign Search
 " Note: SpellBad, SpellCap, Error and Todo can be
 " used depending on what the linters produce
 hi link CocErrorHighlight   Visual

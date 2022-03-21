@@ -6,13 +6,16 @@
 symlinks="${HOME}/.zshrc
           ${HOME}/.bash_profile
           ${HOME}/.config/nvim/init.vim
+          ${HOME}/.config/fish                         # symlinks to be built
           ${HOME}/.tmux.conf"                         # symlinks to be built
 
 sourcedir="${HOME}/dotfiles"                          # where the dot files are
 
+# files or directory
 sourcefiles="zshrc
              bash_profile
              init.vim
+             fish
              tmux.conf"                               # source files^folders
 
 backupdir="${HOME}/dotfiles_old"                      # old dotfiles backup directory
