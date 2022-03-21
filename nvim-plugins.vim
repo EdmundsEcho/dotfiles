@@ -1,12 +1,10 @@
 " -------------------------------------------------------------------------------
 " ~/dotfiles/nvim-plugins.vim
 " required in: ~/dotfiles/init.vim
-" last updated: Dec 21, 2017
+" last updated: Jan 11, 2022
 " -------------------------------------------------------------------------------
 " PLUGINS
-"
-" Note: This does not imply they are going to be loaded _per se_; that is
-"       something that depends on either Plug or fileType events
+" Note: Plugins are lazzy-loaded. Depends on either Plug or fileType events
 " -------------------------------------------------------------------------------
 call plug#begin('~/.config/nvim/bundle')
 " -------------------------------------------------------------------------------
@@ -28,8 +26,9 @@ Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' } " Register, but do not lo
 Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'ctrlpvim/ctrlp.vim'                " Filename search
 Plug 'majutsushi/tagbar'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
+Plug 'nvim-lualine/lualine.nvim'
+Plug 'romgrk/barbar.nvim'                " tabline
+
 Plug 'fholgado/minibufexpl.vim'          " explorer for buffers
 
 " Text manipulation
@@ -40,10 +39,9 @@ Plug 'ConradIrwin/vim-bracketed-paste'   " Enables cmd-v in insert mode
 
 " Distraction-free txt
 Plug 'junegunn/goyo.vim'                 " :Goyo to activate :Goyo! to deactivate
-" buffer manager (Nov 2020 addition)
 
 " Terminal integration
-"Plug 'vimlab/split-term.vim'             " provides user-friendly bindings for neovim's built-in Terminal functionality
+" Nothing
 
 " tmux integration
 Plug 'christoomey/vim-tmux-navigator'     " Allow pane movement to jump out of vim into tmux
@@ -51,75 +49,69 @@ Plug 'benmills/vimux'                     " Send commands to tmux and vice versa
 Plug 'tmux-plugins/vim-tmux-focus-events' " Captures active/inactive pane events
 
 " Dim inactive windows (split views)
-" Plug 'TaDaa/vimade'                       " dims inactive window; depends on tmux-focus events
 Plug 'blueyed/vim-diminactive'            " dims inactive window; depends on tmux-focus events
 
 " folding
 Plug 'tmhedberg/SimpylFold'
 
-" Semantic language support
-" Auto-completion and more (alternative to LaunguageClient-neovim)
-Plug 'neoclide/coc.nvim', {'branch': 'master', 'do': 'yarn install --frozen-lockfile'}
+" running curl from a buffer
+Plug 'NTBBloodbath/rest.nvim'
 
-" Formater (TEST)
-Plug 'Chiel92/vim-autoformat'            " Uses external programs to format code
+" LSP
+Plug 'neovim/nvim-lspconfig'
+Plug 'williamboman/nvim-lsp-installer'
+Plug 'jose-elias-alvarez/null-ls.nvim'
 
-" 🛈
-Plug 'Shougo/context_filetype.vim'       " adds the context filetype feature
+" Completion framework
+Plug 'hrsh7th/nvim-cmp'
+Plug 'hrsh7th/cmp-cmdline'
 
-" Language-specific lint sources
-" Note: see haskell below
+" completion sources for nvim-cmp
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-path'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'ray-x/cmp-treesitter'
+Plug 'hrsh7th/cmp-nvim-lua'
+Plug 'David-Kunz/cmp-npm'       " package.json triggered source
+Plug 'andersevenrud/cmp-tmux'
+Plug 'mtoohey31/cmp-fish'
+Plug 'vappolinario/cmp-clippy'  " ⚠️  experimental, and useful?
+Plug 'lukas-reineke/cmp-rg'     " ripgrep (depends on having it installed)
+Plug 'tzachar/cmp-tabnine', { 'do': './install.sh' }  " AI for completion
+Plug 'lambdalisue/suda.vim'     " enables sudo with password entry SudaWrite
 
-" rust
-Plug 'rust-lang/rust.vim'                " rust-lang.org
-Plug 'mattn/webapi-vim'                  " optional; enables sending code to online playpen
 
-" Syntactic language support
-Plug 'stephpy/vim-yaml'
+" Typescript
+Plug 'jose-elias-alvarez/nvim-lsp-ts-utils'
 
-" JS Syntax highlighting mess starts here
-" =======================================
-Plug 'chemzqm/vim-jsx-improve',           { 'for': ['javascript', 'javascript.jsx'] }
-Plug 'yuezk/vim-js'
-Plug 'maxmellon/vim-jsx-pretty',          { 'for': ['javascript', 'javascript.jsx'] } " may be redundant
+" Prettier
+Plug 'MunifTanjim/prettier.nvim'
+" See hrsh7th's other plugins for more completion sources!
 
-" Plug 'pangloss/vim-javascript'          " Disabled to enable vim-jsx-improve
+" status line content
+Plug 'nvim-lua/lsp-status.nvim'
 
-Plug 'mxw/vim-jsx',                       { 'for': ['javascript', 'javascript.jsx'] } " may be redundant
-" Plug 'othree/yajs.vim',                   { 'for': ['javascript', 'javascript.jsx'] } " vim-javascript alternative
-Plug 'othree/es.next.syntax.vim',         { 'for': ['javascript', 'javascript.jsx'] }
-Plug 'styled-components/vim-styled-components',  { 'for': ['javascript', 'javascript.jsx'] }
-Plug 'othree/jsdoc-syntax.vim',           { 'for': ['javascript', 'javascript.jsx'] }
-" Plug 'othree/javascript-libraries-syntax.vim',   { 'for': ['javascript', 'javascript.jsx'] }
-Plug 'elzr/vim-json'
-" HERE
-" typescript syntax highlighting
-Plug 'HerringtonDarkholme/yats.vim'      " REQUIRED syntax file
-Plug 'mhartington/nvim-typescript',      {'do': './install.sh'}
+" treesitter configuration
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " updating the parsers on update
+Plug 'towolf/vim-helm'        " helm yaml + gotmpl + sprig + custom
 
-" JS syntax highlighting
-Plug 'maxmellon/vim-jsx-pretty',          { 'for': ['javascript', 'javascript.jsx'] } " may be redundant
-Plug 'chemzqm/vim-jsx-improve',           { 'for': ['javascript', 'javascript.jsx'] }
-" Plug 'pangloss/vim-javascript'          " Disabled to enable vim-jsx-improve
-Plug 'styled-components/vim-styled-components',  {'branch': 'main'} " highlights css inside components
-Plug 'yuezk/vim-js'                       " 🛈
-" Plug 'mxw/vim-jsx',                       { 'for': ['javascript', 'javascript.jsx'] } " may be redundant
 
-Plug 'othree/es.next.syntax.vim',         { 'for': ['javascript', 'javascript.jsx'] }
-Plug 'othree/jsdoc-syntax.vim',           { 'for': ['javascript', 'javascript.jsx'] }
+" Optional dependencies
+Plug 'nvim-lua/popup.nvim'
+Plug 'nvim-telescope/telescope.nvim'
 
-" Plug 'othree/yajs.vim',                   { 'for': ['javascript', 'javascript.jsx'] } " vim-javascript alternative
-" Plug 'othree/javascript-libraries-syntax.vim',   { 'for': ['javascript', 'javascript.jsx'] }
-"
-Plug 'elzr/vim-json'
-" Plug 'othree/jspc.vim',                  { 'for': ['javascript', 'javascript.jsx'] } " function parameter completion
-" Plug 'flowtype/vim-flow',                { 'do': 'yarn global --prefer-offline flow-bin' }
-" Note: test = :echo &omnifunc  -> jspc#omni
-" (this tells us we have properly wrapped our omnifunc with this extra capability)
+" Rust (no longer uses telescope)
+Plug 'simrat39/rust-tools.nvim'
 
+" Docker
+Plug 'ekalinin/Dockerfile.vim'
+
+" Debugging
+Plug 'nvim-lua/plenary.nvim'
+Plug 'mfussenegger/nvim-dap'
 
 " Ctags
-Plug 'ludovicchabant/vim-gutentags'
+Plug 'ludovicchabant/vim-gutentags'     " requires brew install universal-ctags
 " Plug 'mkasa/neco-ghc-lushtags',       { 'for': 'haskell' }
 
 " Visual tab guides - Does not work with Haskell
@@ -128,89 +120,30 @@ Plug 'Yggdroot/indentLine'
 " Git
 Plug 'vim-scripts/gitignore'
 Plug 'tpope/vim-fugitive'
-Plug 'int3/vim-extradite'
-
-
-" GraphQL
-Plug 'jparise/vim-graphql'               " .gql .graphql .graphqls syntax highlighting
-
-" Toml (used by rust)
-Plug 'cespare/vim-toml'
-
-" fish scripts
-" Plug 'Stautob/vim-fish'
-Plug 'dag/vim-fish'  " try from JonHoo MIT
 
 " Haskell
-" Plug 'neovimhaskell/haskell-vim',     { 'for': [ 'haskell', 'cabal' ] }
-" Plug 'alx741/vim-hindent',            { 'for': [ 'haskell' ] }
 Plug 'enomsg/vim-haskellConcealPlus', { 'for': 'haskell' } " does not work with indentLine
-" Plug 'eagletmt/ghcmod-vim',           { 'for': 'haskell' }
-" Plug 'eagletmt/neco-ghc',             { 'for': 'haskell' }
-" Plug 'Twinside/vim-hoogle',           { 'for': 'haskell' }
-" Plug 'mpickering/hlint-refactor-vim', { 'for': 'haskell' }
-" TESTING
-" Plug 'bitc/vim-hdevtools',            { 'for': 'haskell' }
-
-" Elm
-Plug 'elmcast/elm-vim',               { 'for': 'elm' }
 
 " Lisp
-Plug 'vim-scripts/paredit.vim',       { 'for': [ 'scheme', 'lisp', 'commonlisp' ] }
-
-" Language specific highlighting
-" Plug 'shmup/vim-sql-syntax',          { 'for': [ 'sql' ] }
-Plug 'chrisbra/csv.vim',              { 'for': [ 'csv' ] }
-Plug 'jalvesaq/nvim-r',               { 'for': [ 'r', 'rscript' ] }
-Plug 'xu-cheng/brew.vim'
-Plug 'hail2u/vim-css3-syntax',        { 'for': 'css' }
+Plug 'vim-scripts/paredit.vim',      { 'for': [ 'scheme', 'lisp', 'commonlisp' ] }
+Plug 'maksimr/vim-jsbeautify',       { 'for': 'html' }
 
 " Pandoc / Markdown
 Plug 'vim-pandoc/vim-pandoc',        { 'for': [ 'pandoc', 'markdown' ] }
 Plug 'vim-pandoc/vim-pandoc-syntax', { 'for': [ 'pandoc', 'markdown' ] }
 Plug 'euclio/vim-markdown-composer',   { 'do': 'cargo build --release' }
 
-" Markdown
-Plug 'gabrielelana/vim-markdown'
-" Plug 'plasticboy/vim-markdown'   " try from JonHoo MIT
-
 " MDN documentation grabber: :Mdn <search terms>
 Plug 'mklabs/mdn.vim', { 'do': 'yarn install --prefer-offline mdn-cli' }
 
-" HTML (note: this is in addition to custom shorthand)
-" Plug 'alvan/vim-closetag',           { 'for': [ 'html', 'javascript', 'javascript.jsx', 'xml' ] }
-" Plug 'othree/html5.vim',             { 'for': 'html' }
-Plug 'maksimr/vim-jsbeautify',       { 'for': 'html' }
-
 " " Color schemes
 Plug 'vim-scripts/wombat256.vim'
-" Plug 'trevordmiller/nova-vim'
-" Plug 'lifepillar/vim-solarized8'
-
-
-" Snippets
-" Plug 'Shougo/neosnippet'                 " snippet engine that exploits vimscript (not slower python)
-" Plug 'Shougo/neosnippet-snippets'        " snippet repository; requires a separate snippet engine: neosnippet
-" Plug 'honza/vim-snippets'                " alternative that seems to provide a modern JS set (including react)
-" Plug 'Shougo/context_filetype.vim'       " provide filetype info within caged code
-
-" Javascript
-" jsdoc highlighting and templates
-Plug 'heavenshell/vim-jsdoc', {
-      \ 'for': ['javascript', 'javascript.jsx'],
-      \ 'do': 'make install'
-      \}
-Plug 'moll/vim-node'                    " TESTING: enables jumps between CommonJS modules
-" Plug 'wokalski/autocomplete-flow'       " Include flow-type in my autocomplete
-" Plug 'kristijanhusak/vim-js-file-import', {'do': 'npm install'}
-
 
 " Fonts - must be last plugin
-Plug 'ryanoasis/vim-devicons'            " Nerd fonts (load last)
+Plug 'kyazdani42/nvim-web-devicons'
+" Plug 'ryanoasis/vim-devicons'            " Nerd fonts (load last)
 
 " -------------------------------------------------------------------------------
 call plug#end()
 " -------------------------------------------------------------------------------
-"Plug 'tpope/vim-sensible'                   " a laundry list of vim configurations
-"Plug 'neovim/node-host', { 'do': 'npm install --cache-min Infinity --loglevel http' }
 " END PLUGINS

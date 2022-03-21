@@ -1,7 +1,8 @@
 " Emoji shortcuts
 ab :person: 🙂
+ab :anonuser: 😈
+ab :cookie: 🍪
 ab :chart: 📈
-ab :warning: ⚠️
 ab :celebrate: 🎉
 ab :idea: 💡
 ab :remember: 📌
@@ -16,7 +17,6 @@ ab :link: 🔗
 ab :brush: 🎨
 ab :render: 🎨
 ab :wrench: 🔧
-ab :question: 🛈
 ab :money: 💰
 ab :todo: ⬜
 ab :todo2: 🔲
@@ -34,44 +34,64 @@ ab :down: ⬇
 ab :up: ⬆
 ab :left: ⬅
 ab :right: ➡
-ab :callback: ☎️
 ab :magic: ✨
 ab :return: 💫
 ab :iterate: 💫
-ab :config: ⚙️
 ab :clock: ⏰
-ab :time: ⌛
 ab :wait: ⏳
 ab :calendar: 📅
 ab :file: 📁
-ab :label: 🏷️
 ab :note: 🔖
 ab :report: 📋
 ab :ref: 📖
 ab :books: 📚
 ab :key: 🔑
 ab :compute: 🧮
-ab :one: 1️⃣
-ab :two: 2️⃣
-ab :three: 3️⃣
-ab :four: 4️⃣
-ab :five: 5️⃣
-ab :six: 6️⃣
-ab :sevent: 7️⃣
 ab :ok: 🆗
 ab :send: 📬
 ab :dispatch: 📬
 ab :in: 📥
 ab :inbox: 📥
 ab :received: 📥
-ab :trash: 🗑️
 ab :window: 🪟
 ab :view: 🪟
 ab :redflag: 🚩
 ab :flag: 🚩
 ab :unlock: 🔓
 ab :lock: 🔐
-ab :shield: 🛡️
 ab :fire: 🔥
 ab :bang: 💥
+ab :question:❔
+ab :questionred: ❓
+" what fails in alacritty
 ab :dead: ☠️
+ab :trash: 🗑️
+ab :shield: 🛡️
+ab :label: 🏷️
+ab :warning: ⚠️
+ab :what!: ⁉️
+ab :one: 1️⃣
+ab :two: 2️⃣
+ab :three: 3️⃣
+ab :four: 4️⃣
+ab :five: 5️⃣
+ab :six: 6️⃣
+ab :seven: 7️⃣
+ab :trash: 🗑️
+ab :callback: ☎️
+ab :time: ⌛
+ab :config: ⚙️
+
+"   Failing
+"   symbol        unicode   emoji  codepoints
+"   gear          4.1       1.0    U+2699 ️   U+FE0F
+"   wastebasket   7.0       1.0
+"   hourglass     1.1       1.0
+"   telophone     1.1       1.0
+"   warning       4.0       1.0    U+26A0    U+FE0F
+"   label         7.0       1.0    U+1F3F7   U+FE0F
+"   shield        7.0       1.0    U+1F6E1   U+FE0F
+"   skull         1.1       1.0    U+2620    U+FE0F
+"
+"   This works
+"   collision     6.0       1.0    U+1F4A5

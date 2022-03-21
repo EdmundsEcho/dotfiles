@@ -9,3 +9,5 @@ bat() {
  $1~/MaxCapacity/{max=$2}
  END{if (max>0) {printf "%.2f%%\n",cur/max*100} else {print "?"}}'
 }
+
+. "$HOME/.cargo/env"
