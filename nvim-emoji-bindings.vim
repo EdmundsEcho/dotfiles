@@ -29,6 +29,12 @@ ab :good: 👍
 ab :bad: 👎
 ab :start: 🟢
 ab :green: 🟢
+ab :caution: 🟡
+ab :yellow: 🟡
+ab :stop: 🔴
+ab :red: 🔴
+ab :purple: 🟣
+ab :orange: 🟠
 ab :finish: 🏁
 ab :down: ⬇
 ab :up: ⬆
@@ -61,7 +67,7 @@ ab :unlock: 🔓
 ab :lock: 🔐
 ab :fire: 🔥
 ab :bang: 💥
-ab :question:❔
+" ab :question:❔
 ab :questionred: ❓
 " what fails in alacritty
 ab :dead: ☠️
@@ -81,6 +87,8 @@ ab :trash: 🗑️
 ab :callback: ☎️
 ab :time: ⌛
 ab :config: ⚙️
+ab :drive: 🗄️
+ab :package: 📦
 
 "   Failing
 "   symbol        unicode   emoji  codepoints

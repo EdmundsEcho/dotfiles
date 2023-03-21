@@ -230,14 +230,18 @@ fun! ShowColorSchemeName()
   endtry
 endfun
 
+" Likely deprecated - needs to be updated given lualine
+" instead of Airline
 " Reveal highlight group of word below the cursor
 " Usage: :set statusline+=%{HiGroup()}
 fun! HiGroup()
   return synIDattr(synID(line("."),col("."),1),"name")
 endfun
 fun! HiGroupEnable()
-  set statusline+=%{HiGroup()}
-  echom  ":set statusline+=%{HiGroup()}"
+  " set statusline+=%{HiGroup()}
+  " lua vim.bo["myspace#usermessage"] = '%{HiGroup()}'
+  lua nvim_buf_set_var(0, usermessage, '%{HiGroup()}')
+  echom  "Activated show highlight group"
 endfun
 
 " Haskell

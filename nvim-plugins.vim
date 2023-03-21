@@ -18,16 +18,20 @@ Plug 'kana/vim-submode'                  " Enables repeated use of key after lea
 Plug 'michaeljsmith/vim-indent-object'   " obj schema for lines with same indentation
 Plug 'moll/vim-bbye'                     " closes buffers without closing windows
 Plug 'haya14busa/incsearch.vim'          " Better search highlighting
-Plug 'jiangmiao/auto-pairs'              " Redundant with neopairs? closes pair of brackets etc.
 Plug 'neomake/neomake'                   " async, fast replacement for :make; see automake setting for when it fires (linting)
+Plug 'jiangmiao/auto-pairs'              " Redundant with neopairs? closes pair of brackets etc.
+Plug 'windwp/nvim-ts-autotag'            " html and xml tag-pairing
+
+" Color preview (depends on go)
+Plug 'rrethy/vim-hexokinase', { 'do': 'make hexokinase' }
 
 " Bars, panels, and files
-Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' } " Register, but do not load... until invoking function call
-Plug 'Xuyuanp/nerdtree-git-plugin'
+" Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'ctrlpvim/ctrlp.vim'                " Filename search
 Plug 'majutsushi/tagbar'
-Plug 'nvim-lualine/lualine.nvim'
-Plug 'romgrk/barbar.nvim'                " tabline
+Plug 'nvim-lualine/lualine.nvim'         " replaces airline
+Plug 'romgrk/barbar.nvim'                " tabline (tabs)
+" Plug 'seblj/nvim-tabline'
 
 Plug 'fholgado/minibufexpl.vim'          " explorer for buffers
 
@@ -54,38 +58,54 @@ Plug 'blueyed/vim-diminactive'            " dims inactive window; depends on tmu
 " folding
 Plug 'tmhedberg/SimpylFold'
 
-" running curl from a buffer
+" running curl from a buffer; very cool
 Plug 'NTBBloodbath/rest.nvim'
 
-" LSP
-Plug 'neovim/nvim-lspconfig'
-Plug 'williamboman/nvim-lsp-installer'
+"--- LSP
+Plug 'folke/lsp-trouble.nvim'
 Plug 'jose-elias-alvarez/null-ls.nvim'
+Plug 'neovim/nvim-lspconfig'
+Plug 'nvim-lua/lsp-status.nvim'
+Plug 'onsails/lspkind-nvim'
+Plug 'williamboman/nvim-lsp-installer'
+Plug 'williamboman/mason.nvim'
+Plug 'williamboman/mason-lspconfig.nvim'
+
+"--- Functional
+Plug 'mg979/vim-visual-multi', {'branch': 'master'}
+Plug 'rcarriga/nvim-notify'
+Plug 'dag/vim-fish'                  " may be redundant with cmp-fish
 
 " Completion framework
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-cmdline'
 
 " completion sources for nvim-cmp
-Plug 'hrsh7th/cmp-nvim-lsp'
-Plug 'hrsh7th/cmp-path'
-Plug 'hrsh7th/cmp-buffer'
-Plug 'ray-x/cmp-treesitter'
-Plug 'hrsh7th/cmp-nvim-lua'
 Plug 'David-Kunz/cmp-npm'       " package.json triggered source
 Plug 'andersevenrud/cmp-tmux'
-Plug 'mtoohey31/cmp-fish'
-Plug 'vappolinario/cmp-clippy'  " ⚠️  experimental, and useful?
-Plug 'lukas-reineke/cmp-rg'     " ripgrep (depends on having it installed)
-Plug 'tzachar/cmp-tabnine', { 'do': './install.sh' }  " AI for completion
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-nvim-lsp-signature-help'
+Plug 'hrsh7th/cmp-nvim-lua'
+Plug 'hrsh7th/cmp-path'
+Plug 'hrsh7th/cmp-vsnip'
+Plug 'hrsh7th/vim-vsnip'
 Plug 'lambdalisue/suda.vim'     " enables sudo with password entry SudaWrite
+Plug 'lukas-reineke/cmp-rg'     " ripgrep (depends on having it installed)
+Plug 'mtoohey31/cmp-fish'
+Plug 'ray-x/cmp-treesitter'
+Plug 'tzachar/cmp-tabnine', { 'do': './install.sh' }  " AI for completion
+Plug 'vappolinario/cmp-clippy'  " ⚠️  experimental, and useful?
 
 
 " Typescript
-Plug 'jose-elias-alvarez/nvim-lsp-ts-utils'
+Plug 'jose-elias-alvarez/typescript.nvim'
 
 " Prettier
 Plug 'MunifTanjim/prettier.nvim'
+
+" Helm
+Plug 'towolf/vim-helm'        " helm yaml + gotmpl + sprig + custom
 " See hrsh7th's other plugins for more completion sources!
 
 " status line content
@@ -93,8 +113,9 @@ Plug 'nvim-lua/lsp-status.nvim'
 
 " treesitter configuration
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " updating the parsers on update
-Plug 'towolf/vim-helm'        " helm yaml + gotmpl + sprig + custom
 
+" html and css
+Plug 'mattn/emmet-vim'
 
 " Optional dependencies
 Plug 'nvim-lua/popup.nvim'
@@ -117,7 +138,7 @@ Plug 'ludovicchabant/vim-gutentags'     " requires brew install universal-ctags
 " Visual tab guides - Does not work with Haskell
 Plug 'Yggdroot/indentLine'
 
-" Git
+"--- Git
 Plug 'vim-scripts/gitignore'
 Plug 'tpope/vim-fugitive'
 
@@ -129,9 +150,11 @@ Plug 'vim-scripts/paredit.vim',      { 'for': [ 'scheme', 'lisp', 'commonlisp' ]
 Plug 'maksimr/vim-jsbeautify',       { 'for': 'html' }
 
 " Pandoc / Markdown
-Plug 'vim-pandoc/vim-pandoc',        { 'for': [ 'pandoc', 'markdown' ] }
-Plug 'vim-pandoc/vim-pandoc-syntax', { 'for': [ 'pandoc', 'markdown' ] }
-Plug 'euclio/vim-markdown-composer',   { 'do': 'cargo build --release' }
+" Plug 'vim-pandoc/vim-pandoc',        { 'for': [ 'pandoc', 'markdown' ] }
+" Plug 'vim-pandoc/vim-pandoc-syntax', { 'for': [ 'pandoc', 'markdown' ] }
+Plug 'euclio/vim-markdown-composer',   { 'do': 'cargo build --release --locked' }
+" If you have nodejs and yarn
+" Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
 
 " MDN documentation grabber: :Mdn <search terms>
 Plug 'mklabs/mdn.vim', { 'do': 'yarn install --prefer-offline mdn-cli' }
@@ -139,9 +162,9 @@ Plug 'mklabs/mdn.vim', { 'do': 'yarn install --prefer-offline mdn-cli' }
 " " Color schemes
 Plug 'vim-scripts/wombat256.vim'
 
-" Fonts - must be last plugin
+" Tree and font - must be last plugin
 Plug 'kyazdani42/nvim-web-devicons'
-" Plug 'ryanoasis/vim-devicons'            " Nerd fonts (load last)
+Plug 'kyazdani42/nvim-tree.lua'
 
 " -------------------------------------------------------------------------------
 call plug#end()

@@ -3,8 +3,14 @@
 --------------------------------------------------------------------------------
 -- Author: shadmansaleh
 -- Credit: glepnir
+-- Modified: Edmund Cape
+--------------------------------------------------------------------------------
+
+-- ✅ airline substitute
+-- See lualine.lua settings
 --------------------------------------------------------------------------------
 local lualine = require("lualine")
+--------------------------------------------------------------------------------
 
 -- Color table for highlights
 -- stylua: ignore
@@ -21,6 +27,24 @@ local colors = {
   blue     = '#51afef',
   red      = '#ec5f67',
 }
+
+-- figure out the filetype
+local function search_result()
+    if vim.v.hlsearch == 0 then
+        return ""
+    end
+    local last_search = vim.fn.getreg("/")
+    if not last_search or last_search == "" then
+        return ""
+    end
+    local searchcount = vim.fn.searchcount({ maxcount = 9999 })
+    return last_search
+        .. "("
+        .. searchcount.current
+        .. "/"
+        .. searchcount.total
+        .. ")"
+end
 
 local conditions = {
     buffer_not_empty = function()
@@ -42,19 +66,21 @@ local config = {
         -- Disable sections and component separators
         component_separators = "",
         section_separators = "",
-        theme = {
-            -- We are going to use lualine_c an lualine_x as left and
-            -- right section. Both are highlighted by c theme .  So we
-            -- are just setting default looks o statusline
-            normal = { c = { fg = colors.fg, bg = colors.bg } },
-            inactive = { c = { fg = colors.fg, bg = colors.bg } },
-        },
+
+        theme = "material",
+        -- theme = {
+        -- We are going to use lualine_c an lualine_x as left and
+        -- right section. Both are highlighted by c theme .  So we
+        -- are just setting default looks o statusline
+        -- normal = { c = { fg = colors.fg, bg = colors.bg } },
+        -- inactive = { c = { fg = colors.fg, bg = colors.bg } },
+        -- },
     },
     sections = {
         -- these are to remove the defaults
         lualine_a = {},
         lualine_b = {},
-        lualine_y = {},
+        lualine_y = { search_result },
         lualine_z = {},
         -- These will be filled later
         lualine_c = {},
@@ -133,7 +159,7 @@ ins_left({
 ins_left({
     "filename",
     cond = conditions.buffer_not_empty,
-    color = { fg = "#00ffff" },
+    color = { fg = "#52a5b8" },
     padding = { left = 2, right = 2 },
 })
 
@@ -162,9 +188,8 @@ ins_left({
 -- Insert mid section. You can make any number of sections in neovim :)
 -- for lualine it's any number greater then 2
 ins_left({
-    function()
-        return "%="
-    end,
+    "filetype",
+    color = { fg = colors.fg },
 })
 
 ins_left({
@@ -184,7 +209,7 @@ ins_left({
         end
         return msg
     end,
-    icon = " LSP:",
+    icon = "  ",
     color = { fg = colors.fg },
 })
 
@@ -212,7 +237,7 @@ ins_right({
 ins_right({
     "diff",
     -- Is it me or the symbol for modified us really weird
-    symbols = { added = " ", modified = "柳 ", removed = " " },
+    symbols = { added = " ", modified = "▲ ", removed = " " },
     diff_color = {
         added = { fg = colors.green },
         modified = { fg = colors.orange },

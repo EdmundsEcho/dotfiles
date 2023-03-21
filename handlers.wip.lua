@@ -55,21 +55,21 @@ local function lsp_keymaps(bufnr)
     buf_set_keymap('i', '<C-x><C-x>', '<cmd> LspSignatureHelp<CR>', opts)
 
     -- Set some keybinds conditional on server capabilities
-    if client.resolved_capabilities.document_formatting then
+    if client.server_capabilities.document_formatting then
         buf_set_keymap('n', '<Leader>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
-    elseif client.resolved_capabilities.document_range_formatting then
+    elseif client.server_capabilities.document_range_formatting then
         buf_set_keymap('n', '<Leader>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
     end
 end
 
 M.on_attach = function(client, bufnr)
-    if client.name == "tsserver" then client.resolved_capabilities.document_formatting = false end
+    if client.name == "tsserver" then client.server_capabilities.document_formatting = false end
     lsp_keymaps(bufnr)
     lsp_highlight_document(client)
 end
 
 local function lsp_highlight_document(client)
-    if client.resolved_capabilities.document_highlight then
+    if client.server_capabilities.document_highlight then
         vim.api.nvi_exec([[
         augroup lsp_document_highlight
         autocmd! * <buffer>

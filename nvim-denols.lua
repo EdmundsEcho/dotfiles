@@ -1,0 +1,26 @@
+--------------------------------------------------------------------------------
+-- Denols additional configuration
+--------------------------------------------------------------------------------
+-- denols
+-- required for denols
+--vim.g.markdown_fenced_languages = {
+--    "ts=typescript",
+--}
+--require("lspconfig").denols.setup({
+--    capabilities = capabilities,
+--    on_attach = on_attach,
+--    root_dir = lspconfig.util.root_pattern(".git", "deno.json", "package.json"),
+--    cmd = { "deno", "lsp" },
+--    filetypes = {
+--        "javascript",
+--        "javascriptreact",
+--        "javascript.jsx",
+--        "typescript",
+--        "typescriptreact",
+--        "typescript.tsx",
+--    },
+--    init_options = {
+--        enable = true,
+--        lint = true,
+--    },
+--})

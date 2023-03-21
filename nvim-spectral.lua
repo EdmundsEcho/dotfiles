@@ -1,0 +1,9 @@
+-- deprecate/disable for now
+-- require("lspconfig").spectral.setup({
+--     filetypes = { "spectral-language-server", "--stdio" },
+--     settings = {
+--         enable = true,
+--         run = "onType",
+--         validateLanguages = { "yaml", "json", "yml" },
+--     },
+-- })
