@@ -1,6 +1,6 @@
 " -------------------------------------------------------------------------------
 " ~/.config/nvim/nvim-bindings.vim
-" last change: Feb 9, 2022
+" last change: March 27, 2022
 " -------------------------------------------------------------------------------
 " -------------------------------------------------------------------------------
 " Tweaks to default mappings
@@ -8,15 +8,22 @@
 " change e.g., <leader>, esc etc. see nvim-other and nvim-deoplete
 "
 " Debugging tips:
+"
 " 1. use :verbose nmap <leader>d to see sequence of setters
+"
 " 2. to use yanked content in command mode <C-R><C-O>"
+"
 " use :registers to see the full contents of registers
 " in normal mode, hit " : p to print the previous command (a cmd)
 " from normal mode, y j : @ " <Enter> will execute the contents of the unamed
 " buffer, "
 " -------------------------------------------------------------------------------
 
-nnoremap <leader>n :call HiGroupEnable()<CR>
+" change local workding directory
+nnoremap <leader>cd :lcd %:p:h<CR>:pwd<CR>
+
+" 🚧 Broken: show hi group in lualine
+nnoremap <leader>hg :call HiGroupEnable()<CR>
 
 " Additional options to engage cmd mode from normal-mode
 " nnoremap <leader>c :
@@ -46,8 +53,11 @@ nnoremap <leader>o :e <C-R>=expand("%:p:h") . '/'<CR>
 " Write to file with sudo privileges
 cnoremap w!! execute 'silent! write !SUDO_ASKPASS=`which ssh-askpass` sudo tee % >/dev/null' <bar> edit!
 
-" run curl under cursor
-nnoremap <leader>c :lua require("rest-nvim").run()<CR>
+" =========
+" rest-nvim
+" =========
+" curl under cursor
+nnoremap <leader>g :lua require("rest-nvim").run()<CR>
 " <Plug>RestNvimPreview, preview the request cURL command
 " <Plug>RestNvimLast, re-run the last request
 
@@ -102,15 +112,16 @@ nmap <leader><leader>l <Plug>(easymotion-overwin-line)
 map  <leader><leader>w <Plug>(easymotion-bd-w)
 nmap <leader><leader>w <Plug>(easymotion-overwin-w)
 
-" NerdTree
-" ========
-" If nerd tree is closed, find current file, if open, close it
-nnoremap <silent><leader>F <ESC>:NERDTreeToggle<CR>
+" Nvim-Tree
+" =========
+nnoremap <silent><leader>t <ESC>:NvimTreeToggle<CR>
+nnoremap <silent><leader>e <ESC>:NvimTreeToggle<CR>
 
-" Jan 2022 NEW 🦀 ?
-command! Fix lua require'lsp_fixcurrent'()
-command! FixAll mF:%!eslint_d --stdin --fix-to-stdout<CR>`F
-nnoremap <leader>f mF:%!eslint_d --stdin --fix-to-stdout<CR>`F
+" 🚧
+" Jan 2022 NEW 🦀 WIP
+" command! Fix lua require'lsp_fixcurrent'()
+" command! FixAll mF:%!eslint_d --stdin --fix-to-stdout<CR>`F
+" nnoremap <leader>f mF:%!eslint_d --stdin --fix-to-stdout<CR>`F
 
 " Operator-pending maps
 " =====================
@@ -272,7 +283,8 @@ nnoremap <silent> <leader>r :redraw!<CR>
 " Copy/Paste
 " ==========
 " Access clipboard from yank while in insert-mode
-inoremap <c-p> <c-r>*
+" 🔖 <C-p> in normal mode activates Ctrp
+inoremap <C-p> <C-r>*
 
 " OS Clipboard
 " Copy and paste to os clipboard
@@ -281,6 +293,9 @@ nnoremap <leader>y "*y
 vnoremap <leader>y "*y
 nnoremap <leader>p "*p
 vnoremap <leader>p "*p
+
+" Prettier
+nnoremap <leader>P :Prettier<CR>
 
 " Visual mode pressing * or # searches for the current selection
 " Super useful! From an idea by Michael Naumann
@@ -296,26 +311,39 @@ nnoremap <silent> <F3> :redir @+<CR>@:<CR>:redir END<CR>
 nnoremap j gj
 nnoremap k gk
 
+" --------------------------------------
+" 🪟 Pane resizing coordinated with tmux
 " vim-tmux-navigator
-" ===================
+" ======================================
 let g:tmux_navigator_no_mappings = 1
-nnoremap <c-h> <c-w>h
-nnoremap <c-k> <c-w>k
-nnoremap <c-j> <c-w>j
-nnoremap <c-l> <c-w>l
-nnoremap <silent> <c-h> :TmuxNavigateLeft<cr>
-nnoremap <silent> <c-j> :TmuxNavigateDown<cr>
-nnoremap <silent> <c-k> :TmuxNavigateUp<cr>
-nnoremap <silent> <c-l> :TmuxNavigateRight<cr>
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-h> <C-w>h
+nnoremap <C-l> <C-w>l
+" pass the same information onto tmux
+nnoremap <silent> <C-j> :TmuxNavigateDown<CR>
+nnoremap <silent> <C-k> :TmuxNavigateUp<CR>
+nnoremap <silent> <C-h> :TmuxNavigateLeft<CR>
+nnoremap <silent> <C-l> :TmuxNavigateRight<CR>
 
-" Split *VIM* window
+" 🚧 WIP pass-through from tmux ?
+" issue: does not pass the event to tmux
+nnoremap <M-j> :resize -2<CR>
+nnoremap <M-k> :resize +2<CR>
+nnoremap <M-h> :vertical resize -2<CR>
+nnoremap <M-l> :vertical resize +2<CR>
+
+" 🦀 ? split {n}vim window
 nnoremap <leader>- :sp<CR>
+nnoremap <leader>/ :vsp<CR>
 nnoremap <leader>\ :vsp<CR>
+
 " Open window splits in various places
 nnoremap <leader>sh :leftabove  vnew<CR>
 nnoremap <leader>sl :rightbelow vnew<CR>
 nnoremap <leader>sk :leftabove  new<CR>
 nnoremap <leader>sj :rightbelow new<CR>
+" --------------------------------------
 
 " Return to last edit position when opening files
 augroup last_edit
@@ -351,9 +379,6 @@ vnoremap <LocalLeader>vs "vy :call VimuxSlime()<CR>
 " Select current paragraph and send it to tmux
 nnoremap <LocalLeader>vs vip<LocalLeader>vs<CR>
 
-" NerdTree
-" ========
-" Usage: <leader>f OR <leader>F
 
 " tabularize
 " ===========

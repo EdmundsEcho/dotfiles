@@ -58,13 +58,17 @@ if v:shell_error == 0
   echom 'The venv_path: ' . g:python3_host_prog
 else
   " notify when not set (a good thing)
-  echom 'The venv_path was not set'
+  " echom 'The venv_path was not set'
   let g:python3_host_prog = '/Users/edmund/.pyenv/shims/python'
 endif
 
 " turn off python2 and python3
 let g:loaded_python_provider = 0
 let g:loaded_python3_provider = 0
+
+" enable virtual text
+let g:diagnostic_enable_virtual_text = 1
+let g:diagnostic_virtual_text_prefix = ' '
 
 " -------------------------------------------------------------------------------
 " esc key with cursor moved forward
@@ -109,6 +113,11 @@ if executable("rg")
   set grepprg=rg\ --vimgrep\ --smart-case\ --hidden
   set grepformat=%f:%l:%c:%m
 endif
+
+" markdown composer
+" =================
+let g:markdown_composer_autostart = 1
+" let g:markdown_composer_external_renderer='pandoc -f markdown -t html'
 
 " vim-autoformat
 " ==============
@@ -289,7 +298,7 @@ augroup FiletypeGroup
   au BufNewFile,BufRead *.yaml        setf yaml
   au BufNewFile,BufRead *.toml        setf toml
   au BufNewFile,BufRead *.fish        setf fish
-  au BufNewFile,BufRead *.md          setf markdown.pandoc
+  " au BufNewFile,BufRead *.md          setf markdown.pandoc
   au BufNewFile,BufRead *.jsx         setf javascript.jsx
   " oh-my-zsh file types
   au BufNewFile,BufRead *.zsh-theme   setfiletype sh
@@ -410,7 +419,7 @@ set updatetime=300              " Faster cursor hold; Change updatetime to faste
 set lazyredraw                  " Don't redraw while executing macros (good performance config)
 " set ruler                       " Always show current position
 set number
-set cmdheight=2                 " Height of the command bar
+set cmdheight=1                 " Height of the command bar
 set incsearch                   " Makes search act like search in modern browsers
 set hlsearch                    " Highlight search results
 set showmatch                   " Show matching brackets when text indicator is over them
@@ -439,6 +448,20 @@ set scrolloff=10                " Keep at least X lines below cursor
 set sidescrolloff=5
 set sidescroll=1
 
+" configure gf (built-in) for js codebase
+set path=.,src,node_nodules
+set suffixesadd=.js,.jsx
+fun! LoadMainNodeModule(fname)
+    let nodeModules = "./node_modules/"
+    let packageJsonPath = nodeModules . a:fname . "/package.json"
+    if filereadable(packageJsonPath)
+        return nodeModules . a:fname . "/" . json_decode(join(readfile(packageJsonPath))).main
+    else
+        return nodeModules . a:fname
+    endif
+endfunction
+" gf searches here when otherwise fails
+set includeexpr=LoadMainNodeModule(v:fname)
 
 
 " indentLine
@@ -615,27 +638,47 @@ hi! NonText       ctermbg=NONE guibg=NONE cterm=NONE gui=NONE
 hi! Error         ctermbg=NONE guibg=NONE cterm=bold gui=bold
 hi! ErrorMsg      ctermbg=NONE guibg=NONE cterm=NONE gui=NONE
 
-" vimade
-" ======
-" Inactive vim window (plugin vimade-diminactive)
-hi ColorColumn   ctermbg=235 guibg=#212121  " 1E1E1E is also good
-let g:vimade = {}
-let g:vimade.basebg=[128,128,128] " either rgb array or hex string
-let g:vimade.fadelevel = 0.8
-let g:vimade.fadepriority=1
-" let g:vimade.enablesigns = 1
+" ------------------------------------------------------------------------------
+" Floating window settings
+" ------------------------------------------------------------------------------
+" 🔖 :set pumblend=0 ~ opaque
+"    See ~/.config/nvm/bundle/nvim-lspconfig/after/ftplugin/lspinfo.lua
+"    for popup setting
+"
+"    blend
+" ------------------------------------------------------------------------------
+hi! Pmenu        guifg=#ccdddd guibg=#202025
+hi! FloatBorder  guifg=#70bdbd guibg=#202025
 
-" Match with Tmux inactive and Airline
+"
+hi! CmpItemAbbrDefault             guifg=#70bdbd
+hi! CmpItemMenuDefault             guifg=#bdbd11
+hi! CmpItemAbbrMatchDefault        guifg=#11dddd gui=bold
+" WIP
+hi! CmpItemAbbrMatchFuzzyDefault   guifg=#000000
+hi! CmpItemAbbrDeprecatedDefault   guifg=#ffffff
+hi! CmpItemKindDefault             guifg=#ffff00
+hi! CmpItemKind         guibg=NONE guifg=NONE
+"    ------------------------------------------------------------------------------
+
+" ------------------------------------------------------------------------------
+" vim-diminactive
+" 🔖 Align the color scheme with tmux active/inactive window
+" ------------------------------------------------------------------------------
+hi! ColorColumn   ctermbg=235 guibg=#212121  " 1E1E1E is also good
+" ------------------------------------------------------------------------------
+
+" Match with Tmux inactive and lualine
 " Search - improve contrast and match Airline Theme
 hi Search ctermfg=214 ctermbg=238 guifg=#ffa724 guibg=#45413b
-hi Visual ctermfg=51 ctermbg=238 guifg=#ACFFFF guibg=#002222
+hi Visual ctermfg=51  ctermbg=238 guifg=#ACFFFF guibg=#002222
 
 " White space and related
 " [link undefined to defined]
-hi NonText            ctermfg=244  guifg=#808080 cterm=NONE gui=NONE
+hi! NonText           ctermfg=244  guifg=#808080 cterm=NONE gui=NONE
 hi! link SpecialKey   NonText
 hi! link LineNr       NonText
-hi CursorLineNR       ctermfg=227  guifg=#FFFF5F cterm=NONE gui=NONE
+hi! CursorLineNR      ctermfg=227  guifg=#FFFF5F cterm=NONE gui=NONE
 
 " Messages
 hi ErrorMsg           ctermfg=203  guifg=#FF5F55
