@@ -1,7 +1,20 @@
+--------------------------------------------------------------------------------
 -- yamlls
-require("lspconfig").yamlls.setup({
+--------------------------------------------------------------------------------
+local status_ok, _ = pcall(require, "lspconfig")
+if not status_ok then
+    return
+end
+--------------------------------------------------------------------------------
+local lspconfig = require("lspconfig")
+--------------------------------------------------------------------------------
+local handlers = require("usermod.nvim_handlers")
+local capabilities = require("usermod.env").capabilities
+--------------------------------------------------------------------------------
+
+lspconfig.yamlls.setup({
     capabilities = capabilities,
-    on_attach = on_attach,
+    on_attach = handlers.on_attach,
     settings = {
         yaml = {
             schemas = {

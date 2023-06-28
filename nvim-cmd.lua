@@ -6,6 +6,8 @@ vim.opt.completeopt = { "menu", "menuone", "noselect" }
 
 local cmp = require("cmp")
 
+-- Setup Completion
+-- See https://github.com/hrsh7th/nvim-cmp#basic-configuration
 cmp.setup({
     -- Enable LSP snippets
     snippet = {
@@ -18,7 +20,7 @@ cmp.setup({
         ["<C-f>"] = cmp.mapping(cmp.mapping.scroll_docs(4), { "i", "c" }),
         ["<C-Space>"] = cmp.mapping(cmp.mapping.complete(), { "i", "c" }),
 
-        ["<C-y>"] = cmp.setup.disable, -- Specify `cmp.setup.disable` if you want to remove the default `<C-y>` mapping.
+        ["<C-y>"] = cmp.setup.enable, -- Specify `cmp.setup.disable` if you want to remove the default `<C-y>` mapping.
         ["<C-e>"] = cmp.mapping({
             i = cmp.mapping.abort(),
             c = cmp.mapping.close(),
@@ -39,12 +41,12 @@ cmp.setup({
     },
     -- Installed sources
     sources = cmp.config.sources({
-        { name = "path" },
-        { name = "nvim_lsp", keyword_length = 3 }, -- from language server
+        { name = "nvim_lsp" }, -- from language server
         { name = "nvim_lsp_signature_help" }, -- display function signatures with current parameter emphasized
+        { name = "path" },
         { name = "nvim_lua", keyword_length = 2 }, -- complete neovim's Lua runtime API such vim.lsp.*
-        { name = "buffer", keyword_length = 2 }, -- source current buffer
         { name = "vsnip", keyword_length = 2 },
+        { name = "buffer", keyword_length = 2 }, -- source current buffer
         { name = "lspconfig" }, -- access to all languages
         { name = "cmp_tabnine" }, -- AI for completion
         { name = "rg" }, -- ripgrep
@@ -53,14 +55,7 @@ cmp.setup({
         { name = "npm", keyword_length = 4 },
         { name = "tmux" },
         { name = "fish" },
-        -- { name = "vsnip" },
-        {
-            name = "cmp-clippy", -- experimental
-            options = {
-                model = "EleutherAI/gpt-neo-2.7B", -- check code clippy vscode repo for options
-                key = "", -- huggingface.co api key
-            },
-        },
+        -- cmp clippy
     }),
     window = {
         completion = cmp.config.window.bordered(),
@@ -73,7 +68,7 @@ cmp.setup({
                 nvim_lsp = "λ",
                 vsnip = "⋗",
                 buffer = "Ω",
-                path = "🖫",
+                path = "◇",
             }
             item.menu = menu_icon[entry.source.name]
             return item

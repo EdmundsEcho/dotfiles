@@ -26,14 +26,14 @@ Plug 'windwp/nvim-ts-autotag'            " html and xml tag-pairing
 Plug 'rrethy/vim-hexokinase', { 'do': 'make hexokinase' }
 
 " Bars, panels, and files
-" Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'ctrlpvim/ctrlp.vim'                " Filename search
 Plug 'majutsushi/tagbar'
 Plug 'nvim-lualine/lualine.nvim'         " replaces airline
-Plug 'romgrk/barbar.nvim'                " tabline (tabs)
-" Plug 'seblj/nvim-tabline'
 
-Plug 'fholgado/minibufexpl.vim'          " explorer for buffers
+" tabs
+Plug 'romgrk/barbar.nvim'                " tabline (tabs)
+Plug 'lewis6991/gitsigns.nvim'           " OPTIONAL: for git status
+Plug 'nvim-tree/nvim-web-devicons'       " OPTIONAL: for file icons
 
 " Text manipulation
 Plug 'godlygeek/tabular'                 " aligns text into table format
@@ -55,6 +55,11 @@ Plug 'tmux-plugins/vim-tmux-focus-events' " Captures active/inactive pane events
 " Dim inactive windows (split views)
 Plug 'blueyed/vim-diminactive'            " dims inactive window; depends on tmux-focus events
 
+" compare blocks of code within the same file
+" :help line diff
+Plug 'AndrewRadev/linediff.vim'
+
+
 " folding
 Plug 'tmhedberg/SimpylFold'
 
@@ -67,13 +72,12 @@ Plug 'jose-elias-alvarez/null-ls.nvim'
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-lua/lsp-status.nvim'
 Plug 'onsails/lspkind-nvim'
-Plug 'williamboman/nvim-lsp-installer'
-Plug 'williamboman/mason.nvim'
+Plug 'williamboman/mason.nvim', { 'do': 'MasonUpdate' }
 Plug 'williamboman/mason-lspconfig.nvim'
 
 "--- Functional
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
-Plug 'rcarriga/nvim-notify'
+" Plug 'rcarriga/nvim-notify' 🦀 ? when not using
 Plug 'dag/vim-fish'                  " may be redundant with cmp-fish
 
 " Completion framework
@@ -109,10 +113,11 @@ Plug 'towolf/vim-helm'        " helm yaml + gotmpl + sprig + custom
 " See hrsh7th's other plugins for more completion sources!
 
 " status line content
-Plug 'nvim-lua/lsp-status.nvim'
+" Plug 'nvim-lua/lsp-status.nvim' 🦀 when not using?
 
 " treesitter configuration
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " updating the parsers on update
+Plug 'nvim-treesitter/playground'
 
 " html and css
 Plug 'mattn/emmet-vim'

@@ -7,14 +7,14 @@ local null_ls = require("null-ls")
 local formatting = null_ls.builtins.formatting
 local diagnostics = null_ls.builtins.diagnostics
 require("null-ls").setup({
-    capabilities = capabilities,
-    on_attach = on_attach,
+    -- capabilities = capabilities,
+    -- on_attach = on_attach,
     sources = {
-        diagnostics.flake8, -- python
+        -- diagnostics.flake8, -- python
+        -- formatting.black.with({ extra_args = { "--fast" } }), -- python
         diagnostics.jsonlint, -- json
         -- diagnostics.yamllint, -- yaml
         formatting.stylua, -- lua
-        formatting.black.with({ extra_args = { "--fast" } }), -- python
         -- formatting.rustfmt, -- rust
         formatting.brittany, -- haskell
         formatting.prettier.with({

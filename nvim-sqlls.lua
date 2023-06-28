@@ -1,7 +1,5 @@
 -- sqlls
-require("lspconfig").sqlls.setup({
-    capabilities = capabilities,
-    on_attach = on_attach,
+return {
     settings = {
         cmd = {
             "sql-language-server",
@@ -16,4 +14,4 @@ require("lspconfig").sqlls.setup({
             "mysql",
         },
     },
-})
+}

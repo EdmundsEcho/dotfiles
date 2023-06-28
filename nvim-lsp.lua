@@ -3,10 +3,10 @@
 -- Lua guide for vim https://github.com/nanotee/nvim-lua-guide
 -- See also: ~/.config/nvim/lua/usermod/nvim_handlers.lua
 --------------------------------------------------------------------------------
-require("nvim-lsp-installer").setup({})
 local lspconfig = require("lspconfig")
 --------------------------------------------------------------------------------
 local handlers = require("usermod.nvim_handlers")
+local capabilities = require("usermod.env")
 --------------------------------------------------------------------------------
 
 -- augment markdown
@@ -24,7 +24,7 @@ local servers = {
     "eslint",
     -- "graphql",
     "html",
-    "hls", -- haskell
+    -- "hls", -- haskell
     "tsserver", -- typescript
     -- "sumneko_lua", -- lua depreacted
     "lua_ls", -- lua
@@ -33,25 +33,100 @@ local servers = {
     "vimls",
     "yamlls",
     -- "emmet_ls",
-    "rust_analyzer",
+    -- "rust_analyzer", -- rust-tools
     -- "clangd",
     "pyright",
     "sqlls",
 }
 
-local capabilities = require("cmp_nvim_lsp").default_capabilities(
-    vim.lsp.protocol.make_client_capabilities()
-)
+require("mason-lspconfig").setup({
+    ensure_installed = servers,
+})
+
+local eslint = {
+    settings = {
+        enable = true,
+        format = { enable = true }, -- this will enable formatting
+        packageManager = "yarn",
+        autoFixOnSave = true,
+        codeActionsOnSave = {
+            mode = "all",
+            rules = { "!debugger", "!no-only-tests/*" },
+        },
+        lintTask = {
+            enable = true,
+        },
+    },
+}
+local sqlls = {
+    settings = {
+        cmd = {
+            "sql-language-server",
+            "up",
+            "--method",
+            "stdio",
+            "--debug",
+            "true",
+        },
+        filetypes = {
+            "sql",
+            "mysql",
+        },
+    },
+}
+local lua = {
+    settings = {
+        Lua = {
+            runtime = {
+                -- Tell the language server which version of Lua you're using
+                -- (most likely LuaJIT in the case of Neovim)
+                version = "LuaJIT",
+            },
+            diagnostics = {
+                -- Get the language server to recognize the `vim` global
+                globals = {
+                    "vim",
+                    "require",
+                },
+            },
+            workspace = {
+                -- Make the server aware of Neovim runtime files
+                library = vim.api.nvim_get_runtime_file("", true),
+            },
+            -- Do not send telemetry data containing a randomized but unique identifier
+            telemetry = {
+                enable = false,
+            },
+        },
+    },
+}
+local option_lookup = {
+    lua_ls = lua,
+    eslint = eslint,
+    sqlls = sqlls,
+}
 --------------------------------------------------------------------------------
 -- activate each lsp in the list
 --------------------------------------------------------------------------------
 for _, lsp in ipairs(servers) do
-    lspconfig[lsp].setup({
+    local generic_opts = {
         capabilities = capabilities,
         on_attach = handlers.on_attach,
         flags = { debounce_text_changes = 150 },
-    })
+    }
+    local specialized_opts = option_lookup[lsp]
+    if specialized_opts == nil then
+        lspconfig[lsp].setup(generic_opts)
+    else
+        local opts = vim.tbl_deep_extend(
+            "force",
+            generic_opts,
+            specialized_opts
+        )
+        lspconfig[lsp].setup(opts)
+    end
 end
+
 --------------------------------------------------------------------------------
 
 -- To debug, run the server and view the log
