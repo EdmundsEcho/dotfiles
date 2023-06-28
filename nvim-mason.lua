@@ -1,3 +1,8 @@
+--------------------------------------------------------------------------------
+-- mason
+-- Manages all lsp server installations
+-- See also nvim-lsp.lua
+--------------------------------------------------------------------------------
 require("mason").setup({
     ui = {
         icons = {
@@ -7,4 +12,3 @@ require("mason").setup({
         },
     },
 })
-require("mason-lspconfig").setup()

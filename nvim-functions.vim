@@ -74,7 +74,7 @@ endfun
 fun! GetVimVariables()
   redir >> /tmp/vim.log
   execute "echom empty(v:completed_item)"
-  call echom v:completed_item
+  echom v:completed_item
   silent execute "let v:"
 endfun
 fun! ToggleVimVariables()
@@ -242,6 +242,24 @@ fun! HiGroupEnable()
   " lua vim.bo["myspace#usermessage"] = '%{HiGroup()}'
   lua nvim_buf_set_var(0, usermessage, '%{HiGroup()}')
   echom  "Activated show highlight group"
+endfun
+
+fun! GetExtmarkDetailsAt(bufnr, ns_id, pos) abort
+  let l:row = line(a:pos)
+  let l:col = col(a:pos)
+  return nvim_buf_get_extmarks(a:bufnr, a:ns_id, [l:row-1, l:col-1], [l:row, l:col], {'details': 1})
+endfun
+
+fun! ListExtHighlightsAtCursor()
+  let l:namespaces = nvim_get_namespaces()
+  let l:hl_groups = []
+  for l:ns_id in values(l:namespaces)
+    let l:extmarks = GetExtmarkDetailsAt(0, l:ns_id, '.')
+    for l:extmark in l:extmarks
+      let l:hl_groups += [l:extmark[3]['hl_group']]
+    endfor
+  endfor
+  return l:hl_groups
 endfun
 
 " Haskell

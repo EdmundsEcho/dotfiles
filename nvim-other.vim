@@ -50,17 +50,17 @@ endif
 " Neovim's Python and Ruby provider(s)
 " see https://duseev.com/articles/vim-python-pipenv/
 " -------------------------------------------------------------------------------
-let pipenv_venv_path = system('pipenv --venv') " use system call to try...
-if v:shell_error == 0
-  " parse the response and construct the setting
-  let venv_path = substitute(pipenv_venv_path, '\n', '', '')
-  let g:python3_host_prog = venv_path . '/bin/python'
-  echom 'The venv_path: ' . g:python3_host_prog
-else
-  " notify when not set (a good thing)
-  " echom 'The venv_path was not set'
-  let g:python3_host_prog = '/Users/edmund/.pyenv/shims/python'
-endif
+"let pipenv_venv_path = system('pipenv --venv') " use system call to try...
+"if v:shell_error == 0
+"  " parse the response and construct the setting
+"  let venv_path = substitute(pipenv_venv_path, '\n', '', '')
+"  let g:python3_host_prog = venv_path . '/bin/python'
+"  echom 'The venv_path: ' . g:python3_host_prog
+"else
+"  " notify when not set (a good thing)
+"  " echom 'The venv_path was not set'
+"  let g:python3_host_prog = '/Users/edmund/.pyenv/shims/python'
+"endif
 
 " turn off python2 and python3
 let g:loaded_python_provider = 0
@@ -204,6 +204,8 @@ let g:ctrlp_custom_ignore = {
       \ }
 " list of files to hide in Explore
 let g:netrw_list_hide = {}
+let g:loaded_netrw = 1
+let g:loaded_netrwPlugin = 1
 
 " HTML plugin
 " ===========
@@ -239,11 +241,11 @@ let NERDTreeDirArrows = 1
 
 " mini buffer explorer
 "======================
-let g:miniBufExplorerAutoStart = 0 " prefer manual
-let g:miniBufExplVSplit = 40 " column width in chars
-noremap <Leader>mbe :MBEOpen<cr>
-noremap <Leader>mbc :MBEClose<cr>
-noremap <Leader>mbt :MBEToggle<cr>
+"let g:miniBufExplorerAutoStart = 0 " prefer manual
+"let g:miniBufExplVSplit = 40 " column width in chars
+"noremap <Leader>mbe :MBEOpen<cr>
+"noremap <Leader>mbc :MBEClose<cr>
+"noremap <Leader>mbt :MBEToggle<cr>
 
 " Linting
 set shortmess+=c
@@ -251,14 +253,8 @@ set shortmess+=c
 " lspconfig
 " format on save
 " =================
-" rust
-autocmd BufWritePre *.rs lua vim.lsp.buf.formatting_sync(nil, 200)
-" lua
-autocmd BufWritePre *.lua lua vim.lsp.buf.formatting_sync(nil, 100)
 " yaml
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
-" Show diagnostic popup on cursor hold
-autocmd CursorHold * lua vim.diagnostic.open_float({focusable = false})
 
 " ctags gutentags -- <C-[>
 " ========================
@@ -378,15 +374,7 @@ let g:plug_timeout = 5              " Low vim-plug timeout to prevent long freez
 " barbar tabline
 " ==============
 " NOTE: If barbar's option dict isn't created yet, create it
-let bufferline = get(g:, 'bufferline', {})
-" Enable/disable close button
-let bufferline.closable = v:false
-" Configure icons on the bufferline.
-let bufferline.icon_separator_active = ''
-let bufferline.icon_separator_inactive = ''
-let bufferline.icon_close_tab = ''
-let bufferline.icon_close_tab_modified = '●'
-let bufferline.icon_pinned = '車'
+" TODO: Update configuration in lua
 " color of the tabs
 " let bg_current  = s:bg(['Normal'], '#000000')
 " let bg_visible  = s:bg(['TabLineSel', 'Normal'], '#000000')
@@ -523,7 +511,7 @@ set ttyfast     " faster rendering
 " Folding
 " =======
 set foldmethod=expr
-set foldexpr=nvim_treesitter#foldexpr()
+" set foldexpr=nvim_treesitter#foldexpr() -- moved to lua
 set foldnestmax=10
 set nofoldenable
 "set foldlevelstart
@@ -575,7 +563,8 @@ autocmd FileType nerdtree setlocal nolist
 
 " set font terminal font or set gui vim font
 " to a Nerd Font (https://github.com/ryanoasis/nerd-fonts):
-set guifont=DroidSansMono\ Nerd\ Font\ 12
+" set guifont=DroidSansMono\ Nerd\ Font\ 12
+" set guifont=Hasklug\ Nerd\ Font\ Mono:h13
 
 "-----------------------
 " go to tab number
@@ -602,7 +591,6 @@ EOF
 "    to see the range of options for setting icon displays
 set termguicolors    " Enable true color support in terminal
 set background=dark  " best for my transparent term configuration
-set guifont=Hasklig\ Light\ Nerd\ Font\ Complete:h13
 
 " Color scheme
 " ============
@@ -625,9 +613,37 @@ endtry
 " 2. iTerm2 v3 controls the cursor color and how bold
 "    fonts are displayed
 " 3. Call :hi to see a full list of syntax objects
+" 4. Use :Inspect and :TSNodeUnderCursor
 
 " Use same color behind concealed unicode characters
 hi clear Conceal
+
+" useful: https://colorhex.net/78b830
+" jsx pretty syntax highlighting
+" scheme:
+hi YELLOW       guifg=#D0C050
+hi RED          guifg=#CF5379
+hi ORANGE       guifg=#D4AC0D
+hi TURQUOISE    guifg=#78c0b0
+hi PURPLE       guifg=#8048b0
+hi GREEN        guifg=#78b830
+hi GRAY         guifg=#808080
+hi MUTED_GREEN  guifg=#609326
+hi MUTED_PURPLE guifg=#BA5D7E
+hi MUTED_BLUE   guifg=#83A8C1
+hi MUTED_BROWN  guifg=#A07A2F
+hi MUTED_YELLOW guifg=#A79414
+hi TYPE1        guifg=#bc990c
+hi TYPE1        guifg=#ecbf0e
+hi TYPE2        guifg=#ecbf0e
+hi TYPE         guifg=#ffdc73
+hi TYPE3        guifg=#e0c455
+hi TYPE4        guifg=#D2BD7F
+hi IDENTIFIER   guifg=#cae982
+hi FUNCTION     guifg=#A2CE68 gui=NONE
+hi COMMENT      guifg=#587182 gui=italic
+hi STRING       guifg=#72CF7B gui=italic
+hi MACRO        guifg=#CF745D
 
 " Parent highlighting groups
 " ==========================
@@ -685,14 +701,9 @@ hi ErrorMsg           ctermfg=203  guifg=#FF5F55
 hi! link Error ErrorMsg
 hi WarningMsg         ctermfg=192  guifg=#CAE982
 hi! link MoreMsg Question
-hi Comment            ctermfg=72   guifg=#83A8C1
+hi DiagnosticInfo     ctermfg=72   guifg=#808080
+hi DiagnosticHint     ctermfg=72   guifg=#588080
 hi Todo               ctermfg=234  guifg=#1C1C1C ctermbg=227 guibg=#FFFF5F gui=NONE
-
-" Note: SpellBad, SpellCap, Error and Todo can be
-" used depending on what the linters produce
-hi link CocErrorHighlight   Visual
-hi CocErrorSign  ctermfg=Red guifg=#00FFFF
-hi link CocWarningSign  WarningMsg
 
 " Window and folds
 hi VertSplit    ctermfg=51   guifg=#00FFFF " turquoise
@@ -702,19 +713,6 @@ hi Folded       ctermfg=250  ctermbg=235 guifg=#A8A8A8 guibg=#262626
 hi FoldedColumn ctermfg=250  ctermbg=235 guifg=#A8A8A8 guibg=#262626
 hi! link SignColumn LineNr
 
-" useful: https://colorhex.net/78b830
-" jsx pretty syntax highlighting
-" scheme:
-hi YELLOW       guifg=#d0c050
-hi RED          guifg=#c04888
-hi ORANGE       guifg=#D4AC0D
-hi TURQUOISE    guifg=#78c0b0
-hi PURPLE       guifg=#8048b0
-hi GREEN        guifg=#78b830
-hi MUTED_YELLOW guifg=#A79414
-hi MUTED_GREEN  guifg=#609326
-hi MUTED_GOLD   guifg=#D2BD7F
-hi MUTED_BROWN  guifg=#745600
 
 hi def link  jsxElement        YELLOW
 hi def link  jsxAttrib         PURPLE
@@ -744,10 +742,33 @@ hi def link  jsClassDefinition jsxClass
 hi def link  jsObjectKey       Identifier
 hi def link  xmlAttrib         PURPLE
 
+" Tabs
+"let s:BG = '#282c34'
+"let s:B1 = '#1c1f24'
+"
+"let s:bg_current   = s:BG
+"let s:bg_visible   = s:BG
+"let s:bg_other     = s:B1
+"let s:fg_separator = s:B1
+"let s:bg_visual    = s:B1
+"let s:bg_selection = s:B1
+"let s:bg_widget    = s:B1
+"let s:bg_highlight = s:B1
+"let s:bg_alt = s:B1
+"let s:bg = s:B1
+
+hi def link  BufferCurrent       ORANGE
+hi def link  BufferCurrentMod    TURQUOISE
+hi def link  BufferVisible       PURPLE
+hi def link  BufferInactive      GRAY
+hi def link  BufferTabpages      MUTED_PURPLE
+hi def link  BufferDefaultInactiveMod MUTED_BROWN
+
 " Rust tags
-" hi rustCommentLineDoc ctermfg=100 guifg=#A67C00
-" hi rustCommentLineDoc ctermfg=100 guifg=#B79632
-hi def link rustCommentLineDoc MUTED_BROWN
+" Use :Inspect and :TSNodeUnderCursor
+hi rustCommentLineDoc ctermfg=100 guifg=#B79632
+hi rustShebang        ctermfg=100 guifg=#B79632
+hi rustTrait          ctermfg=100 guifg=#A270A7
 hi rustModPath        ctermfg=100 guifg=#A270A7
 hi rustModPathSep     ctermfg=100 guifg=#BA5D7E
 hi rustEnumVariant    ctermfg=100 guifg=#DF95AF
@@ -755,5 +776,28 @@ hi rustAttribute      ctermfg=100 guifg=#85478B
 hi rustString         ctermfg=100 guifg=#679933
 hi RLSRLS             ctermfg=100 guifg=#FFBEAA
 hi RLS                ctermfg=100 guifg=#FFBEAA
+hi MYLIB              ctermfg=100 guifg=#4784DF
 hi def link rustStringDelimiter rustString
+
+hi def link @lsp.type.enumMember.rust GREEN
+hi def link @lsp.type.interface.rust rustTrait
+hi def link @lsp.type.unresolvedReference.rust RED
+hi def link @constant.rust ORANGE
+hi def link @lsp.mod.constant.rust ORANGE
+hi def link @include.rust MUTED_BROWN
+hi def link @namespace.rust MUTED_YELLOW
+hi def link @punctuation.type_param.rust GRAY
+hi def link @lsp.type.derive.rust rustTrait
+hi def link @lsp.type.typeAlias.rust TYPE2
+
+hi def link @lsp.typemod.namespace.declaration.rust MYLIB
+hi def link @lsp.mod.attribute.rust GRAY
+" hi def link @lsp.typemod.generic.attribute.rust rustShebang
+" hi @comment.rust cterm=italic guifg=#83A8C1 gui=italic
+hi def link @comment.vim COMMENT
+hi def link @comment.rust COMMENT
+hi def link @lsp.type.macro.rust MACRO
+
+" hi Comment            ctermfg=72   guifg=#83A8C1
+
 

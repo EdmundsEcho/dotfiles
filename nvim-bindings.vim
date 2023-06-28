@@ -91,10 +91,6 @@ augroup sourcing
   autocmd bufwritepost init.vim :source $MYVIMRC
 augroup END
 
-" coc
-" ===
-" See the coc config file
-
 "
 " EasyMotion
 " ==========
@@ -180,11 +176,15 @@ inoremap <C-F> <space><space><esc>kbywjPlli<C-V> <BS><BS>
 
 " shortcut to making arrows (note: - key maps to underscore)
 inoremap <C-_> -><space>
-inoremap <C-\> =><space>
+inoremap <C-=> =><space>
 
 " Place `;` at the end of the line
 " Note: . and ; cannot be mapped.
 inoremap <C-]> <Esc>A;<CR>
+
+" jump to start and end of the line
+inoremap <C-J> <Esc>0i
+inoremap <C-K> <Esc>A
 
 " Undo from insertmode
 inoremap <C-B> <Esc>ui
