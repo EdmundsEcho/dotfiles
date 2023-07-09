@@ -11,12 +11,14 @@ source $HOME/dotfiles/nvim-other.vim
 " Lua files
 source $HOME/dotfiles/nvim-mason.lua
 " -- configs
-source $HOME/dotfiles/nvim-cmp-npm.lua
 source $HOME/dotfiles/nvim-lualine.lua
 source $HOME/dotfiles/nvim-barbar.lua
 source $HOME/dotfiles/nvim-autotag.lua
 source $HOME/dotfiles/nvim-tree.lua
 source $HOME/dotfiles/nvim-null_ls.lua
+
+source $HOME/dotfiles/nvim-cmp-npm.lua
+source $HOME/dotfiles/nvim-cmd-completion.lua
 source $HOME/dotfiles/nvim-cmd.lua
 source $HOME/dotfiles/nvim-treesitter.lua
 

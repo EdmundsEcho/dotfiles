@@ -1,7 +1,8 @@
 --------------------------------------------------------------------------------
 -- Auto-completion with cmp
 --------------------------------------------------------------------------------
-vim.opt.completeopt = { "menu", "menuone", "noselect" }
+-- vim.opt.completeopt = { "menu", "menuone", "noselect" }
+vim.opt.completeopt = { "menu", "menuone", "noinsert" }
 -- print(vim.inspect(vim.opt.completeopt:get()))
 
 local cmp = require("cmp")
@@ -15,6 +16,7 @@ cmp.setup({
             vim.fn["vsnip#anonymous"](args.body)
         end,
     },
+
     mapping = {
         ["<C-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-4), { "i", "c" }),
         ["<C-f>"] = cmp.mapping(cmp.mapping.scroll_docs(4), { "i", "c" }),
@@ -41,22 +43,23 @@ cmp.setup({
     },
     -- Installed sources
     sources = cmp.config.sources({
-        { name = "nvim_lsp" }, -- from language server
-        { name = "nvim_lsp_signature_help" }, -- display function signatures with current parameter emphasized
+        { name = "nvim_lsp" },                     -- from language server
+        { name = "nvim_lsp_signature_help" },      -- display function signatures with current parameter emphasized
         { name = "path" },
-        { name = "nvim_lua", keyword_length = 2 }, -- complete neovim's Lua runtime API such vim.lsp.*
-        { name = "vsnip", keyword_length = 2 },
-        { name = "buffer", keyword_length = 2 }, -- source current buffer
-        { name = "lspconfig" }, -- access to all languages
-        { name = "cmp_tabnine" }, -- AI for completion
-        { name = "rg" }, -- ripgrep
+        { name = "nvim_lua",               keyword_length = 2 }, -- complete neovim's Lua runtime API such vim.lsp.*
+        { name = "vsnip",                  keyword_length = 2 },
+        { name = "buffer",                 keyword_length = 2 }, -- source current buffer
+        { name = "lspconfig" },                    -- access to all languages
+        { name = "cmp_tabnine" },                  -- AI for completion
+        { name = "rg" },                           -- ripgrep
         { name = "nvim_lua" },
         { name = "treesitter" },
-        { name = "npm", keyword_length = 4 },
+        { name = "npm",                    keyword_length = 4 },
         { name = "tmux" },
         { name = "fish" },
         -- cmp clippy
     }),
+    view = "wildmenu", -- or 'native' 'wildmenu'
     window = {
         completion = cmp.config.window.bordered(),
         documentation = cmp.config.window.bordered(),
@@ -76,13 +79,20 @@ cmp.setup({
     },
 })
 
-cmp.setup.cmdline("/", { sources = { { name = "buffer" } } })
+-- Use buffer source for `/` and `?`
+-- (if you enabled `native_menu`, this won't work anymore).
+cmp.setup.cmdline({ "/", "?" }, {
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = {
+        { name = "buffer" },
+    },
+})
 
 -- ✅ Use cmdline & path source for ':'
 -- 🔖  requires disabling 'native_menu`
-cmp.setup.cmdline(":", {
-    sources = cmp.config.sources(
-        { { name = "path" } },
-        { { name = "cmdline" } }
-    ),
-})
+--cmp.setup.cmdline(":", {
+--    sources = cmp.config.sources(
+--        { { name = "path" } },
+--        { { name = "cmdline" } }
+--    ),
+--})

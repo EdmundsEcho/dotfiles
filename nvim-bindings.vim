@@ -19,6 +19,9 @@
 " buffer, "
 " -------------------------------------------------------------------------------
 
+" File type specific bindings
+autocmd FileType json nnoremap <buffer> <C-f>:%!jq .<CR>
+
 " change local workding directory
 nnoremap <leader>cd :lcd %:p:h<CR>:pwd<CR>
 
@@ -78,11 +81,6 @@ noremap <C-]> :cstag <C-R>=expand("<cword>")<CR><CR>
 " Update files: codex update -> codex.tag
 "               git-hscope -X TemplateHaskell -> hscope.out
 
-" Map esc to remove highlighting of previous search
-" Disable in favor of using it to close the float window
-" 🔗 see nvim-coc.vim
-" nnoremap <esc> :noh<return><esc>
-
 " Display .vimrc in a new window; source when done
 " ===============================================
 nnoremap <leader>forc :sp ${HOME}/.config/nvim/init.vim <CR>
@@ -111,7 +109,6 @@ nmap <leader><leader>w <Plug>(easymotion-overwin-w)
 " Nvim-Tree
 " =========
 nnoremap <silent><leader>t <ESC>:NvimTreeToggle<CR>
-nnoremap <silent><leader>e <ESC>:NvimTreeToggle<CR>
 
 " 🚧
 " Jan 2022 NEW 🦀 WIP
@@ -180,11 +177,11 @@ inoremap <C-=> =><space>
 
 " Place `;` at the end of the line
 " Note: . and ; cannot be mapped.
-inoremap <C-]> <Esc>A;<CR>
+" inoremap <C-;> <Esc>A;<CR>
 
 " jump to start and end of the line
 inoremap <C-J> <Esc>0i
-inoremap <C-K> <Esc>A
+inoremap <C-K> <Esc>A;
 
 " Undo from insertmode
 inoremap <C-B> <Esc>ui

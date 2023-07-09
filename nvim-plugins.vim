@@ -76,13 +76,15 @@ Plug 'williamboman/mason.nvim', { 'do': 'MasonUpdate' }
 Plug 'williamboman/mason-lspconfig.nvim'
 
 "--- Functional
-Plug 'mg979/vim-visual-multi', {'branch': 'master'}
+" Plug 'mg979/vim-visual-multi', {'branch': 'master'} -- good but <C-n> conflict
 " Plug 'rcarriga/nvim-notify' 🦀 ? when not using
 Plug 'dag/vim-fish'                  " may be redundant with cmp-fish
 
 " Completion framework
 Plug 'hrsh7th/nvim-cmp'
-Plug 'hrsh7th/cmp-cmdline'
+Plug 'hrsh7th/cmp-cmdline'  " use
+" Plug 'gelguy/wilder.nvim', { 'do': function('UpdateRemotePlugins') } " alternative to cmp for command line
+Plug 'smolck/command-completion.nvim'  " alternative to cmp for command line
 
 " completion sources for nvim-cmp
 Plug 'David-Kunz/cmp-npm'       " package.json triggered source
@@ -120,7 +122,7 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " updating the pars
 Plug 'nvim-treesitter/playground'
 
 " html and css
-Plug 'mattn/emmet-vim'
+" Plug 'mattn/emmet-vim'
 
 " Optional dependencies
 Plug 'nvim-lua/popup.nvim'
@@ -168,6 +170,7 @@ Plug 'mklabs/mdn.vim', { 'do': 'yarn install --prefer-offline mdn-cli' }
 Plug 'vim-scripts/wombat256.vim'
 
 " Tree and font - must be last plugin
+" Note: Disables netrw
 Plug 'kyazdani42/nvim-web-devicons'
 Plug 'kyazdani42/nvim-tree.lua'
 
