@@ -1,0 +1,7 @@
+|c_CTRL-N|	CTRL-N		after using 'wildchar' with multiple matches:
+				go to next match, otherwise: recall older
+				command-line from history.
+		CTRL-O		not used
+|c_CTRL-P|	CTRL-P		after using 'wildchar' with multiple matches:
+				go to previous match, otherwise: recall older
+				command-line from history.

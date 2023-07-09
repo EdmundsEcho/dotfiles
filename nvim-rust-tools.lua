@@ -43,15 +43,20 @@ require("rust-tools").setup({
             ["rust-analyzer"] = {
                 -- enable clippy on save
                 cargo = {
-                    loadOutDirsFromCheck = true,
-                    runBuildScripts = true,
                     allFeatures = true,
+                    -- loadOutDirsFromCheck = true,
+                    -- runBuildScripts = true,
                 },
                 procMacro = { enable = true },
                 diagnostics = {
                     enable = true,
                     disabled = { "unresolved-proc-macro" },
                     enableExperimental = true,
+                },
+                completion = {
+                    postfix = {
+                        enable = false,
+                    },
                 },
                 checkOnSave = {
                     command = "clippy",

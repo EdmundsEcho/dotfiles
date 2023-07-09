@@ -32,6 +32,14 @@
 " TESTING
 " inoremap <ctr-g><ctr-f> <esc>kbywj0pA
 
+" -------------------------------------------------------------------------------
+"  Change the underlying shell to support vim/neovim
+"  (fish shell is insufficiently POSIX compliant)
+" -------------------------------------------------------------------------------
+if $SHELL =~ 'bin/fish'
+  set shell=/bin/sh
+endif
+
 set nocompatible " No VI compatibility
 set autoread     " Detect file changes outside vim
 
@@ -39,28 +47,6 @@ set autoread     " Detect file changes outside vim
 " use set noautochdir to turn it off
 " manually :lcd %:p:h
 set autochdir    " change working dir to current buffer
-
-" -------------------------------------------------------------------------------
-"  Change the underlying shell to support vim/neovim
-" -------------------------------------------------------------------------------
-if $SHELL =~ 'bin/fish'
-  set shell=/bin/sh
-endif
-" -------------------------------------------------------------------------------
-" Neovim's Python and Ruby provider(s)
-" see https://duseev.com/articles/vim-python-pipenv/
-" -------------------------------------------------------------------------------
-"let pipenv_venv_path = system('pipenv --venv') " use system call to try...
-"if v:shell_error == 0
-"  " parse the response and construct the setting
-"  let venv_path = substitute(pipenv_venv_path, '\n', '', '')
-"  let g:python3_host_prog = venv_path . '/bin/python'
-"  echom 'The venv_path: ' . g:python3_host_prog
-"else
-"  " notify when not set (a good thing)
-"  " echom 'The venv_path was not set'
-"  let g:python3_host_prog = '/Users/edmund/.pyenv/shims/python'
-"endif
 
 " turn off python2 and python3
 let g:loaded_python_provider = 0
@@ -90,10 +76,6 @@ let g:submode_timeout = 500
 " don't consume submode-leaving key
 let g:submode_keep_leaving_key = 1
 
-" vim cursor settings
-" set guicursor=n-v-c:block-Cursor/lCursor-blinkon0,
-"       \i-ci:ver25-Cursor/lCursor,
-"       \r:hor50-Cursor
 
 " Line formatting
 " TODO: how does it work with syntax based formatting
@@ -136,6 +118,12 @@ let g:formatters_haskell = ['custom_haskell']
 " debug
 " let g:autoformat_verbosemode=1
 
+" vimspector
+" ==========
+let g:vimspector_sidebar_width = 85
+let g:vimspector_bottombar_height = 15
+let g:vimspector_terminal_maxwidth = 70
+
 " Kill the damned Ex mode (no operation).
 nnoremap Q <nop>
 
@@ -172,22 +160,22 @@ let g:session_autosave = 'no'
 " default: <CR-S><CR-S> to save
 " default: <CR-S><CR-R> to restore
 
-
+" 🦀 ??
 " REQUIRED (Dec 2017)
 " Make Vim recognize XTerm escape sequences for Page and Arrow
 " keys combined with modifiers such as Shift, Control, and Alt.
 " See http://www.reddit.com/r/vim/comments/1a29vk/_/c8tze8p
-if &term =~ '^screen'
-  " Page keys http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/FAQ
-  execute "set t_kP=\e[5;*~"
-  execute "set t_kN=\e[6;*~"
-
-  " Arrow keys http://unix.stackexchange.com/a/34723
-  execute "set <xUp>=\e[1;*A"
-  execute "set <xDown>=\e[1;*B"
-  execute "set <xRight>=\e[1;*C"
-  execute "set <xLeft>=\e[1;*D"
-endif
+"if &term =~ '^screen'
+"  " Page keys http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/FAQ
+"  execute "set t_kP=\e[5;*~"
+"  execute "set t_kN=\e[6;*~"
+"
+"  " Arrow keys http://unix.stackexchange.com/a/34723
+"  execute "set <xUp>=\e[1;*A"
+"  execute "set <xDown>=\e[1;*B"
+"  execute "set <xRight>=\e[1;*C"
+"  execute "set <xLeft>=\e[1;*D"
+"endif
 
 " SimpylFold fold plugin (Python focus)
 " =====================================
@@ -218,37 +206,6 @@ let g:closetag_emptyTags_caseSensitive = 1
 
 " Do not use this compatibility feature; breaks clean use of <c-k>
 " let g:neosnippet#enable_snipmate_compatibility = 1
-
-" Notes:
-" 1. It must be "imap" and "smap".  It uses <Plug> mappings
-" 2. Potential interaction with SuperTab
-" Plugin key-mappings.
-" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
-imap <C-k> <Plug>(neosnippet_expand_or_jump)
-smap <C-k> <Plug>(neosnippet_expand_or_jump)
-xmap <C-k> <Plug>(neosnippet_expand_target)
-
-
-" file/buffer exploring
-" Note: :Explorer is the built-in utility
-"
-" NerdTree configuration
-"======================
-let NERDTreeQuitOnOpen = 1
-let NERDTreeAutoDeleteBuffer = 1
-" let NERDTreeMinimalUI = 1
-let NERDTreeDirArrows = 1
-
-" mini buffer explorer
-"======================
-"let g:miniBufExplorerAutoStart = 0 " prefer manual
-"let g:miniBufExplVSplit = 40 " column width in chars
-"noremap <Leader>mbe :MBEOpen<cr>
-"noremap <Leader>mbc :MBEClose<cr>
-"noremap <Leader>mbt :MBEToggle<cr>
-
-" Linting
-set shortmess+=c
 
 " lspconfig
 " format on save
@@ -380,6 +337,9 @@ let g:plug_timeout = 5              " Low vim-plug timeout to prevent long freez
 " let bg_visible  = s:bg(['TabLineSel', 'Normal'], '#000000')
 " let bg_inactive = s:bg(['TabLineFill', 'StatusLine'], '#000000')
 
+" Other neovim settings
+" =====================
+set shortmess+=c                " Linting
 set hidden                      " Allow buffer change w/o saving/don't close when not visible
 set history=1000                " Remember last 1000 commands
 set viminfo='100,f1             " save marks and jumps for 100 files
@@ -545,26 +505,12 @@ let g:vim_jsx_pretty_colorful_config = 1              " default 0
 let g:vim_jsx_pretty_template_tags = ['html', 'jsx']  " default
 let g:vim_jsx_pretty_enable_jsx_highlight = 0         " default 1
 
-" ⚠️  rust.vim
-" ===========
-" let g:rustfmt_autosave = 1
-"let g:rustfmt_emit_files = 1
-"let g:rustfmt_fail_silently = 0
-"let g:rust_clip_command = 'pbcopy' " take code to PlayPen
 
 " typescript
 let g:yats_host_keyword = 1  " syntax config file for yats
 
 " Limit the use of devicon fonts
 let g:WebDevIconsUnicodeDecorateFileNodes = 0
-
-" testing extra-powerline-symbols
-autocmd FileType nerdtree setlocal nolist
-
-" set font terminal font or set gui vim font
-" to a Nerd Font (https://github.com/ryanoasis/nerd-fonts):
-" set guifont=DroidSansMono\ Nerd\ Font\ 12
-" set guifont=Hasklug\ Nerd\ Font\ Mono:h13
 
 "-----------------------
 " go to tab number
@@ -622,7 +568,7 @@ hi clear Conceal
 " jsx pretty syntax highlighting
 " scheme:
 hi YELLOW       guifg=#D0C050
-hi RED          guifg=#CF5379
+hi RED          guifg=#FF5F55
 hi ORANGE       guifg=#D4AC0D
 hi TURQUOISE    guifg=#78c0b0
 hi PURPLE       guifg=#8048b0
@@ -641,9 +587,10 @@ hi TYPE3        guifg=#e0c455
 hi TYPE4        guifg=#D2BD7F
 hi IDENTIFIER   guifg=#cae982
 hi FUNCTION     guifg=#A2CE68 gui=NONE
-hi COMMENT      guifg=#587182 gui=italic
-hi STRING       guifg=#72CF7B gui=italic
+hi COMMENT      guifg=#609199 gui=italic
 hi MACRO        guifg=#CF745D
+hi STRING       guifg=#72CF7B gui=italic
+hi MUTED_STRING guifg=#679933 gui=italic
 
 " Parent highlighting groups
 " ==========================
@@ -745,17 +692,6 @@ hi def link  xmlAttrib         PURPLE
 " Tabs
 "let s:BG = '#282c34'
 "let s:B1 = '#1c1f24'
-"
-"let s:bg_current   = s:BG
-"let s:bg_visible   = s:BG
-"let s:bg_other     = s:B1
-"let s:fg_separator = s:B1
-"let s:bg_visual    = s:B1
-"let s:bg_selection = s:B1
-"let s:bg_widget    = s:B1
-"let s:bg_highlight = s:B1
-"let s:bg_alt = s:B1
-"let s:bg = s:B1
 
 hi def link  BufferCurrent       ORANGE
 hi def link  BufferCurrentMod    TURQUOISE
@@ -763,6 +699,11 @@ hi def link  BufferVisible       PURPLE
 hi def link  BufferInactive      GRAY
 hi def link  BufferTabpages      MUTED_PURPLE
 hi def link  BufferDefaultInactiveMod MUTED_BROWN
+
+hi def link DiagnosticError RED
+hi DiagnosticWarn  ctermfg=5 guifg=#B79632
+" hi def link DiagnosticInfo  guifg=Blue
+" hi def link DiagnosticHint  guifg=Green
 
 " Rust tags
 " Use :Inspect and :TSNodeUnderCursor
@@ -773,11 +714,11 @@ hi rustModPath        ctermfg=100 guifg=#A270A7
 hi rustModPathSep     ctermfg=100 guifg=#BA5D7E
 hi rustEnumVariant    ctermfg=100 guifg=#DF95AF
 hi rustAttribute      ctermfg=100 guifg=#85478B
-hi rustString         ctermfg=100 guifg=#679933
 hi RLSRLS             ctermfg=100 guifg=#FFBEAA
 hi RLS                ctermfg=100 guifg=#FFBEAA
 hi MYLIB              ctermfg=100 guifg=#4784DF
-hi def link rustStringDelimiter rustString
+" hi rustString         ctermfg=100 guifg=#679933
+" hi def link rustStringDelimiter rustString
 
 hi def link @lsp.type.enumMember.rust GREEN
 hi def link @lsp.type.interface.rust rustTrait
@@ -794,9 +735,12 @@ hi def link @lsp.typemod.namespace.declaration.rust MYLIB
 hi def link @lsp.mod.attribute.rust GRAY
 " hi def link @lsp.typemod.generic.attribute.rust rustShebang
 " hi @comment.rust cterm=italic guifg=#83A8C1 gui=italic
-hi def link @comment.vim COMMENT
 hi def link @comment.rust COMMENT
 hi def link @lsp.type.macro.rust MACRO
+hi def link @storageclass.lifetime.rust MUTED_STRING
+hi def link @lsp.type.namespace.rust GRAY
+
+hi def link @comment.vim COMMENT
 
 " hi Comment            ctermfg=72   guifg=#83A8C1
 
