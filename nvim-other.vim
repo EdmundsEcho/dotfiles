@@ -39,6 +39,8 @@
 if $SHELL =~ 'bin/fish'
   set shell=/bin/sh
 endif
+" Prepend mise shims to PATH
+let $PATH = $HOME . '/.local/share/mise/shims:' . $PATH
 
 set nocompatible " No VI compatibility
 set autoread     " Detect file changes outside vim
@@ -48,13 +50,16 @@ set autoread     " Detect file changes outside vim
 " manually :lcd %:p:h
 set autochdir    " change working dir to current buffer
 
-" turn off python2 and python3
+" turn off default services
 let g:loaded_python_provider = 0
 let g:loaded_python3_provider = 0
+let g:loaded_perl_provider = 0
+let g:loaded_node_provider = 0
+let g:loaded_ruby_provider = 0
 
 " enable virtual text
 let g:diagnostic_enable_virtual_text = 1
-let g:diagnostic_virtual_text_prefix = ' '
+" let g:diagnostic_virtual_text_prefix = ' '
 
 " -------------------------------------------------------------------------------
 " esc key with cursor moved forward
@@ -83,8 +88,9 @@ set formatprg=par
 let $PARINIT = 'rTbgqR B=.,?_A_a Q=_s>|'
 
 " ripgrep
-" =======
-" Make sure rg is in the PATH
+" Option 1 using :Rg
+" ==================
+" Installed using cargo; must be in PATH
 " Usage
 " Search for foo in current working directory: :grep foo.
 " Search for foo in files under src/: :grep foo src.
@@ -95,6 +101,8 @@ if executable("rg")
   set grepprg=rg\ --vimgrep\ --smart-case\ --hidden
   set grepformat=%f:%l:%c:%m
 endif
+" Option 2 using :Rg
+let g:rg_path = "$HOME/.cargo/bin/rg"
 
 " markdown composer
 " =================
@@ -186,10 +194,24 @@ let g:SimpylFold_docstring_preview=1
 " set the root directory to vim's working directory
 " let g:ctrlp_cmd='CtrlP :pwd'
 let g:ctrlp_working_path_mode = 'ra'
-let g:ctrlp_custom_ignore = {
-      \ 'dir':  '\v[\/]\.(git|hg|svn)$',
-      \ 'file': '\v\.(exe|so|dll)$',
-      \ }
+" inactive when using user_command (see below)
+" let g:ctrlp_custom_ignore = {
+"   \ 'dir':  '\v[\/]\.(git|hg|svn)|node_modules|build|dist$',
+"   \ 'file': '\v\.(exe|so|dll)$',
+"   \ 'link': 'some_bad_symbolic_links',
+"   \ }
+" file listing command for MacOSX
+let g:ctrlp_user_command = 'find %s -type d \( ' .
+                         \ '-name target ' .
+                         \ '-o -name node_modules ' .
+                         \ '-o -name .git ' .
+                         \ '-o -name build ' .
+                         \ '-o -name include ' .
+                         \ '-o -name .venv ' .
+                         \ '-o -name .pytest_cache ' .
+                         \ '-o -name .mypy_cache ' .
+                         \ '-o -name .ruff_cache ' .
+                         \ '\) -prune -o -type f'
 " list of files to hide in Explore
 let g:netrw_list_hide = {}
 let g:loaded_netrw = 1
@@ -260,6 +282,7 @@ augroup END
 
 " javascript
 " https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#eslint
+" TODO: move this to after/ftplugin
 augroup JavaScript
   autocmd!
   " au FileType javascript setlocal foldmethod=indent
@@ -313,12 +336,11 @@ augroup previewWindow
 augroup END
 
 " HASKELL specific
-source $HOME/dotfiles/nvim-haskell-extras.vim
-
+" TODO: Integrate with after/ftplugin
+" source $HOME/dotfiles/nvim-haskell-extras.vim
 
 " TODO: Find a better place for these settings
 let g:jsx_ext_required = 0          " Enable jsx for *.js files
-autocmd FileType json syntax match Comment +\/\/.\+$+
 
 " vim-javascript
 " ==============
@@ -579,18 +601,50 @@ hi MUTED_PURPLE guifg=#BA5D7E
 hi MUTED_BLUE   guifg=#83A8C1
 hi MUTED_BROWN  guifg=#A07A2F
 hi MUTED_YELLOW guifg=#A79414
+
+" playing with TYPE, use link
 hi TYPE1        guifg=#bc990c
-hi TYPE1        guifg=#ecbf0e
 hi TYPE2        guifg=#ecbf0e
-hi TYPE         guifg=#ffdc73
 hi TYPE3        guifg=#e0c455
 hi TYPE4        guifg=#D2BD7F
-hi IDENTIFIER   guifg=#cae982
-hi FUNCTION     guifg=#A2CE68 gui=NONE
-hi COMMENT      guifg=#609199 gui=italic
-hi MACRO        guifg=#CF745D
-hi STRING       guifg=#72CF7B gui=italic
-hi MUTED_STRING guifg=#679933 gui=italic
+hi TYPE5        guifg=#B9BA1E
+hi! link TYPE    TYPE2
+hi! link VARIANT TYPE5
+
+" playing with IDENTIFIER, use link
+hi IDENTIFIER1  guifg=#DBd263
+hi IDENTIFIER2  guifg=#f5e77d
+hi IDENTIFIER3  guifg=#dbd263
+hi IDENTIFIER4  guifg=#dbe667
+hi! link IDENTIFIER IDENTIFIER2
+
+" playing with FUNCTION, use link
+hi FUNCTION1        guifg=#A2CE68
+hi FUNCTION2        guifg=#95F5CB
+hi FUNCTION3        guifg=#BBC1F6
+hi FUNCTION4        guifg=#4F78C2
+hi FUNCTION5        guifg=#D3FA73
+hi! link FUNCTION FUNCTION5
+
+" playing with STRING, use link
+hi STRING1        guifg=#72CF7B gui=italic
+hi STRING2        guifg=#78b830 gui=italic
+hi STRING3        guifg=#679933 gui=italic
+hi STRING4        guifg=#d6d6d6 gui=italic
+hi! link STRING STRING1
+hi! link LIFETIME STRING2
+
+" playing with COMMENT, use link for both COMMENT & DOCUMENTATION
+hi COMMENT1        guifg=#609199 gui=italic
+hi COMMENT2        guifg=#8ca375 gui=italic
+hi! link COMMENT COMMENT1
+hi! link DOCUMENTATION COMMENT2
+
+hi MACRO guifg=#CF745D
+hi MYLIB guifg=#4784DF
+
+hi TRAIT  guifg=#A270A7
+hi TRAIT2 guifg=#ab8ac1
 
 " Parent highlighting groups
 " ==========================
@@ -600,6 +654,10 @@ hi! Normal        ctermbg=NONE guibg=NONE cterm=NONE gui=NONE
 hi! NonText       ctermbg=NONE guibg=NONE cterm=NONE gui=NONE
 hi! Error         ctermbg=NONE guibg=NONE cterm=bold gui=bold
 hi! ErrorMsg      ctermbg=NONE guibg=NONE cterm=NONE gui=NONE
+
+hi! link LineNr   COMMENT
+hi! link LineNrAbove GRAY
+hi! link LineNrBelow GRAY
 
 " ------------------------------------------------------------------------------
 " Floating window settings
@@ -640,8 +698,6 @@ hi Visual ctermfg=51  ctermbg=238 guifg=#ACFFFF guibg=#002222
 " [link undefined to defined]
 hi! NonText           ctermfg=244  guifg=#808080 cterm=NONE gui=NONE
 hi! link SpecialKey   NonText
-hi! link LineNr       NonText
-hi! CursorLineNR      ctermfg=227  guifg=#FFFF5F cterm=NONE gui=NONE
 
 " Messages
 hi ErrorMsg           ctermfg=203  guifg=#FF5F55
@@ -651,6 +707,16 @@ hi! link MoreMsg Question
 hi DiagnosticInfo     ctermfg=72   guifg=#808080
 hi DiagnosticHint     ctermfg=72   guifg=#588080
 hi Todo               ctermfg=234  guifg=#1C1C1C ctermbg=227 guibg=#FFFF5F gui=NONE
+hi def link DiagnosticError RED
+hi DiagnosticWarn  ctermfg=5 guifg=#B79632
+
+" Tabs
+hi link  BufferCurrent       ORANGE
+hi link  BufferCurrentMod    TURQUOISE
+hi link  BufferVisible       PURPLE
+hi link  BufferInactive      GRAY
+hi link  BufferTabpages      MUTED_PURPLE
+hi link  BufferDefaultInactiveMod MUTED_BROWN
 
 " Window and folds
 hi VertSplit    ctermfg=51   guifg=#00FFFF " turquoise
@@ -660,88 +726,67 @@ hi Folded       ctermfg=250  ctermbg=235 guifg=#A8A8A8 guibg=#262626
 hi FoldedColumn ctermfg=250  ctermbg=235 guifg=#A8A8A8 guibg=#262626
 hi! link SignColumn LineNr
 
+" JSX
+hi link  jsxElement        YELLOW
+hi link  jsxAttribute      PURPLE
+hi link  jsxComponentName  ORANGE
+hi link  jsxTag            TURQUOISE
+hi link  jsxTagName        TURQUOISE
+hi link  jsxCloseString    YELLOW
+hi link  jsxCloseTag       YELLOW
+hi link  jsxComment        Comment
+hi link  jsxDot            Identifier
+hi link  jsxEqual          Type
+hi link  jsxEscapeJs       jsxEscapeJs
+hi link  jsxNameSpace      RED
+hi link  jsxString         String
+hi link  jsxPunct          YELLOW
 
-hi def link  jsxElement        YELLOW
-hi def link  jsxAttrib         PURPLE
-hi def link  jsxComponentName  ORANGE
-hi def link  jsxTag            TURQUOISE
-hi def link  jsxTagName        TURQUOISE
-hi def link  jsxCloseString    YELLOW
-hi def link  jsxCloseTag       YELLOW
-hi def link  jsxComment        Comment
-hi def link  jsxDot            Identifier
-hi def link  jsxEqual          Type
-hi def link  jsxEscapeJs       jsxEscapeJs
-hi def link  jsxNameSpace      RED
-hi def link  jsxString         String
-hi def link  jsxPunct          YELLOW
+hi link  TSCjsxBraces      GREEN
+hi link  jsFuncName        GREEN
+hi link  jsFunction        MUTED_YELLOW
+hi link  jsBraces          MUTED_GREEN
 
-hi def link  TSCjsxBraces      GREEN
-hi def link  jsFuncName        GREEN
-hi def link  jsFunction        MUTED_YELLOW
-hi def link  jsBraces          MUTED_GREEN
+hi link  jsxClass          ORANGE
+hi link  jsxCloseClass     jsxClass
+hi link  xmlTagName        jsxClass
+hi link  xmlEndTag         jsxClass
+hi link  jsClassDefinition jsxClass
+hi link  jsObjectKey       Identifier
+hi link  xmlAttrib         PURPLE
 
-hi def link  jsxClass          ORANGE
-hi def link  jsxCloseClass     jsxClass
-hi def link  xmlTagName        jsxClass
-hi def link  xmlEndTag         jsxClass
-hi def link  jsClassDefinition jsxClass
-hi def link  jsObjectKey       Identifier
-hi def link  xmlAttrib         PURPLE
+" treesitter jsx
+hi! link @constructor.javascript jsxClass
+hi! link @tag.attribute.javascript jsxAttribute
+hi! link @none.javascript STRING4
 
-" Tabs
-"let s:BG = '#282c34'
-"let s:B1 = '#1c1f24'
+" lsp rust
+hi! link @lsp.mod.attribute.rust GRAY
+hi! link @lsp.mod.constant.rust ORANGE
+hi! link @lsp.type.derive.rust TRAIT
+hi! link @lsp.type.enumMember.rust VARIANT
+hi! link @lsp.type.interface.rust TRAIT
+hi! link @lsp.type.macro.rust MACRO
+hi! link @lsp.type.namespace.rust GRAY
+hi! link @lsp.type.typeAlias.rust TYPE2
+hi! link @lsp.type.unresolvedReference.rust RED
+hi! link @lsp.typemod.namespace.declaration.rust MYLIB
+hi! link @lsp.typemod.method.trait.rust TRAIT2
 
-hi def link  BufferCurrent       ORANGE
-hi def link  BufferCurrentMod    TURQUOISE
-hi def link  BufferVisible       PURPLE
-hi def link  BufferInactive      GRAY
-hi def link  BufferTabpages      MUTED_PURPLE
-hi def link  BufferDefaultInactiveMod MUTED_BROWN
+" treesitter rust
+hi! link @comment.rust COMMENT
+hi! link @comment.documentation.rust DOCUMENTATION
+hi! link @constant.rust ORANGE
+hi! link @function.rust FUNCTION
+hi! link @identifier.rust IDENTIFIER
+hi! link @include.rust MUTED_BROWN
+hi! link @namespace.rust MUTED_YELLOW
+hi! link @punctuation.type_param.rust GRAY
+hi! link @storageclass.lifetime.rust LIFETIME
 
-hi def link DiagnosticError RED
-hi DiagnosticWarn  ctermfg=5 guifg=#B79632
-" hi def link DiagnosticInfo  guifg=Blue
-" hi def link DiagnosticHint  guifg=Green
-
-" Rust tags
-" Use :Inspect and :TSNodeUnderCursor
-hi rustCommentLineDoc ctermfg=100 guifg=#B79632
-hi rustShebang        ctermfg=100 guifg=#B79632
-hi rustTrait          ctermfg=100 guifg=#A270A7
-hi rustModPath        ctermfg=100 guifg=#A270A7
-hi rustModPathSep     ctermfg=100 guifg=#BA5D7E
-hi rustEnumVariant    ctermfg=100 guifg=#DF95AF
-hi rustAttribute      ctermfg=100 guifg=#85478B
-hi RLSRLS             ctermfg=100 guifg=#FFBEAA
-hi RLS                ctermfg=100 guifg=#FFBEAA
-hi MYLIB              ctermfg=100 guifg=#4784DF
-" hi rustString         ctermfg=100 guifg=#679933
-" hi def link rustStringDelimiter rustString
-
-hi def link @lsp.type.enumMember.rust GREEN
-hi def link @lsp.type.interface.rust rustTrait
-hi def link @lsp.type.unresolvedReference.rust RED
-hi def link @constant.rust ORANGE
-hi def link @lsp.mod.constant.rust ORANGE
-hi def link @include.rust MUTED_BROWN
-hi def link @namespace.rust MUTED_YELLOW
-hi def link @punctuation.type_param.rust GRAY
-hi def link @lsp.type.derive.rust rustTrait
-hi def link @lsp.type.typeAlias.rust TYPE2
-
-hi def link @lsp.typemod.namespace.declaration.rust MYLIB
-hi def link @lsp.mod.attribute.rust GRAY
-" hi def link @lsp.typemod.generic.attribute.rust rustShebang
-" hi @comment.rust cterm=italic guifg=#83A8C1 gui=italic
-hi def link @comment.rust COMMENT
-hi def link @lsp.type.macro.rust MACRO
-hi def link @storageclass.lifetime.rust MUTED_STRING
-hi def link @lsp.type.namespace.rust GRAY
-
-hi def link @comment.vim COMMENT
-
-" hi Comment            ctermfg=72   guifg=#83A8C1
+" treesitter other
+hi! link @comment.vim COMMENT
+hi! link @comment.py COMMENT
+hi! link @string.documentation.python DOCUMENTATION
 
 

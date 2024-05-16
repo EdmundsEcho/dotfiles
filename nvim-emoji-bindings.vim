@@ -89,6 +89,9 @@ ab :time: ⌛
 ab :config: ⚙️
 ab :drive: 🗄️
 ab :package: 📦
+ab :effect: 💢
+ab :side-effect: 💢
+ab :diamond: 💎
 
 "   Failing
 "   symbol        unicode   emoji  codepoints

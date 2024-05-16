@@ -1,52 +1,91 @@
 --------------------------------------------------------------------------------
 -- ✅ Parsing for deep highlighting
-require("nvim-treesitter.configs").setup({
-    --------------------------------------------------------------------------------
-    -- one of "all", "maintained" (parsers with maintainers), or a list of languages
+-- nvim-treesitter-setup.lua
+
+local M = {}
+
+-- local configs = require("nvim-treesitter.configs")
+
+M.opts = {
+
     ensure_installed = {
-        "css",
-        "dockerfile",
-        "fish",
+        "bash",
+        "c",
+        "diff",
+        "haskell",
         "html",
         "javascript",
+        "jsdoc",
         "json",
+        "jsonc",
         "lua",
+        "luadoc",
+        "luap",
+        "markdown",
+        "markdown_inline",
         "python",
+        "query",
+        "regex",
         "rust",
         "toml",
         "tsx",
         "typescript",
         "vim",
+        "vimdoc",
+        "xml",
         "yaml",
     },
-    auto_install = true,
-    sync_install = true, -- install languages synchronously (only applied to `ensure_installed`)
-    ignore_install = {}, -- List of parsers to ignore installing
-    highlight = {
-        enable = true, -- false will disable the whole extension
-        disable = {}, -- list of language that will be disabled
-        additional_vim_regex_highlighting = false,
-        -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
-        -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
-        -- Using this option may slow down your editor, and you may see some duplicate highlights.
-        -- Instead of true it can also be a list of languages
+    incremental_selection = {
+        enable = true,
+        keymaps = {
+            init_selection = "<C-space>",
+            node_incremental = "<C-space>",
+            scope_incremental = false,
+            node_decremental = "<bs>",
+        },
     },
-    indent = { enable = true },
-    extensions = { "quickfix" },
+    textobjects = {
+        move = {
+            enable = true,
+            goto_next_start = {
+                ["]f"] = "@function.outer",
+                ["]c"] = "@class.outer",
+            },
+            goto_next_end = {
+                ["]F"] = "@function.outer",
+                ["]C"] = "@class.outer",
+            },
+            goto_previous_start = {
+                ["[f"] = "@function.outer",
+                ["[c"] = "@class.outer",
+            },
+            goto_previous_end = {
+                ["[F"] = "@function.outer",
+                ["[C"] = "@class.outer",
+            },
+        },
+    },
+    sync_install = true,
+    ignore_install = { "" },
+    highlight = {
+        enable = true,
+        disable = { "" },
+        additional_vim_regex_highlighting = true,
+    },
+    indent = {
+        enable = true,
+        disable = { "yaml" },
+    },
     rainbow = {
         enable = true,
         extended_mode = true,
         max_file_lines = nil,
     },
-    --------------------------------------------------------------------------------
-    -- treesitter-playground (plugin)
-    -- also be sure to TSInstall query
-    --------------------------------------------------------------------------------
     playground = {
         enable = true,
         disable = {},
-        updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
-        persist_queries = false, -- Whether the query persists across vim sessions
+        updatetime = 25,
+        persist_queries = false,
         keybindings = {
             toggle_query_editor = "o",
             toggle_hl_groups = "i",
@@ -60,4 +99,8 @@ require("nvim-treesitter.configs").setup({
             show_help = "?",
         },
     },
-})
+}
+
+return M
+
+-- END

@@ -33,7 +33,6 @@ Plug 'nvim-lualine/lualine.nvim'         " replaces airline
 " tabs
 Plug 'romgrk/barbar.nvim'                " tabline (tabs)
 Plug 'lewis6991/gitsigns.nvim'           " OPTIONAL: for git status
-Plug 'nvim-tree/nvim-web-devicons'       " OPTIONAL: for file icons
 
 " Text manipulation
 Plug 'godlygeek/tabular'                 " aligns text into table format
@@ -59,21 +58,17 @@ Plug 'blueyed/vim-diminactive'            " dims inactive window; depends on tmu
 " :help line diff
 Plug 'AndrewRadev/linediff.vim'
 
+" formatting manager
+Plug 'stevearc/conform.nvim'
 
 " folding
 Plug 'tmhedberg/SimpylFold'
 
 " running curl from a buffer; very cool
-Plug 'NTBBloodbath/rest.nvim'
-
-"--- LSP
-Plug 'folke/lsp-trouble.nvim'
-Plug 'jose-elias-alvarez/null-ls.nvim'
-Plug 'neovim/nvim-lspconfig'
-Plug 'nvim-lua/lsp-status.nvim'
-Plug 'onsails/lspkind-nvim'
-Plug 'williamboman/mason.nvim', { 'do': 'MasonUpdate' }
-Plug 'williamboman/mason-lspconfig.nvim'
+" Plug 'vhyrro/luarocks.nvim',  {'branch': '91badd46c60df6bd9800c809056af2d80d33da4c'}
+" Plug 'rest-nvim/rest.nvim'
+" Add this line to .vimrc
+Plug 'diepm/vim-rest-console'
 
 "--- Functional
 " Plug 'mg979/vim-visual-multi', {'branch': 'master'} -- good but <C-n> conflict
@@ -82,7 +77,7 @@ Plug 'dag/vim-fish'                  " may be redundant with cmp-fish
 
 " Completion framework
 Plug 'hrsh7th/nvim-cmp'
-Plug 'hrsh7th/cmp-cmdline'  " use
+Plug 'hrsh7th/cmp-cmdline'  " used for / and ?, see command-completion for :
 " Plug 'gelguy/wilder.nvim', { 'do': function('UpdateRemotePlugins') } " alternative to cmp for command line
 Plug 'smolck/command-completion.nvim'  " alternative to cmp for command line
 
@@ -103,8 +98,10 @@ Plug 'ray-x/cmp-treesitter'
 Plug 'tzachar/cmp-tabnine', { 'do': './install.sh' }  " AI for completion
 Plug 'vappolinario/cmp-clippy'  " ⚠️  experimental, and useful?
 
+" :Rg access to ripgrep
+Plug 'duane9/nvim-rg'
 
-" Typescript
+" Typescript (needs to be configured)
 Plug 'jose-elias-alvarez/typescript.nvim'
 
 " Prettier
@@ -126,17 +123,22 @@ Plug 'nvim-treesitter/playground'
 
 " Optional dependencies
 Plug 'nvim-lua/popup.nvim'
-Plug 'nvim-telescope/telescope.nvim'
 
 " Rust (no longer uses telescope)
 Plug 'simrat39/rust-tools.nvim'
 
-" Docker
-Plug 'ekalinin/Dockerfile.vim'
+" Docker - incompatible with tree-sitter
+" Plug 'ekalinin/Dockerfile.vim'
 
-" Debugging
+" Debugging (a dependency for other plugins)
 Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
 Plug 'mfussenegger/nvim-dap'
+Plug 'rcarriga/nvim-dap-ui'
+Plug 'folke/neodev.nvim'
+
+" schema loading utility (depends on plenary, telescope, lspconfig)
+Plug 'someone-stole-my-name/yaml-companion.nvim'
 
 " Ctags
 Plug 'ludovicchabant/vim-gutentags'     " requires brew install universal-ctags
@@ -151,10 +153,16 @@ Plug 'tpope/vim-fugitive'
 
 " Haskell
 Plug 'enomsg/vim-haskellConcealPlus', { 'for': 'haskell' } " does not work with indentLine
+" disable haskle tools for now
+Plug 'mrcjkb/haskell-tools.nvim', { 'for': 'Haskell', 'on': [] }
 
-" Lisp
+" Lisp, html
 Plug 'vim-scripts/paredit.vim',      { 'for': [ 'scheme', 'lisp', 'commonlisp' ] }
 Plug 'maksimr/vim-jsbeautify',       { 'for': 'html' }
+
+" psql lint
+" Usage: :SQLSetType pgsql.vim
+Plug 'lifepillar/pgsql.vim',        { 'for': ['pgsql'] }
 
 " Pandoc / Markdown
 " Plug 'vim-pandoc/vim-pandoc',        { 'for': [ 'pandoc', 'markdown' ] }
@@ -169,9 +177,38 @@ Plug 'mklabs/mdn.vim', { 'do': 'yarn install --prefer-offline mdn-cli' }
 " " Color schemes
 Plug 'vim-scripts/wombat256.vim'
 
+"--- LSP
+Plug 'folke/lsp-trouble.nvim'
+Plug 'nvim-lua/lsp-status.nvim'
+Plug 'onsails/lspkind-nvim'
+"--- mason manager (sequence matters)
+Plug 'williamboman/mason.nvim', { 'do': 'MasonUpdate' }
+Plug 'williamboman/mason-lspconfig.nvim'
+Plug 'neovim/nvim-lspconfig'
+Plug 'nvimtools/none-ls.nvim' " non-deprecated version of null-ls
+Plug 'jay-babu/mason-null-ls.nvim'
+
+"--- copilot and chatGPT
+" Plug 'github/copilot.vim'
+Plug 'zbirenbaum/copilot.lua' , { 'do': 'auth' }
+" Plug 'jackMort/ChatGPT.nvim' " depends on nui, plenary, telescope
+" Plug 'gera2ld/ai.nvim' " depends on plenary
+"
+" To eliminate errors
+Plug 'nvim-neotest/nvim-nio' " async io"
+
+"--- picture
+Plug 'onsails/lspkind-nvim'
+" Plug 'glepnir/lspsaga.nvim' " NEW - good ui?
+
+" floating command line
+Plug 'MunifTanjim/nui.nvim'
+Plug 'VonHeikemen/fine-cmdline.nvim'
+
 " Tree and font - must be last plugin
 " Note: Disables netrw
-Plug 'kyazdani42/nvim-web-devicons'
+Plug 'nvim-tree/nvim-web-devicons'       " OPTIONAL: for file icons
+Plug 'yamatsum/nvim-nonicons'
 Plug 'kyazdani42/nvim-tree.lua'
 
 " -------------------------------------------------------------------------------

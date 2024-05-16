@@ -1,3 +1,5 @@
+vim.cmd[[
+
 " -------------------------------------------------------------------------------
 " ~/dotfiles/nvim-support.vim
 " symlinked to: ~/.config/nvim/config/nvim-support.vim
@@ -14,23 +16,19 @@
 " -------------------------------------------------------------------------------
 "
 " Get to the beginning of a line without having to use single `0`
-fun! GoToFrontLine()
-  " if cursor is already at the first char, then go to the very
-  " front of the line
-  let col_num_cursor = col(".")   " store the current position of the cursor
-  let row_num_cursor = line(".")  " used to position the cursor
-  let col_num_front  = indent(line("."))
-  if (col_num_cursor != (1 + col_num_front))
-    call cursor(row_num_cursor, col_num_front + 1) " default
-  else
-    call cursor(row_num_cursor, 1)             " go to the very front
-  endif
-endfun
+""fun! GoToFrontLine()
+""  " if cursor is already at the first char, then go to the very
+""  " front of the line
+""  let col_num_cursor = col(".")   " store the current position of the cursor
+""  let row_num_cursor = line(".")  " used to position the cursor
+""  let col_num_front  = indent(line("."))
+""  if (col_num_cursor != (1 + col_num_front))
+""    call cursor(row_num_cursor, col_num_front + 1) " default
+""  else
+""    call cursor(row_num_cursor, 1)             " go to the very front
+""  endif
+""endfun
 
-" Check for .vimrc before loading
-fun! HasVimrc()
-  return findfile(".vimrc", ".")
-endfun
 
 " folding for javascript; considers imports
 function! JSFolds()
@@ -171,37 +169,37 @@ endfun
 " Called with autocmd when saving or opening a buffer
 " TODO: set a global variable that sets the filetypes for which to ignore this
 " function.
-let g:user_trimwhite_off = ["mardown","pandoc"]
-fun! TrimWhitespace()
-  if (index(g:user_trimwhite_off, &filetype) >= 0)
-    echom "cancelled: user-defined TrimWhitespace()"
-    return
-  else
-    let l:save_cursor = getpos('.')
-    %s/\s\+$//e
-    call setpos('.', l:save_cursor)
-  endif
-endfun
+""let g:user_trimwhite_off = ["mardown","pandoc"]
+""fun! TrimWhitespace()
+""  if (index(g:user_trimwhite_off, &filetype) >= 0)
+""    echom "cancelled: user-defined TrimWhitespace()"
+""    return
+""  else
+""    let l:save_cursor = getpos('.')
+""    %s/\s\+$//e
+""    call setpos('.', l:save_cursor)
+""  endif
+""endfun
 
 " Auto magically Mkdir
 " ====================
 " TODO: Fix bug; not sufficiently aware of changing directory.
 " Conditionaly create the parent directory when writing to disk
 " Called with autocmd
-fun! MkDir()
-  if !isdirectory(expand("<afile>:p:h"))
-    let confirmation=confirm("Create a new directory?", "&Yes\n&No")
-    if confirmation == 1
-      call mkdir(expand("<afile>:p:h"), "p")
-      lcd %:p:h
-      saveas %:t
-      echom "Created a new directory:" expand("<afile>:p:h")
-      " let buf_del = bufnr("$")
-      " exe "bd" . buf_del
-    endif
-    redraw
-  endif
-endfun
+""fun! MkDir()
+""  if !isdirectory(expand("<afile>:p:h"))
+""    let confirmation=confirm("Create a new directory?", "&Yes\n&No")
+""    if confirmation == 1
+""      call mkdir(expand("<afile>:p:h"), "p")
+""      lcd %:p:h
+""      saveas %:t
+""      echom "Created a new directory:" expand("<afile>:p:h")
+""      " let buf_del = bufnr("$")
+""      " exe "bd" . buf_del
+""    endif
+""    redraw
+""  endif
+""endfun
 " <afile> refers to the file we are saving
 " :p is a modifier that expands to full filename
 " :h is a modifier that removes the file from full filename
@@ -324,3 +322,5 @@ fun! VisualSelection(direction, extra_filter) range
   let @/ = l:pattern
   let @" = l:saved_reg
 endfun
+
+]]

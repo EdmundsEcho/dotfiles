@@ -105,7 +105,8 @@
         "/Users/edmund/.config/nvim/bundle/vim-haskellConcealPlus/after",
         "/Users/edmund/.config/nvim/bundle/vim-markdown-composer/after",
         "${3rd}/love2d/library",
-        "${3rd}/luassert/library"
+        "${3rd}/luassert/library",
+        "${3rd}/luv/library"
     ],
     "workspace.checkThirdParty": false
 }

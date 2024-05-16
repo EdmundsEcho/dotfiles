@@ -1,3 +1,70 @@
+-- $HOME/dotfies/nvim-keybindings.lua
+-------------------------------------------------------------------------------
+-- Keybinding
+-- Last updated: May 14th, 2024
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+-- local utilities
+local map = vim.keymap.set
+local opts = { noremap = true, silent = true }
+
+-------------------------------------------------------------------------------
+-- Save a file using ctrl-a in normal, insert and visual modes
+-------------------------------------------------------------------------------
+map({ "n", "v" }, "<C-a>", ":w<CR>", opts)
+map("i", "<C-a>", "<Esc>:w<CR>a", opts)
+
+-------------------------------------------------------------------------------
+-- go to tab number, index tabs 1..n
+-------------------------------------------------------------------------------
+for i = 1, 9, 1 do
+    map(
+        "n",
+        string.format("<leader>%d", i),
+        string.format(":BufferGoto %d<CR>", i),
+        opts
+    )
+end
+
+-------------------------------------------------------------------------------
+-- Keybindings for LSP navigation using Telescope
+-------------------------------------------------------------------------------
+local builtin = require("telescope.builtin")
+
+-- <ctr-p> in all modes
+map("n", "<C-p>", ":Telescope find_files<CR>", opts)
+map({ "i", "v" }, "<C-p>", "<Esc>:Telescope find_files<CR>", opts)
+map("c", "<C-p>", "<C-c>:Telescope find_files<CR>", opts)
+
+-- <leader> in normal mode
+map("n", "<leader>ff", builtin.find_files, opts)
+map("n", "<leader>fg", builtin.live_grep, opts)
+map("n", "<leader>fb", builtin.buffers, opts)
+map("n", "<leader>fh", builtin.help_tags, opts)
+
+-- no-leader in normal mode
+map("n", "gd", builtin.lsp_definitions, opts)
+map("n", "gr", builtin.lsp_references, opts)
+map("n", "gi", builtin.lsp_implementations, opts)
+map("n", "gs", builtin.lsp_document_symbols, opts)
+map("n", "K", vim.lsp.buf.hover, opts)
+
+-------------------------------------------------------------------------------
+-- Write to file with sudo privileges
+-------------------------------------------------------------------------------
+map("c", "w!!", function()
+    vim.cmd(
+        "silent! write !SUDO_ASKPASS=`which ssh-askpass` sudo tee % >/dev/null"
+    )
+    vim.cmd("edit!")
+end, { noremap = true, silent = true })
+
+-------------------------------------------------------------------------------
+-- Show/Hide File Tree
+-------------------------------------------------------------------------------
+map("n", "<leader>t", ":NvimTreeToggle<CR>", opts)
+
+vim.cmd([[
 " -------------------------------------------------------------------------------
 " ~/.config/nvim/nvim-bindings.vim
 " last change: March 27, 2022
@@ -26,9 +93,6 @@ autocmd FileType json syntax match Comment +\/\/.\+$+
 " change local workding directory
 nnoremap <leader>cd :lcd %:p:h<CR>:pwd<CR>
 
-" 🚧 Broken: show hi group in lualine
-nnoremap <leader>hg :call HiGroupEnable()<CR>
-
 " Additional options to engage cmd mode from normal-mode
 " nnoremap <leader>c :
 " nnoremap <leader>n /
@@ -37,16 +101,6 @@ nnoremap <leader>v :@:<CR>
 " v is next to c, v is mac pasting
 " recall, the `gc` postfix engages user-confirmed search and replace
 
-" Remap start of the line; end of the file and EOF
-nnoremap 0 :call GoToFrontLine()<CR>
-nnoremap gg :0<CR>
-nnoremap G G0
-
-" Writing to file with <ctr-a>
-nnoremap <C-a> :w<CR>
-inoremap <C-a> <Esc>:w<CR>l
-vnoremap <C-a> <Esc>:w<CR>
-
 " Copy filename and filepath
 nnoremap <leader>file :let @*=expand("%")<CR>
 nnoremap <leader>fp :let @*=expand("%:p")<CR>
@@ -54,23 +108,12 @@ nnoremap <leader>fp :let @*=expand("%:p")<CR>
 " Open file prompt with current path
 nnoremap <leader>o :e <C-R>=expand("%:p:h") . '/'<CR>
 
-" Write to file with sudo privileges
-cnoremap w!! execute 'silent! write !SUDO_ASKPASS=`which ssh-askpass` sudo tee % >/dev/null' <bar> edit!
-
-" =========
-" rest-nvim
-" =========
-" curl under cursor
-nnoremap <leader>g :lua require("rest-nvim").run()<CR>
-" <Plug>RestNvimPreview, preview the request cURL command
-" <Plug>RestNvimLast, re-run the last request
 
 " Ctags and Cscope (hscope for Haskell)
 " =====================================
 " Note: Haskell specific configurations of tag and csprg registers
 "       and function LoadHscope()
 "
-" TODO: Configure for JS
 " place cursor over the symbol to lookup
 " :help cs for details
 " Cscope limited to hscope functionality
@@ -81,14 +124,6 @@ noremap <C-_> :cs find 1 <C-R>=expand("<cword>")<CR><CR>
 noremap <C-]> :cstag <C-R>=expand("<cword>")<CR><CR>
 " Update files: codex update -> codex.tag
 "               git-hscope -X TemplateHaskell -> hscope.out
-
-" Display .vimrc in a new window; source when done
-" ===============================================
-nnoremap <leader>forc :sp ${HOME}/.config/nvim/init.vim <CR>
-augroup sourcing
-  autocmd!
-  autocmd bufwritepost init.vim :source $MYVIMRC
-augroup END
 
 "
 " EasyMotion
@@ -107,9 +142,6 @@ nmap <leader><leader>l <Plug>(easymotion-overwin-line)
 map  <leader><leader>w <Plug>(easymotion-bd-w)
 nmap <leader><leader>w <Plug>(easymotion-overwin-w)
 
-" Nvim-Tree
-" =========
-nnoremap <silent><leader>t <ESC>:NvimTreeToggle<CR>
 
 " 🚧
 " Jan 2022 NEW 🦀 WIP
@@ -256,15 +288,8 @@ tnoremap <c-l> <C-\><C-n><C-w>l
 " spell checking
 nnoremap <leader>ss :setlocal spell!<cr>
 
-" Tags and Tagbar
-" ===============
-nnoremap <leader>tt :TagbarToggle<CR>
-
 " Force redraw
 nnoremap <silent> <leader>r :redraw!<CR>
-
-" Force formatting
-" nnoremap <leader>d magg=G`a
 
 " TAGS
 " Notes:
@@ -362,21 +387,6 @@ augroup fish
         \ set foldmethod=expr
 augroup END
 
-" VIMUX - a new Slime
-" ====================
-nnoremap <Leader>rb :call VimuxRunCommand("clear; rspec " . bufname("%"))<CR>
-vnoremap <silent> <Leader>rs <Plug>SendSelectionToTmux
-nnoremap <silent> <Leader>rs <Plug>NormalModeSendToTmux
-nnoremap <silent> <Leader>rv <Plug>SetTmuxVars
-fun! VimuxSlime()
-  call VimuxSendText(@v)
-  call VimuxSendKeys("Enter")
-endfun
-" If text is selected, save it in the v buffer and send that buffer it to tmux
-vnoremap <LocalLeader>vs "vy :call VimuxSlime()<CR>
-" Select current paragraph and send it to tmux
-nnoremap <LocalLeader>vs vip<LocalLeader>vs<CR>
-
 
 " tabularize
 " ===========
@@ -390,24 +400,6 @@ nnoremap <leader>ta :Tabularize<space>/
 " Align records in Hask
 nnoremap <leader>tr :Tabularize<space>/[:,{}]/l1l1l1r0l0l1l1<CR>
 
-" ctrl-p
-" =======
-" Silver search - faster and  hides unwanted
-let g:ctrlp_use_caching = 0
-let g:ctrlp_max_files=0
-let g:ctrlp_show_hidden=1
-let g:ctrlp_custom_ignore = { 'dir': '\v[\/](.git|.cabal-sandbox|.stack-work)$' }
-" Open file menu
-nnoremap <Leader>po :CtrlP<CR>
-" Open buffer menu
-nnoremap <Leader>pb :CtrlPBuffer<CR>
-
-" Open most recently used files
-nnoremap <leader>pr :CtrlPMRUFiles<CR>
-" Fuzzy find files
-nnoremap <silent> <Leader>pf<space> :CtrlP<CR>
-" fuzzy find buffers
-nnoremap <silent> <leader>pb<space> :CtrlPBuffer<cr>
 
 " hlint-refactor-vim keybindings
 nnoremap <silent> <leader>hr :call ApplyOneSuggestion()<CR>
@@ -435,9 +427,5 @@ nnoremap <leader>hI :HoogleInfo
 vnoremap <silent> <leader>h. :call Pointfree()<CR>
 vnoremap <silent> <leader>h> :call Pointful()<CR>
 
-" ------------------------------------------------------------------------------
-" call to refresh after reload
-if exists("g:loaded_webdevicons")
-  call webdevicons#refresh()
-endif
-" ------------------------------------------------------------------------------
+
+]])
