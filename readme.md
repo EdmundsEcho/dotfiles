@@ -13,7 +13,7 @@ The features include:
 5. Several removed and some replaced plugins.
 
 
-## Orinal description
+## Original description
 
 This directory has all of the .config files that are sufficiently complex to
 save and maintain over multiple systems.
