@@ -2,3 +2,6 @@ tags
 .DS_Store
 zshrc_bk
 OLD/
+nvim-gemini.lua
+nvim-chatGpt.lua
+tmp.*
