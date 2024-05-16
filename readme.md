@@ -6,9 +6,9 @@ The features include:
 
 1. lazy.nvim for lazy loading of plugins
 2. use of mason and friends to manage lsp
-3. A mostly unified means of configuring the lsp
+3. A mostly unified means of configuring the host of lsps.
 4. A new color scheme that is based on wombat that includes extra detail
-   using treesitter around key differences in syntax (espetially good
+   using treesitter around key differences in syntax (especially useful
    for Rust).
 5. Several removed and some replaced plugins.
 
