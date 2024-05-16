@@ -24,7 +24,7 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 return require("lazy").setup(
-    -- Plugins
+-- Plugins
     {
         -- Support bundles
         "tpope/vim-surround",
@@ -62,18 +62,44 @@ return require("lazy").setup(
         -- Notify - v. pretty
         {
             "rcarriga/nvim-notify",
-            lasy = false,
-            config = function()
-                require("nvim-notify").setup({
-                    -- used to make transparent
-                    background_colour = "#000000",
-                })
-            end,
+            lazy = false,
+            opts = {
+                -- used to make transparent
+                -- NotifyBackground
+                background_colour = "#000000",
+            },
         },
-        --
+        -- Noice - v. pretty
+        {
+            "folke/noice.nvim",
+            lazy = false,
+            event = "VeryLazy",
+            opts = {
+                lsp = {
+                    -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
+                    override = {
+                        ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+                        ["vim.lsp.util.stylize_markdown"] = true,
+                        ["cmp.entry.get_documentation"] = true, -- requires hrsh7th/nvim-cmp
+                    },
+                },
+                presets = {
+                    bottom_search = true,         -- use a classic bottom cmdline for search
+                    command_palette = true,       -- position the cmdline and popupmenu together
+                    long_message_to_split = true, -- long messages will be sent to a split
+                    inc_rename = false,           -- enables an input dialog for inc-rename.nvim
+                    lsp_doc_border = false,       -- add a border to hover docs and signature help
+                },
+            },
+            dependencies = {
+                "MunifTanjim/nui.nvim",
+                "rcarriga/nvim-notify",
+                "hrsh7th/nvim-cmp",
+            },
+        },
 
         -- Tmux integration
-        { "benmills/vimux", lazy = false },
+        { "benmills/vimux",                     lazy = false },
         { "tmux-plugins/vim-tmux-focus-events", lazy = false },
         {
             "christoomey/vim-tmux-navigator",
@@ -86,10 +112,10 @@ return require("lazy").setup(
                 "TmuxNavigatePrevious",
             },
             keys = {
-                { "<c-h>", "<cmd><C-U>TmuxNavigateLeft<cr>" },
-                { "<c-j>", "<cmd><C-U>TmuxNavigateDown<cr>" },
-                { "<c-k>", "<cmd><C-U>TmuxNavigateUp<cr>" },
-                { "<c-l>", "<cmd><C-U>TmuxNavigateRight<cr>" },
+                { "<c-h>",  "<cmd><C-U>TmuxNavigateLeft<cr>" },
+                { "<c-j>",  "<cmd><C-U>TmuxNavigateDown<cr>" },
+                { "<c-k>",  "<cmd><C-U>TmuxNavigateUp<cr>" },
+                { "<c-l>",  "<cmd><C-U>TmuxNavigateRight<cr>" },
                 { "<c-\\>", "<cmd><C-U>TmuxNavigatePrevious<cr>" },
             },
         },
@@ -232,7 +258,7 @@ return require("lazy").setup(
             "romgrk/barbar.nvim",
             dependencies = { "nvim-tree/nvim-web-devicons" }, -- For file icons (if needed)
             init = function()
-                vim.g.barbar_auto_setup = false -- Disable default setup
+                vim.g.barbar_auto_setup = false               -- Disable default setup
             end,
             config = function()
                 require("nvim-barbar").setup()
@@ -377,7 +403,7 @@ return require("lazy").setup(
             "williamboman/mason.nvim",
             lazy = false,
             config = function()
-                require("nvim-mason").setup() -- calls mason.setup(opts)
+                require("nvim-mason").setup()                                 -- calls mason.setup(opts)
                 local mason_ref =
                     require("mason-lspconfig").setup({ auto_install = true }) -- presumably refs mason
                 if mason_ref then
@@ -402,7 +428,7 @@ return require("lazy").setup(
             priority = 90,
             disable = true,
             version = "^4", -- Recommended
-            lazy = false, -- This plugin is already lazy
+            lazy = false,   -- This plugin is already lazy
             config = function()
                 require("nvim-rustacean").setup()
             end,
@@ -466,8 +492,8 @@ return require("lazy").setup(
         -- Copilot
         {
             "zbirenbaum/copilot.lua",
-            event = "InsertEnter", -- Lazy load on entering Insert mode (optional)
-            cmd = "Copilot", -- To be able to call `:Copilot` if lazy loaded (optional)
+            event = "InsertEnter",   -- Lazy load on entering Insert mode (optional)
+            cmd = "Copilot",         -- To be able to call `:Copilot` if lazy loaded (optional)
             build = ":Copilot auth", -- For authentication if required
             config = function()
                 require("nvim-copilot").setup()
@@ -492,7 +518,7 @@ return require("lazy").setup(
             end,
             dependencies = {
                 "nvim-treesitter/nvim-treesitter", -- optional
-                "nvim-tree/nvim-web-devicons", -- optional
+                "nvim-tree/nvim-web-devicons",     -- optional
             },
         },
 

@@ -8,16 +8,64 @@
 -- 3. diagnostics popup settings
 --
 --------------------------------------------------------------------------------
+local logger = require("nvim-logging")
+
 -- Spelling
 vim.o.spelllang = "en"
 vim.o.spellfile = os.getenv("HOME") .. "/dotfiles/en.utf-8.add"
 
 --------------------------------------------------------------------------------
--- Vim autoformat
-vim.g.formatterpath = {
-    os.getenv("HOME") .. "/.local/bin/ormolu",
-    os.getenv("HOME") .. "/.local/bin/stylish-haskell",
-}
+-- Open quickfix window after grep
+vim.api.nvim_create_autocmd("QuickFixCmdPost", {
+    pattern = "*grep*",
+    callback = function()
+        vim.cmd("cwindow")
+    end,
+})
+
+-- Set options for quickfix filetype
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "qf",
+    callback = function()
+        vim.opt_local.wrap = true
+        vim.opt_local.number = false
+        vim.opt_local.colorcolumn = ""
+    end,
+})
+
+-- Quick escape `q` to exit help and quickfix file
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "help",
+    callback = function()
+        vim.api.nvim_buf_set_keymap(
+            0,
+            "n",
+            "q",
+            ":q<CR>",
+            { noremap = true, silent = true }
+        )
+    end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "qf",
+    callback = function()
+        vim.api.nvim_buf_set_keymap(
+            0,
+            "n",
+            "q",
+            ":q<CR>",
+            { noremap = true, silent = true }
+        )
+        vim.api.nvim_buf_set_keymap(
+            0,
+            "n",
+            "<CR>",
+            "<CR>",
+            { noremap = true, silent = true }
+        )
+    end,
+})
 
 --------------------------------------------------------------------------------
 -- Turn off default services
@@ -138,7 +186,17 @@ vim.wo.foldexpr = "nvim_treesitter#foldexpr()"
 autocmd("BufWritePre", {
     pattern = "*",
     callback = function()
-        vim.lsp.buf.format({ async = false })
+        local success, _ = pcall(function()
+            vim.lsp.buf.format({ async = false })
+        end)
+        if not success then
+            local bufnr = vim.api.nvim_get_current_buf()
+            local bufname = vim.api.nvim_buf_get_name(bufnr)
+            logger.log(
+                "Error formatting buffer: " .. bufname,
+                vim.log.levels.WARN
+            )
+        end
     end,
 })
 

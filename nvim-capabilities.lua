@@ -1,6 +1,8 @@
 --------------------------------------------------------------------------------
 -- Generic cmp_nvim_lsp capabilities
 -- Usage: Set the capabilities property of a lsp configuration.
+--
+-- Configures cmp with the lsp servers.
 --------------------------------------------------------------------------------
 
 local M = {}

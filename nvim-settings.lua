@@ -59,12 +59,12 @@ vim.api.nvim_set_keymap(
 --------------------------------------------------------------------------------
 -- Vim basic settings
 vim.o.spell = false
-vim.o.autoread = true                    -- Detect file changes outside vim
-vim.o.autochdir = true                   -- Change working dir to current buffer
+vim.o.autoread = true -- Detect file changes outside vim
+vim.o.autochdir = true -- Change working dir to current buffer
 vim.o.timeoutlen = 1100
 vim.g.diagnostic_enable_virtual_text = 1 -- Enable virtual text
-set.clipboard = "unnamedplus"            -- copy to system clipboard
-vim.opt.signcolumn = "yes"               -- Always show sign column
+set.clipboard = "unnamedplus" -- copy to system clipboard
+vim.opt.signcolumn = "yes" -- Always show sign column
 
 --------------------------------------------------------------------------------
 -- Linting, history, and search behavior
@@ -97,7 +97,7 @@ set.clipboard = "unnamed"
 set.encoding = "UTF-8"
 set.showmode = true
 set.updatetime = 300
-set.lazyredraw = true
+set.lazyredraw = false -- ? 🦀
 set.number = true
 set.cmdheight = 1
 set.incsearch = true

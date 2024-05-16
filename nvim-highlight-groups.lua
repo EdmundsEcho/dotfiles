@@ -1,4 +1,7 @@
 -- nvim-highlight-groups.lua
+--------------------------------------------------------------------------------
+-- Last updated: May 15, 2024
+--------------------------------------------------------------------------------
 --
 --  Notes:
 --  1. Overwrites loaded colorscheme
@@ -44,6 +47,8 @@ M.match = {
     ASYNC = c.theme_colors.Purples.LightPurple,
 }
 
+--------------------------------------------------------------------------------
+-- Move this to nvim-barbar-highlights.lua
 -- https://github.com/romgrk/barbar.nvim
 local barbar = {
     active = c.theme_colors.Grays.Black,
@@ -54,7 +59,13 @@ local barbar = {
 local white = c.theme_colors.Grays.White
 local black = c.theme_colors.Grays.NearBlack
 
+local fg = c.theme_colors.Grays.White
+local dim = c.theme_colors.Grays.DarkGray
+local dim_accent = c.theme_colors.Reds.DimPink2
+-- local dim_sign = c.theme_colors.Grays.GrayCloud
+
 local barbar_hi_cfg = {
+    -- Buffer<Status><Part>
     BufferCurrent = { fg = white, bg = barbar.active, bold = true },
     BufferCurrentMod = { fg = barbar.accent, bg = barbar.active },
     BufferVisible = { fg = white, bg = barbar.visible },
@@ -63,6 +74,13 @@ local barbar_hi_cfg = {
     -- Hide gaps between tabs
     BufferCurrentSign = { fg = black, bg = black },
     BufferVisibleSign = { fg = black, bg = black },
+    BufferInactiveSign = { fg = black, bg = black },
+
+    -- INFO, ERROR, HINT
+    BufferVisibleINFO = { fg = dim, bg = barbar.inactive },
+    BufferVisibleERROR = { fg = dim, bg = barbar.inactive },
+    BufferVisibleHINT = { fg = dim, bg = barbar.inactive },
+
     -- Index
     BufferCurrentIndex = {
         fg = c.theme_colors.Luci.SecondaryMain,
@@ -74,19 +92,14 @@ local barbar_hi_cfg = {
     BufferScrollArrow = { fg = c.theme_colors.Luci.SecondaryMain, bg = "NONE" },
 }
 
-local fg = c.theme_colors.Grays.White
-local dim = c.theme_colors.Grays.DarkGray
-local dim_accent = c.theme_colors.Reds.DimPink2
--- local dim_sign = c.theme_colors.Grays.GrayCloud
-
 local inactive_grps = {
     BufferInactive = { fg = dim, bg = barbar.inactive },
     BufferInactiveIndex = { fg = dim, bg = barbar.inactive },
     BufferInactiveMod = { fg = dim_accent, bg = barbar.inactive },
-    BufferInactiveSign = { fg = black, bg = black },
     BufferInactiveTarget = { fg = fg, bg = barbar.inactive },
 }
 
+--------------------------------------------------------------------------------
 function M.update_highlights()
     -- set hl tables
     for group, props in pairs(barbar_hi_cfg) do
@@ -96,6 +109,10 @@ function M.update_highlights()
         vim.api.nvim_set_hl(0, group, props)
     end
 
+    -- move this
+    vim.api.nvim_set_hl(0, "NotifyBackground", {
+        bg = c.theme_colors.Grays.White,
+    })
     vim.api.nvim_set_hl(0, "MatchParen", {
         fg = c.theme_colors.Grays.White,
         bg = c.theme_colors.Luci.PrimaryMainDark,
@@ -152,6 +169,7 @@ function M.update_highlights()
     end
 
     -- unknown -> already defined
+    link_highlight("DiagnosticError", "ERROR")
     link_highlight("IDENTIFIER", "IDENTIFIER2")
     link_highlight("Function", "FUNCTION")
     link_highlight("Macro", "MACRO")

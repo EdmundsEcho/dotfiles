@@ -1,5 +1,9 @@
 --------------------------------------------------------------------------------
 -- Auto-completion with cmp
+--
+-- Must be configured with lsp capabilities using cmp-nvim-lsp
+-- (see nvim-capabilities)
+--
 --------------------------------------------------------------------------------
 local M = {}
 
@@ -22,9 +26,8 @@ function M.setup()
             )
         end
     end
-    -- vim.opt.completeopt = { "menu", "menuone", "noselect" }
-    vim.opt.completeopt = { "menu", "menuone", "noinsert" }
-    -- print(vim.inspect(vim.opt.completeopt:get()))
+    vim.opt.completeopt = { "menu", "menuone", "noinsert", "noselect" }
+    vim.opt.pumheight = 10
 
     local cmp = require("cmp")
     local lspkind = require("lspkind")
@@ -106,11 +109,60 @@ function M.setup()
             documentation = cmp.config.window.bordered(),
             completion = cmp.config.window.bordered({
                 winhighlight = "Normal:Pmenu,FloatBorder:Pmenu,Search:None",
-                col_offset = -3,
-                side_padding = 1,
-                max_height = 17, -- Maximum height of the popup
-                max_width = 60, -- Maximum width of the popup
+                -- col_offset = -3,
+                side_padding = 0,
+                max_items = 17,
+                max_width = 20,
             }),
+        },
+        formatting = {
+            fields = { "abbr", "kind", "menu" },
+            show_labelDetails = true, -- show labelDetails in menu. Disabled by default
+            ellipsis_char = "…", -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first)
+            format = function(entry, vim_item)
+                -- Limit the width of the completion menu
+                local max_width = 20
+                local label = vim_item.abbr
+                local truncated_label = vim.fn.strcharpart(label, 0, max_width)
+                if label ~= truncated_label then
+                    vim_item.abbr = truncated_label .. "…"
+                end
+                if vim.tbl_contains({ "path" }, entry.source.name) then
+                    local icon, hl_group =
+                        require("nvim-web-devicons").get_icon(
+                            entry:get_completion_item().label
+                        )
+                    if icon then
+                        vim_item.kind = icon
+                        vim_item.kind_hl_group = hl_group
+                        return vim_item
+                    end
+                end
+                return lspkind.cmp_format({ with_text = false })(
+                    entry,
+                    vim_item
+                )
+            end,
+        },
+        --[[
+        formatting = {
+            format = function(entry, vim_item)
+                if vim.tbl_contains({ "path" }, entry.source.name) then
+                    local icon, hl_group =
+                        require("nvim-web-devicons").get_icon(
+                            entry:get_completion_item().label
+                        )
+                    if icon then
+                        vim_item.kind = icon
+                        vim_item.kind_hl_group = hl_group
+                        return vim_item
+                    end
+                end
+                return lspkind.cmp_format({ with_text = false })(
+                    entry,
+                    vim_item
+                )
+            end,
         },
         formatting = {
             fields = { "menu", "abbr", "kind" },
@@ -132,7 +184,7 @@ function M.setup()
                     return item
                 end,
             }),
-        },
+        }, ]]
     })
 
     -- Use buffer source for `/` and `?`

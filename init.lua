@@ -10,7 +10,7 @@ package.path = package.path .. ";" .. cfg_path
 
 local logger = require("nvim-logging")
 logger.log("🎉 configuration started", vim.log.INFO)
-logger.log("👉 Lua package path: " .. package.path, vim.log.DEBUG)
+logger.log("🔗 Lua package path: " .. package.path, vim.log.DEBUG)
 
 --------------------------------------------------------------------------------
 -- Track the log
@@ -26,6 +26,7 @@ require("nvim-lua-functions")  -- this deprecates nvim-functions.lua
 require("nvim-keybindings")    -- this has legacy vim WIP update
 require("nvim-emoji-abbr").setup()
 require("nvim-highlights-vim") -- legacy hi WIP deprecate
+require("nvim-pmenu-highlights")
 require("nvim-highlight-groups").update_highlights()
 
 -- END
