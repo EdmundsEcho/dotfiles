@@ -10,7 +10,10 @@ The features include:
 4. A new color scheme that is based on wombat that includes extra detail
    using treesitter around key differences in syntax (espetially good
    for Rust).
+5. Several removed and some replaced plugins.
 
+
+## Orinal description
 
 This directory has all of the .config files that are sufficiently complex to
 save and maintain over multiple systems.
