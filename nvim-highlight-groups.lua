@@ -10,8 +10,34 @@
 --  3. Call :hi to see a full list of syntax objects
 --  4. Use :Inspect and :TSNodeUnderCursor :TSCaptureUnderCursor
 --
+--  See also: ~/.config/nvim/bundle/nvim-treesitter/queries/<language>.scm
+--
 
 local M = {}
+
+-- WIP to make brighter when the mouse is hovering over the value
+function make_brighter(hex_color, amount)
+    -- Ensure amount is between 0 and 1, where 1 makes the color completely white
+    amount = math.min(math.max(amount, 0), 1)
+
+    -- Remove the '#' if it's included in the hex color
+    hex_color = hex_color:gsub("#", "")
+
+    -- Extract the red, green, and blue components from the hex color
+    local r = tonumber(hex_color:sub(1, 2), 16)
+    local g = tonumber(hex_color:sub(3, 4), 16)
+    local b = tonumber(hex_color:sub(5, 6), 16)
+
+    -- Calculate the brighter color by moving each component towards 255 by the specified amount
+    r = math.floor(r + (255 - r) * amount)
+    g = math.floor(g + (255 - g) * amount)
+    b = math.floor(b + (255 - b) * amount)
+
+    -- Reassemble the components back into a hex string
+    local bright_hex = string.format("#%02x%02x%02x", r, g, b)
+
+    return bright_hex
+end
 
 local c = require("nvim-colors")
 
@@ -25,18 +51,18 @@ M.match = {
     IDENTIFIER2 = c.theme_colors.Yellows.BronzeDawn,
     IDENTIFIER3 = c.theme_colors.Yellows.GoldenRay,
     IDENTIFIER4 = c.theme_colors.Greens.SpringGreen,
-    FUNCTION1 = c.theme_colors.Greens.FreshLime,
+    -- FUNCTION1 = c.theme_colors.Greens.FreshLime,
     FUNCTION2 = c.theme_colors.Blues.Turquoise,
     FUNCTION3 = c.theme_colors.Yellows.OliveTwist,
-    FUNCTION4 = c.theme_colors.Blues.OceanDeep,
-    FUNCTION5 = c.theme_colors.Greens.LimeZest,
+    -- FUNCTION4 = c.theme_colors.Blues.OceanDeep,
+    -- FUNCTION5 = c.theme_colors.Greens.LimeZest,
     FUNCTION = c.theme_colors.Blues.LightBlue,
     STRING1 = c.theme_colors.Greens.SpringGreen,
     STRING2 = c.theme_colors.Greens.SpringGreen,
     STRING3 = c.theme_colors.Greens.MossGreen,
-    STRING4 = c.theme_colors.Grays.CloudDancer,
-    COMMENT1 = c.theme_colors.Greens.StormySky,
-    COMMENT2 = c.theme_colors.Greens.SageGreen,
+    -- STRING4 = c.theme_colors.Grays.CloudDancer,
+    COMMENT1 = c.theme_colors.Blues.Comment,
+    -- COMMENT2 = c.theme_colors.Greens.SageGreen,
     MACRO = c.theme_colors.Reds.DarkRed,
     TRAIT = c.theme_colors.Purples.LightPurple,
     TRAIT2 = c.theme_colors.Purples.LighterPurple,
@@ -117,6 +143,9 @@ function M.update_highlights()
         fg = c.theme_colors.Grays.White,
         bg = c.theme_colors.Luci.PrimaryMainDark,
     })
+    vim.api.nvim_set_hl(0, "Normal", {
+        fg = c.theme_colors.Grays.GrayCloud,
+    })
     vim.api.nvim_set_hl(
         0,
         "Statement",
@@ -142,11 +171,7 @@ function M.update_highlights()
         "Special",
         { fg = c.theme_colors.Grays.DarkGray, bg = "NONE" }
     )
-    vim.api.nvim_set_hl(
-        0,
-        "IDENTIFIER2",
-        { fg = M.match.IDENTIFIER2, bg = "NONE" }
-    )
+    vim.api.nvim_set_hl(0, "IDENTIFIER2", { fg = M.match.IDENTIFIER2, bg = "NONE" })
     vim.api.nvim_set_hl(
         0,
         "STRING1",
@@ -163,12 +188,24 @@ function M.update_highlights()
     vim.api.nvim_set_hl(0, "TRAIT", { fg = M.match.TRAIT, bg = "NONE" })
     vim.api.nvim_set_hl(0, "TYPE2", { fg = M.match.TYPE2, bg = "NONE" })
     vim.api.nvim_set_hl(0, "ERROR", { fg = M.match.ERROR, bg = "NONE" })
+    vim.api.nvim_set_hl(0, "Identifier", { fg = M.match.IDENTIFIER3, bg = "NONE" })
+    vim.api.nvim_set_hl(0, "Function", { fg = M.match.FUNCTION, bg = "NONE" })
+    vim.api.nvim_set_hl(0, "Visual", { fg = M.match.COMMENT1, bg = "NONE" })
+    vim.api.nvim_set_hl(0, "CurSearch", c.elements.Search.CurSearch)
+    vim.api.nvim_set_hl(0, "Search", c.elements.Search.Search)
+    vim.api.nvim_set_hl(0, "Cursor", c.elements.Cursor.Cursor)
+    vim.api.nvim_set_hl(0, "lCursor", c.elements.Cursor.lCursor)
+    vim.api.nvim_set_hl(0, "Fidget", c.elements.Fidget)
+    vim.api.nvim_set_hl(0, "VertSplit", c.elements.VertSplit)
+
     --
+    ----------------------------------------------------------------------------
     local function link_highlight(from, to)
         vim.cmd(string.format("highlight! link %s %s", from, to))
     end
-
     -- unknown -> already defined
+    link_highlight("@variable", "IDENTIFIER")
+    link_highlight("@function.macro.vim", "MACRO")
     link_highlight("DiagnosticError", "ERROR")
     link_highlight("IDENTIFIER", "IDENTIFIER2")
     link_highlight("Function", "FUNCTION")
@@ -186,21 +223,16 @@ function M.update_highlights()
     link_highlight("@lsp.type.unresolvedReference.rust", "ERROR")
     link_highlight("@lsp.typemod.namespace.declaration.rust", "MYLIB")
     link_highlight("@lsp.typemod.method.trait.rust", "TRAIT2")
+    link_highlight("@lsp.type.property.lspinfo", "NORMAL")
+
+    link_highlight("@lsp.type.method.rust", "IDENTIFIER2")
 
     link_highlight("@type.builtin.python", "TYPE2")
     link_highlight("@type.python", "TYPE3")
     vim.api.nvim_set_hl(0, "@function.python", { fg = M.match.FUNCTION })
     vim.api.nvim_set_hl(0, "@function.call.python", { fg = M.match.FUNCTION2 })
-    vim.api.nvim_set_hl(
-        0,
-        "@function.method.call.python",
-        { fg = M.match.FUNCTION3 }
-    )
-    vim.api.nvim_set_hl(
-        0,
-        "@lsp.typemod.keyword.async.rust",
-        { fg = M.match.ASYNC }
-    )
+    vim.api.nvim_set_hl(0, "@function.method.call.python", { fg = M.match.FUNCTION3 })
+    vim.api.nvim_set_hl(0, "@lsp.typemod.keyword.async.rust", { fg = M.match.ASYNC })
 
     -- Treesitter rust
     link_highlight("@comment.rust", "COMMENT")

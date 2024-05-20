@@ -37,6 +37,7 @@ M.theme_colors = {
         MutedBlue = "#83A8C1",
         SkyBlue = "#4F78C2",
         Turquoise = "#64b4dc",
+        Comment = "#609199",
     },
     Greens = {
         SpringGreen = "#78b830",
@@ -76,23 +77,53 @@ M.theme_colors = {
         RicherOrange = "#D78A0F",
         VibrantOrange = "#DB7C0A",
         MutedBrown = "#A07A2F",
+        SearchOrangeBg = "#45413B",
+        SearchOrangeFg = "#ffa724",
     },
     Grays = {
         GraniteGray = "#505050",
-        DarkGray = "#707070",
+        DarkGray = "#606060",
         GrayCloud = "#A8A8A8",
         SteelGray = "#ccdddd",
-        Black = "#222222",
-        NearBlack = "#212121",
+        NearBlack = "#202020",
+        Black = "#212121",
+        Black2 = "#121212",
         PureBlack = "#000000",
         White = "#c8c8c8",
         PureWhite = "#ffffff",
+        WindowBg = "#1c1c1c",
     },
     Luci = {
         PrimaryMain = "#52A5B8",
         PrimaryMainDark = "#19788E",
         SecondaryMain = "#FFA868",
         SecondaryMainDark = "#F17417",
+    },
+}
+
+M.elements = {
+    Search = {
+        Search = { ctermfg = 214, ctermbg = 238, fg = "#ffa724", bg = "#45413b" },
+        CurSearch = { ctermfg = 238, ctermbg = 214, bg = "#ffa724", fg = "#45413b" },
+    },
+    Fidget = { bg = M.theme_colors.Grays.WindowBg },
+    VertSplit = {
+        fg = M.theme_colors.Luci.PrimaryMain,
+        bg = M.theme_colors.Grays.NearBlack,
+    },
+    Cursor = {
+        Cursor = {
+            ctermfg = 214,
+            ctermbg = 238,
+            bg = M.theme_colors.Luci.PrimaryMain,
+            fg = M.theme_colors.Grays.White,
+        },
+        lCursor = {
+            ctermfg = 214,
+            ctermbg = 238,
+            bg = M.theme_colors.Luci.PrimaryMain,
+            fg = M.theme_colors.Grays.White,
+        },
     },
 }
 

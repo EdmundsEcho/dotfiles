@@ -1,33 +1,15 @@
 --------------------------------------------------------------------------------
 -- json ls configuration
 -- Utilized by nvim-lspconfig
--- ref setup to get opts table
+--
+-- Returns M.setup()
 --------------------------------------------------------------------------------
 local M = {}
 
-local required_modules = {
-    "lspconfig",
-    "nvim-handlers",
-    "nvim-capabilities",
-}
+local logger = require("nvim-logging")
 
 M.setup = function()
-    for _, module_name in ipairs(required_modules) do
-        local ok, err = pcall(require, module_name)
-        if not ok then
-            vim.notify(
-                string.format(
-                    "👎 %s not found. json_ls error: %s",
-                    module_name,
-                    err
-                ),
-                vim.log.levels.ERROR
-            )
-        end
-    end
-
-    local handlers = require("nvim-handlers")
-    local capabilities = require("nvim-capabilities").capabilities
+    logger.log("Injecting opts into json_ls ", vim.log.levels.INFO)
 
     local schemas = {
         {
@@ -40,8 +22,7 @@ M.setup = function()
         },
         {
             title = "Alacritty Configuration",
-            description =
-            "Configuration schema for [Alacritty](https://github.com/alacritty/alacritty), the GPU enhanced terminal emulator",
+            description = "Configuration schema for [Alacritty](https://github.com/alacritty/alacritty), the GPU enhanced terminal emulator",
             fileMatch = {
                 "alacritty.yml",
                 "alacritty.yaml",
@@ -75,9 +56,7 @@ M.setup = function()
         },
     }
 
-    local opts = {
-        capabilities = capabilities,
-        on_attach = handlers.on_attach,
+    return {
         settings = {
             json = {
                 schemas = schemas,
@@ -98,7 +77,6 @@ M.setup = function()
             },
         },
     }
-    return opts
 end
 
 return M.setup()

@@ -1,13 +1,14 @@
 --------------------------------------------------------------------------------
 -- Linters and formatters without a lsp interface
 -- use null_ls as the interface
+--
+-- Utilized by nvim-lspconfig.lua
 --------------------------------------------------------------------------------
 local M = {}
 
 local logger = require("nvim-logging")
 
 local required_modules = {
-    "null-ls",
     "null-ls.utils",
     "telescope.builtin",
     "nvim-capabilities",
@@ -20,7 +21,7 @@ function M.setup()
         if not ok then
             vim.notify(
                 string.format(
-                    "👎 %s not found. null-ls error: %s",
+                    "x %s not found. null-ls error: %s",
                     module_name,
                     err
                 ),
@@ -28,8 +29,6 @@ function M.setup()
             )
         end
     end
-    -- vim.opt.completeopt = { "menu", "menuone", "noselect" }
-    -- vim.opt.completeopt = { "menu", "menuone", "noinsert" }
 
     --------------------------------------------------------------------------------
     local nls = require("null-ls")
@@ -37,8 +36,8 @@ function M.setup()
     local handlers = require("nvim-handlers")
     local capabilities = require("nvim-capabilities")
     --------------------------------------------------------------------------------
-    -- set opts, then call nls.setup(opts)
-    local opts = {
+    return {
+        -- Todo: Unify with configs plugin
         root_dir = require("null-ls.utils").root_pattern(
             ".null-ls-root",
             ".neoconf.json",
@@ -51,24 +50,23 @@ function M.setup()
             require("none-ls.formatting.jq"),
             require("none-ls.formatting.eslint_d"),
             require("none-ls.code_actions.eslint_d"),
+
+            -- remove formatting fixes from the autocompletion
             require("none-ls.diagnostics.eslint_d").with({
                 filter = function(diagnostic)
                     return diagnostic.code ~= "prettier/prettier"
                 end,
             }),
+
             -- Make sure mason installs the formatters
             nls.builtins.formatting.sqlfluff.with({
                 extra_args = { "--dialect", "postgres" },
             }),
-            nls.builtins.diagnostics.sqlfluff.with({
-                extra_args = { "--dialect", "postgres" },
-            }),
             nls.builtins.formatting.stylua,
-            nls.builtins.completion.spell,
             nls.builtins.formatting.prettierd.with({
                 env = {
                     PRETTIERD_DEFAULT_CONFIG = vim.fn.expand(
-                        "~/.config/nvim/utils/linter-config/.prettierrc.json"
+                        "~/dotfiles/.prettierrc.json"
                     ),
                 },
             }),
@@ -77,31 +75,13 @@ function M.setup()
         capabilities = capabilities,
 
         on_attach = function(client, bufnr)
-            logger.log(
-                "3.🚨 Attaching to " .. client.name,
-                vim.log.levels.TRACE
-            )
-            local function buf_set_keymap(...)
-                vim.api.nvim_buf_set_keymap(bufnr, ...)
-            end
-            local opts = { noremap = true, silent = true }
-
-            -- Keybinding to show code actions
-            buf_set_keymap(
-                "n",
-                "<leader>ca",
-                "<cmd>lua vim.lsp.buf.code_action()<CR>",
-                opts
-            )
+            logger.log("3. Attaching to " .. client.name, vim.log.levels.TRACE)
             -- fire up the shared-default
             handlers.on_attach(client, bufnr)
         end,
     }
-    -- ignore redundant parameter
-    ---@diagnostic disable-next-line: redundant-parameter
-    nls.setup(opts)
 end
 
-return M
+return M.setup()
 
 -- END

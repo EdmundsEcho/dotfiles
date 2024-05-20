@@ -9,9 +9,23 @@ local cfg_path = home .. "/dotfiles/?.lua"
 package.path = package.path .. ";" .. cfg_path
 
 local logger = require("nvim-logging")
-logger.log("🎉 configuration started", vim.log.INFO)
-logger.log("🔗 Lua package path: " .. package.path, vim.log.DEBUG)
+logger.log("🎉 configuration started", vim.log.levels.INFO)
+logger.log("🔗 Lua package path: " .. package.path, vim.log.levels.DEBUG)
 
+logger.log("📋 Logging to: " .. logger.get_logfile())
+
+--------------------------------------------------------------------------------
+local function hide_semantic_highlights()
+    for _, group in ipairs(vim.fn.getcompletion("@lsp", "highlight")) do
+        vim.api.nvim_set_hl(0, group, {})
+    end
+end
+
+vim.api.nvim_create_autocmd("ColorScheme", {
+    desc = "Clear LSP highlight groups",
+    callback = hide_semantic_highlights,
+})
+--------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Track the log
 -- :echo stdpath('log')
@@ -27,6 +41,7 @@ require("nvim-keybindings")    -- this has legacy vim WIP update
 require("nvim-emoji-abbr").setup()
 require("nvim-highlights-vim") -- legacy hi WIP deprecate
 require("nvim-pmenu-highlights")
+require("nvim-noice-highlights")
 require("nvim-highlight-groups").update_highlights()
 
 -- END

@@ -1,36 +1,17 @@
--- nvim-yamlls.lua
+--------------------------------------------------------------------------------
+-- yamlls
+-- Used by lspconfig
+-- Return M.setup()
+--------------------------------------------------------------------------------
+
+local logger = require("nvim-logging")
+
 local M = {}
 
-local required_modules = {
-    "lspconfig",
-    "nvim-handlers",
-    "nvim-capabilities",
-}
-
 M.setup = function()
-    for _, module_name in ipairs(required_modules) do
-        local ok, err = pcall(require, module_name)
-        if not ok then
-            vim.notify(
-                string.format(
-                    "👎 %s not found. yamlls error: %s",
-                    module_name,
-                    err
-                ),
-                vim.log.levels.ERROR
-            )
-        end
-    end
+    logger.log("Injecting opts into yamlls ", vim.log.levels.INFO)
 
-    ----------------------------------------------------------------------------
-    local handlers = require("nvim-handlers")
-    local capabilities = require("nvim-capabilities").capabilities
-    ----------------------------------------------------------------------------
-
-    -- YAML LSP Configuration
     return {
-        capabilities = capabilities,
-        on_attach = handlers.on_attach,
         settings = {
             yaml = {
                 trace = {
@@ -58,4 +39,6 @@ M.setup = function()
     }
 end
 
-return M
+return M.setup()
+
+-- END

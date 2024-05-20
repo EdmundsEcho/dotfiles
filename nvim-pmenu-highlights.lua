@@ -12,18 +12,18 @@ local c = require("nvim-colors")
 
 -- Set the background color of the popup menu
 vim.api.nvim_set_hl(
-    0,
-    "Pmenu",
-    { fg = c.theme_colors.Grays.GrayCloud, bg = c.theme_colors.Grays.Black }
+  0,
+  "Pmenu",
+  { fg = c.theme_colors.Grays.GrayCloud, bg = c.theme_colors.Grays.Black }
 )
 vim.api.nvim_set_hl(
-    0,
-    "NormalFloat",
-    { fg = c.theme_colors.Greens.MossGreen, bg = c.theme_colors.Grays.Black }
+  0,
+  "NormalFloat",
+  { fg = c.theme_colors.Grays.GrayCloud, bg = c.theme_colors.Grays.Black }
 )
 vim.api.nvim_set_hl(0, "FloatBorder", {
-    fg = c.theme_colors.Greens.MossGreen,
-    bg = c.theme_colors.Grays.Black,
+  fg = c.theme_colors.Greens.MossGreen,
+  bg = c.theme_colors.Grays.Black,
 })
 -- Set the background color of the selected item in the popup menu
 vim.api.nvim_set_hl(0, "PmenuSel", { ctermbg = "blue", bg = "#3e4451" })
@@ -49,9 +49,9 @@ vim.api.nvim_set_hl(0, "PmenuIconSel", { fg = "#e06c75", bg = "#3e4451" })
 --------------------------------------------------------------------------------
 -- gray
 vim.api.nvim_set_hl(
-    0,
-    "CmpItemAbbrDeprecated",
-    { bg = "NONE", strikethrough = true, fg = "#808080" }
+  0,
+  "CmpItemAbbrDeprecated",
+  { bg = "NONE", strikethrough = true, fg = "#808080" }
 )
 -- blue
 vim.api.nvim_set_hl(0, "CmpItemAbbrMatch", { bg = "NONE", fg = "#569CD6" })

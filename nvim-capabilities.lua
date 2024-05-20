@@ -4,9 +4,6 @@
 --
 -- Configures cmp with the lsp servers.
 --------------------------------------------------------------------------------
-
-local M = {}
-
 local required_modules = {
     "cmp_nvim_lsp",
 }
@@ -25,8 +22,11 @@ for _, module_name in ipairs(required_modules) do
     end
 end
 
-M.capabilities = require("cmp_nvim_lsp").default_capabilities(
-    vim.lsp.protocol.make_client_capabilities()
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities = vim.tbl_deep_extend(
+    "force",
+    capabilities,
+    require("cmp_nvim_lsp").default_capabilities()
 )
 
-return M
+return capabilities

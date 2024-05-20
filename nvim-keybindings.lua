@@ -2,6 +2,8 @@
 -------------------------------------------------------------------------------
 -- Keybinding
 -- Last updated: May 14th, 2024
+--
+--  See `:help vim.keymap.set()`
 -------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
 -- local utilities
@@ -13,6 +15,27 @@ local opts = { noremap = true, silent = true }
 -------------------------------------------------------------------------------
 map({ "n", "v" }, "<C-a>", ":w<CR>", opts)
 map("i", "<C-a>", "<Esc>:w<CR>a", opts)
+
+-------------------------------------------------------------------------------
+-- Resize vim windows
+-------------------------------------------------------------------------------
+-- see orginal setup
+
+-------------------------------------------------------------------------------
+-- Open nvim config
+-------------------------------------------------------------------------------
+map("n", "<C-c>", ":edit ~/.config/nvim/init.lua<CR>", opts)
+
+-------------------------------------------------------------------------------
+-- execute files
+-------------------------------------------------------------------------------
+map("n", "<leader>x", "<cmd>.lua<CR>", { desc = "execute the current line" })
+map(
+    "n",
+    "<leader><leader>x",
+    "<cmd>source %<CR>",
+    { desc = "execute the current file" }
+)
 
 -------------------------------------------------------------------------------
 -- go to tab number, index tabs 1..n
@@ -27,42 +50,89 @@ for i = 1, 9, 1 do
 end
 
 -------------------------------------------------------------------------------
--- Keybindings for LSP navigation using Telescope
+-- [[ Basic Keymaps ]]
+-- Set highlight on search, but clear on pressing <Esc> in normal mode
 -------------------------------------------------------------------------------
-local builtin = require("telescope.builtin")
+vim.opt.hlsearch = true
+vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 
--- <ctr-p> in all modes
-map("n", "<C-p>", ":Telescope find_files<CR>", opts)
-map({ "i", "v" }, "<C-p>", "<Esc>:Telescope find_files<CR>", opts)
-map("c", "<C-p>", "<C-c>:Telescope find_files<CR>", opts)
+-- Diagnostic keymaps
+vim.keymap.set(
+    "n",
+    "[d",
+    vim.diagnostic.goto_prev,
+    { desc = "Go to previous [D]iagnostic message" }
+)
+vim.keymap.set(
+    "n",
+    "]d",
+    vim.diagnostic.goto_next,
+    { desc = "Go to next [D]iagnostic message" }
+)
+vim.keymap.set(
+    "n",
+    "<leader>e",
+    vim.diagnostic.open_float,
+    { desc = "Show diagnostic [E]rror messages" }
+)
+vim.keymap.set(
+    "n",
+    "<leader>q",
+    vim.diagnostic.setloclist,
+    { desc = "Open diagnostic [Q]uickfix list" }
+)
 
--- <leader> in normal mode
-map("n", "<leader>ff", builtin.find_files, opts)
-map("n", "<leader>fg", builtin.live_grep, opts)
-map("n", "<leader>fb", builtin.buffers, opts)
-map("n", "<leader>fh", builtin.help_tags, opts)
+-- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
+-- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
+-- is not what someone will guess without a bit more experience.
+--
+-- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
+-- or just use <C-\><C-n> to exit terminal mode
+vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 
--- no-leader in normal mode
-map("n", "gd", builtin.lsp_definitions, opts)
-map("n", "gr", builtin.lsp_references, opts)
-map("n", "gi", builtin.lsp_implementations, opts)
-map("n", "gs", builtin.lsp_document_symbols, opts)
-map("n", "K", vim.lsp.buf.hover, opts)
+-- TIP: Disable arrow keys in normal mode
+-- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
+-- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
+-- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
+-- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
+
+-- Keybinds to make split navigation easier.
+--  Use CTRL+<hjkl> to switch between windows
+--
+--  See `:help wincmd` for a list of all window commands
+--  Todo: coordinate with tmux and previous config that works nicely
+-- vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
+-- vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
+-- vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
+-- vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
+-------------------------------------------------------------------------------
+-- Keybindings for LSP navigation using Telescope
+-- see nvim-telescope.lua
+-------------------------------------------------------------------------------
 
 -------------------------------------------------------------------------------
 -- Write to file with sudo privileges
 -------------------------------------------------------------------------------
 map("c", "w!!", function()
-    vim.cmd(
-        "silent! write !SUDO_ASKPASS=`which ssh-askpass` sudo tee % >/dev/null"
-    )
+    vim.cmd("silent! write !SUDO_ASKPASS=`which ssh-askpass` sudo tee % >/dev/null")
     vim.cmd("edit!")
 end, { noremap = true, silent = true })
 
 -------------------------------------------------------------------------------
 -- Show/Hide File Tree
 -------------------------------------------------------------------------------
-map("n", "<leader>t", ":NvimTreeToggle<CR>", opts)
+vim.g.neotree_open = vim.g.neotree_open or false
+map("n", "<leader>t", function()
+    if vim.g.neotree_open then
+        -- If Neo-tree is open, close it
+        vim.cmd("Neotree close")
+        vim.g.neotree_open = false
+    else
+        -- If Neo-tree is closed, open it
+        vim.cmd("Neotree reveal")
+        vim.g.neotree_open = true
+    end
+end, opts)
 
 vim.cmd([[
 " -------------------------------------------------------------------------------

@@ -1,92 +1,68 @@
 --------------------------------------------------------------------------------
 -- tsserver
---
--- 🚧 There is a contradiction:
---    * formatter = prettier
---    * formatter is disabled ~/.config/nvim/lua/usermod/nvim_hanlders.lua
---
+-- Used by lspconfig
+-- Return M.setup()
+--------------------------------------------------------------------------------
 -- TODO: configure using typescript.vim plugin that sets up tsserver in a
 --       more powerful manner.
 --------------------------------------------------------------------------------
+local logger = require("nvim-logging")
+
 local M = {}
 
-local required_modules = {
-    "lspconfig",
-    "nvim-handlers",
-    "nvim-capabilities",
-}
-
---wrap the following code in a setup function associated with M
 M.setup = function()
-    for _, module_name in ipairs(required_modules) do
-        local ok, err = pcall(require, module_name)
-        if not ok then
-            vim.notify(
-                string.format(
-                    "👎 %s not found. tsserver error: %s",
-                    module_name,
-                    err
-                ),
-                vim.log.levels.ERROR
-            )
-        end
-    end
-    --------------------------------------------------------------------------------
-    local lspconfig = require("lspconfig")
-    --------------------------------------------------------------------------------
-    local handlers = require("nvim-handlers")
-    local capabilities = require("nvim-capabilities")
-    --------------------------------------------------------------------------------
+    return function(lspattach_au_group)
+        logger.log("Injecting opts into tsserver ", vim.log.levels.INFO)
 
-    local buf_map = function(bufnr, mode, lhs, rhs, opts)
-        vim.api.nvim_buf_set_keymap(
-            bufnr,
-            mode,
-            lhs,
-            rhs,
-            opts or { silent = true }
-        )
-    end
+        -- Jump to the definition of the word under your cursor.
+        --  This is where a variable was first declared, or where a function is defined, etc.
+        --  To jump back, press <C-t>.
+        -- map("gd", require("telescope.builtin").lsp_definitions, "[G]oto [D]efinition")
+        --
+        vim.api.nvim_create_autocmd("LspAttach", {
+            group = vim.api.nvim_create_augroup(lspattach_au_group, { clear = true }),
+            callback = function(event)
+                --local helper
+                local map = function(keys, func, desc)
+                    vim.keymap.set(
+                        "n",
+                        keys,
+                        func,
+                        { buffer = event.buf, desc = "LSP: " .. desc }
+                    )
+                end
+                map("ro", ":TSLspOrganize<CR>", "[R]e [O]rganize ")
+                map("ga", ":TSLspImportAll<CR>", "[G]o import [A]ll ")
+            end,
+        })
+        -- enable self referencing
 
-    -- enable self referencing
-    return {
-        capabilities = capabilities,
-        format = { enable = false },
-        filetypes = {
-            "javascript",
-            "javascriptreact",
-            "javascript.jsx",
-            "typescript",
-            "typescriptreact",
-            "typescript.tsx",
-        },
-        init_options = {
-            disableAutomaticTypingAcquisition = false,
-            hostInfo = "neovim",
-        },
-        root_dir = lspconfig.util.root_pattern("package.json"),
-        cmd = { "typescript-language-server", "--stdio" },
-        -- on_attach = on_attach,
-        on_attach = function(client, bufnr)
-            client.server_capabilities.documentFormattingProvider = false
-            client.server_capabilities.documentRangeFormattingProvider = false
-            local ts_utils = require("nvim-lsp-ts-utils")
-            ts_utils.setup({
-                eslint_bin = "/Users/edmund/.yarn/bin/prettier-eslint_d",
-                eslint_enable_diagnostics = true,
-                eslint_enable_code_actions = true,
-                enable_formatting = true,
-                formatter = "prettier",
-            })
-            ts_utils.setup_client(client)
-            buf_map(bufnr, "n", "gs", ":TSLspOrganize<CR>")
-            buf_map(bufnr, "n", "gi", ":TSLspRenameFile<CR>")
-            buf_map(bufnr, "n", "go", ":TSLspImportAll<CR>")
-            handlers.on_attach(client, bufnr)
-        end,
-    }
+        return {
+            format = { enable = false },
+            filetypes = {
+                "javascript",
+                "javascriptreact",
+                "javascript.jsx",
+                "typescript",
+                "typescriptreact",
+                "typescript.tsx",
+            },
+            init_options = {
+                disableAutomaticTypingAcquisition = false,
+                hostInfo = "neovim",
+            },
+            root_dir = require("lspconfig.util").root_pattern("package.json"),
+            cmd = { "typescript-language-server", "--stdio" },
+            on_init = function(client)
+                logger.log(
+                    "Running on_init tsserver " .. client.name,
+                    vim.log.levels.INFO
+                )
+            end,
+        }
+    end
 end
 
-return M
+return M.setup()
 
 -- END
