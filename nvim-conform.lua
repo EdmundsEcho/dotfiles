@@ -103,14 +103,21 @@ else
     --------------------------------------------------------------------------------
     conform.setup({
         -- These options will be passed to conform.format()
-        notify_on_error = false,
+        log_level = vim.log.levels.DEBUG,
+        -- Conform will notify you when a formatter errors
+        notify_on_error = true,
         format_on_save = conform_format_params,
         formatters = {
             stylua = {
+                autosave = 1,
                 prepend_args = { "--config-path", stylua_cfg_file },
             },
             rustfmt = {
+                autosave = 1,
                 prepend_args = { "--config-path", rust_cfg_file },
+            },
+            ruff_lsp = {
+                autosave = 1,
             },
         },
         formatters_by_ft = {

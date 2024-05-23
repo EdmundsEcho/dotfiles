@@ -17,6 +17,25 @@ logger.log("Lsp and LspAttach is being configured.", vim.log.DEBUG)
 
 local M = {}
 
+-- Coordinate with lualine
+-- local signs = {
+--     Error = ">>",
+--     Warn = " ",
+--     Hint = " ✓",
+--     Info = " ",
+-- }
+--
+vim.diagnostic.config({
+    signs = {
+        text = {
+            [vim.diagnostic.severity.ERROR] = "✘",
+            [vim.diagnostic.severity.WARN] = "▲",
+            [vim.diagnostic.severity.HINT] = "⚑",
+            [vim.diagnostic.severity.INFO] = "»",
+        },
+    },
+})
+
 function M.setup()
     -- Global mappings.
     -- See `:help vim.diagnostic.*` for documentation on any of the below functions
@@ -37,32 +56,6 @@ function M.setup()
             virtual_text = true,
         })
 
-    -- helper
-    local function sign_define(args)
-        vim.fn.sign_define(args.name, {
-            texthl = args.name,
-            text = args.text,
-            numhl = "",
-        })
-    end
-
-    -- Coordinate with lualine
-    local signs = {
-        Error = ">>",
-        Warn = " ",
-        Hint = " ✓",
-        Info = " ",
-    }
-    vim.diagnostic.config({
-        signs = {
-            text = {
-                [vim.diagnostic.severity.ERROR] = "✘",
-                [vim.diagnostic.severity.WARN] = "▲",
-                [vim.diagnostic.severity.HINT] = "⚑",
-                [vim.diagnostic.severity.INFO] = "»",
-            },
-        },
-    })
     -- Configure the autocommand group for the LspAttach event
     --
     -- Use LspAttach autocommand to only map the following keys

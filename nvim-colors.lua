@@ -38,6 +38,7 @@ M.theme_colors = {
         SkyBlue = "#4F78C2",
         Turquoise = "#64b4dc",
         Comment = "#609199",
+        Visual = "#00e6e6",
     },
     Greens = {
         SpringGreen = "#78b830",
@@ -104,7 +105,7 @@ M.theme_colors = {
 M.elements = {
     Search = {
         Search = { ctermfg = 214, ctermbg = 238, fg = "#ffa724", bg = "#45413b" },
-        CurSearch = { ctermfg = 238, ctermbg = 214, bg = "#ffa724", fg = "#45413b" },
+        CurSearch = { ctermfg = 238, ctermbg = 214, fg = "#ffa724", bg = "#45413b" },
     },
     Fidget = { bg = M.theme_colors.Grays.WindowBg },
     VertSplit = {

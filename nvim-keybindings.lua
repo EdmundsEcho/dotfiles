@@ -5,6 +5,28 @@
 --
 --  See `:help vim.keymap.set()`
 -------------------------------------------------------------------------------
+-- WARNING conflicting keymap exists for mode **"o"**, lhs: **"  "**
+-- rhs: `<Plug>(easymotion-prefix)`
+-- WARNING conflicting keymap exists for mode **"o"**, lhs: **"p"**
+-- rhs: `i(`
+-- WARNING conflicting keymap exists for mode **"v"**, lhs: **"  "**
+-- rhs: `<Plug>(easymotion-prefix)`
+-- WARNING conflicting keymap exists for mode **"n"**, lhs: **"  "**
+-- rhs: `<Plug>(easymotion-prefix)`
+-- WARNING conflicting keymap exists for mode **"n"**, lhs: **" r"**
+-- rhs: `:redraw!<CR>`
+-- WARNING conflicting keymap exists for mode **"n"**, lhs: **" x"**
+-- rhs: `<Cmd>.lua<CR>`
+-- WARNING conflicting keymap exists for mode **"n"**, lhs: **" f"**
+-- rhs: ` `
+-- WARNING conflicting keymap exists for mode **"n"**, lhs: **"gc"**
+-- rhs: `<Plug>(comment_toggle_linewise)`
+-- WARNING conflicting keymap exists for mode **"n"**, lhs: **"gb"**
+-- rhs: `<Plug>(comment_toggle_blockwise)`
+-- WARNING conflicting keymap exists for mode **"n"**, lhs: **"ys"**
+-- rhs: `<Plug>Ysurround`
+-- WARNING conflicting keymap exists for mode **"n"**, lhs: **"yS"**
+-- rhs: `<Plug>YSurround`
 -------------------------------------------------------------------------------
 -- local utilities
 local map = vim.keymap.set
@@ -194,23 +216,6 @@ noremap <C-_> :cs find 1 <C-R>=expand("<cword>")<CR><CR>
 noremap <C-]> :cstag <C-R>=expand("<cword>")<CR><CR>
 " Update files: codex update -> codex.tag
 "               git-hscope -X TemplateHaskell -> hscope.out
-
-"
-" EasyMotion
-" ==========
-map  <leader><leader>f <Plug>(easymotion-bd-f)
-nmap <leader><leader>f <Plug>(easymotion-overwin-f)
-
-" s{char}{char} to move to {char}{char}
-nmap s <Plug>(easymotion-overwin-f2)
-
-" Move to line
-map  <leader><leader>l <Plug>(easymotion-bd-jk)
-nmap <leader><leader>l <Plug>(easymotion-overwin-line)
-
-" Move to word
-map  <leader><leader>w <Plug>(easymotion-bd-w)
-nmap <leader><leader>w <Plug>(easymotion-overwin-w)
 
 
 " 🚧

@@ -40,6 +40,72 @@ return require("lazy").setup(
     "moll/vim-bbye",
     "jiangmiao/auto-pairs",
     "windwp/nvim-ts-autotag",
+    {
+      "echasnovski/mini.nvim",
+      config = function()
+        -- Better Around/Inside textobjects
+        --
+        -- Examples:
+        --  - va)  - [V]isually select [A]round [)]paren
+        --  - yinq - [Y]ank [I]nside [N]ext [']quote
+        --  - ci'  - [C]hange [I]nside [']quote
+        require("mini.ai").setup({ n_lines = 500 })
+
+        -- Add/delete/replace surroundings (brackets, quotes, etc.)
+        --
+        -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
+        -- - sd'   - [S]urround [D]elete [']quotes
+        -- - sr)'  - [S]urround [R]eplace [)] [']
+        require("mini.surround").setup()
+      end,
+    },
+    {     -- nextgen easymotion
+      "smoka7/hop.nvim",
+      version = "*",
+      opts = {
+        keys = "etovxqpdygfblzhckisuran",
+      },
+    },
+    {                           -- Useful plugin to show you pending keybinds.
+      "folke/which-key.nvim",
+      event = "VimEnter",       -- Sets the loading event to 'VimEnter'
+      config = function()       -- This is the function that runs, AFTER loading
+        require("which-key").setup()
+
+        -- Document existing key chains
+        require("which-key").register({
+          ["<leader><leader>c"] = { name = "[C]ode", _ = "which_key_ignore" },
+          ["<leader><leader>d"] = {
+            name = "[D]ocument",
+            _ = "which_key_ignore",
+          },
+          ["<leader><leader>r"] = {
+            name = "[R]ename",
+            _ = "which_key_ignore",
+          },
+          ["<leader><leader>s"] = {
+            name = "[S]earch",
+            _ = "which_key_ignore",
+          },
+          ["<leader><leader>w"] = {
+            name = "[W]orkspace",
+            _ = "which_key_ignore",
+          },
+          ["<leader><leader>t"] = {
+            name = "[T]oggle",
+            _ = "which_key_ignore",
+          },
+          ["<leader><leader>h"] = {
+            name = "Git [H]unk",
+            _ = "which_key_ignore",
+          },
+        })
+        -- visual mode
+        require("which-key").register({
+          ["<leader><leader>h"] = { "Git [H]unk" },
+        }, { mode = "v" })
+      end,
+    },
 
     {     -- Adds git related signs to the gutter, as well as utilities for managing changes
       "lewis6991/gitsigns.nvim",
@@ -75,46 +141,6 @@ return require("lazy").setup(
     "tmhedberg/SimpylFold",
     -- Functional
     "dag/vim-fish",
-    {                           -- Useful plugin to show you pending keybinds.
-      "folke/which-key.nvim",
-      event = "VimEnter",       -- Sets the loading event to 'VimEnter'
-      config = function()       -- This is the function that runs, AFTER loading
-        require("which-key").setup()
-
-        -- Document existing key chains
-        require("which-key").register({
-          ["<leader>c"] = { name = "[C]ode", _ = "which_key_ignore" },
-          ["<leader>d"] = {
-            name = "[D]ocument",
-            _ = "which_key_ignore",
-          },
-          ["<leader>r"] = {
-            name = "[R]ename",
-            _ = "which_key_ignore",
-          },
-          ["<leader>s"] = {
-            name = "[S]earch",
-            _ = "which_key_ignore",
-          },
-          ["<leader>w"] = {
-            name = "[W]orkspace",
-            _ = "which_key_ignore",
-          },
-          ["<leader>t"] = {
-            name = "[T]oggle",
-            _ = "which_key_ignore",
-          },
-          ["<leader>h"] = {
-            name = "Git [H]unk",
-            _ = "which_key_ignore",
-          },
-        })
-        -- visual mode
-        require("which-key").register({
-          ["<leader>h"] = { "Git [H]unk" },
-        }, { mode = "v" })
-      end,
-    },
     -- Oil filename manager
     -- {
     --   "stevearc/oil.nvim",
@@ -136,6 +162,7 @@ return require("lazy").setup(
     -- },
 
     -- Noice - v. pretty
+    -- see: https://github.com/folke/noice.nvim/wiki/Configuration-Recipes
     {
       "folke/noice.nvim",
       event = "VeryLazy",
@@ -452,13 +479,9 @@ return require("lazy").setup(
     -- LSP
     {
       "neovim/nvim-lspconfig",
-      config = function()
-        require("nvim-mason")
-        require("mason-lspconfig").setup({ auto_install = true })
-        require("nvim-lspconfig")
-      end,
+      config = function() require("nvim-lspconfig") end,
       dependencies = {
-        "williamboman/mason.nvim",
+        { "williamboman/mason.nvim", opts = require("nvim-mason") },
         "williamboman/mason-lspconfig.nvim",
         "nvim-telescope/telescope.nvim",
         "WhoIsSethDaniel/mason-tool-installer.nvim",
@@ -468,7 +491,7 @@ return require("lazy").setup(
           config = function() require("nvim-fidget") end,
         },
         -- configures Lua LSP for your Neovim config, runtime and plugins
-        { "folke/neodev.nvim", opts = {} },
+        { "folke/neodev.nvim",       opts = {} },
       },
     },
     -- Rust

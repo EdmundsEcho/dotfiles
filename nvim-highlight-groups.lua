@@ -190,7 +190,16 @@ function M.update_highlights()
     vim.api.nvim_set_hl(0, "ERROR", { fg = M.match.ERROR, bg = "NONE" })
     vim.api.nvim_set_hl(0, "Identifier", { fg = M.match.IDENTIFIER3, bg = "NONE" })
     vim.api.nvim_set_hl(0, "Function", { fg = M.match.FUNCTION, bg = "NONE" })
-    vim.api.nvim_set_hl(0, "Visual", { fg = M.match.COMMENT1, bg = "NONE" })
+    vim.api.nvim_set_hl(
+        0,
+        "Visual",
+        { fg = c.theme_colors.Blues.Visual, bg = "#001919" }
+    )
+    vim.api.nvim_set_hl(
+        0,
+        "Delimiter",
+        { fg = c.theme_colors.Grays.GrayCloud, bg = "NONE" }
+    )
     vim.api.nvim_set_hl(0, "CurSearch", c.elements.Search.CurSearch)
     vim.api.nvim_set_hl(0, "Search", c.elements.Search.Search)
     vim.api.nvim_set_hl(0, "Cursor", c.elements.Cursor.Cursor)

@@ -16,8 +16,6 @@
 --------------------------------------------------------------------------------
 local M = {}
 
-local logger = require("nvim-logging")
-
 local required_modules = {
     "lspconfig",
     "mason-lspconfig",
@@ -32,6 +30,7 @@ local required_modules = {
 
 local lspattach_au_group = "kickstart-lsp-attach"
 local servers = {
+    ruff_lsp = require("nvim-ruff_lsp"),
     yamlls = require("nvim-yamlls"),
     lua_ls = require("nvim-lua_ls"),
     json_ls = require("nvim-json_ls"),
@@ -51,6 +50,7 @@ local servers = {
 --
 -- @return client with updated document_formatting toggles
 --------------------------------------------------------------------------------
+---@ignore unused-local
 local set_client_formatting = function(client)
     if client.name == "html" then
         -- use settings in conform
@@ -60,7 +60,7 @@ local set_client_formatting = function(client)
         -- use settings in conform
         client.server_capabilities.document_formatting = false
     end
-    if client.name == "ruff_ls" then
+    if client.name == "ruff_lsp" then
         -- use pyright for hover
         client.server_capabilities.hoverProvider = false
     end
@@ -71,8 +71,6 @@ local set_client_formatting = function(client)
 
     return client
 end
---------------------------------------------------------------------------------
-
 --------------------------------------------------------------------------------
 -- 💢 Function that mutates lspconfig.<lsp_name> table
 -- @return nil
