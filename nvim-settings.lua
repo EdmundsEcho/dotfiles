@@ -14,7 +14,8 @@ if shell and string.match(shell, "bin/fish") then set.shell = "/bin/sh" end
 -- Path
 -- Prepend mise shims to PATH
 --------------------------------------------------------------------------------
-vim.env.PATH = os.getenv("HOME") .. "/.local/share/mise/shims:" .. vim.env.PATH
+-- vim.env.PATH = os.getenv("HOME") .. "/.local/share/mise/shims:" .. vim.env.PATH
+-- notify which version of python is being used
 
 --------------------------------------------------------------------------------
 -- Escape and leader keys
@@ -65,15 +66,15 @@ vim.api.nvim_set_keymap(
 
 --------------------------------------------------------------------------------
 -- Vim basic settings
-vim.opt.showmode = false -- already in status line
+vim.opt.showmode = false                 -- already in status line
 vim.o.spell = false
-vim.o.autoread = true -- Detect file changes outside vim
-vim.o.autochdir = true -- Change working dir to current buffer
+vim.o.autoread = true                    -- Detect file changes outside vim
+vim.o.autochdir = true                   -- Change working dir to current buffer
 vim.o.timeoutlen = 1100
 vim.g.diagnostic_enable_virtual_text = 1 -- Enable virtual text
-set.clipboard = "unnamedplus" -- copy to system clipboard
-vim.opt.signcolumn = "yes" -- Always show sign column
-vim.opt.breakindent = true -- new 🦀 ?
+set.clipboard = "unnamedplus"            -- copy to system clipboard
+vim.opt.signcolumn = "yes"               -- Always show sign column
+vim.opt.breakindent = true               -- new 🦀 ?
 
 --------------------------------------------------------------------------------
 -- Linting, history, and search behavior
@@ -147,7 +148,7 @@ set.sidescrolloff = 5
 set.sidescroll = 1
 --------------------------------------------------------------------------------
 -- Set visual tweaks
-set.textwidth = 80
+set.textwidth = 88
 set.colorcolumn = "+1"
 set.wrap = false
 set.linebreak = true
@@ -173,16 +174,9 @@ set.smartindent = true
 set.smarttab = true
 
 --------------------------------------------------------------------------------
--- GUI-specific options
--- if vim.fn.has("gui_running") == 1 then
---   vim.opt.guioptions:remove("T")
---   vim.opt.guioptions:remove("e")
---   vim.opt.guitablabel = "%M %t"
--- end
---------------------------------------------------------------------------------
 -- Command completion settings
-set.wildmenu = true
-set.wildmode = "list:longest"
+-- set.wildmenu = true
+-- set.wildmode = "list:longest"
 -- Uncomment below if you want to extend wildmode behavior
 -- vim.opt.wildmode = 'list:longest,full'
 -- Configure patterns to ignore during file completion
@@ -192,16 +186,15 @@ set.wildignore:append("build,cache,dist,coverage,node_modules")
 set.wildignore:append("release,rls,debug")
 set.wildignore:append("*\\tmp\\*,*.swp,*.swo,*.zip,.git,.cabal-sandbox")
 --------------------------------------------------------------------------------
--- Set up filetype detection, plugins, and indentation
--- set.filetype = "on"
 
 --------------------------------------------------------------------------------
 -- Highlight when yanking (copying) text
 --  Try it with `yap` in normal mode
 --  See `:help vim.highlight.on_yank()`
-vim.api.nvim_create_autocmd("TextYankPost", {
-    desc = "Highlight when yanking (copying) text",
-    group = vim.api.nvim_create_augroup("kickstart-highlight-yank", { clear = true }),
-    callback = function() vim.highlight.on_yank() end,
-})
+-- vim.api.nvim_create_autocmd("TextYankPost", {
+--     desc = "Highlight when yanking (copying) text",
+--     group = vim.api.nvim_create_augroup("kickstart-highlight-yank", { clear = true }),
+--     callback = function() vim.highlight.on_yank() end,
+-- })
+
 -- END

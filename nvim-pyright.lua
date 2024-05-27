@@ -9,7 +9,7 @@ local logger = require("nvim-logging")
 local M = {}
 
 function M.setup()
-    logger.log("Injecting opts into pyright ", vim.log.level.INFO)
+    logger.log("Injecting opts into pyright ", vim.log.levels.INFO)
 
     return {
         cmd = { "pyright-langserver", "--stdio" },
@@ -19,21 +19,16 @@ function M.setup()
                 -- Using Ruff's import organizer
                 disableOrganizeImports = true,
             },
-            python = {
-                analysis = {
-                    -- Ignore all files for analysis to exclusively use Ruff for linting
-                    ignore = { "*" },
-                },
-            },
-            settings = {
-                python = {
-                    analysis = {
-                        autoSearchPaths = true,
-                        diagnosticMode = "workspace",
-                        useLibraryCodeForTypes = true,
-                    },
-                },
-            },
+            -- python = {
+            --     pythonPath = ".venv/bin/python",
+            --     analysis = {
+            --         autoSearchPaths = true,
+            --         diagnosticMode = "workspace",
+            --         useLibraryCodeForTypes = true,
+            --         extraPaths = { "./.venv/lib/python3.11/site-packages" },
+            --         ignore = { "*" }, -- Ignore all files for analysis to exclusively use Ruff for linting
+            --     },
+            -- },
         },
     }
 end

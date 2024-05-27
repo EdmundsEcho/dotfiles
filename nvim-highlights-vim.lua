@@ -63,7 +63,6 @@ hi MUTED_YELLOW guifg=#A79414
 hi IDENTIFIER1  guifg=#DBd263
 hi IDENTIFIER2  guifg=#f5e77d
 hi IDENTIFIER3  guifg=#dbd263
-hi IDENTIFIER4  guifg=#dbe667
 hi! link IDENTIFIER IDENTIFIER2
 
 " playing with FUNCTION, use link

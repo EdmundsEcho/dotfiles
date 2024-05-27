@@ -24,6 +24,16 @@ local opts = {
   log_level = vim.log.levels.WARN,
   use_icons = true,
   max_concurrent_installers = 3,
+  pip = {
+    ---@since 1.0.0
+    -- Whether to upgrade pip to the latest version in the virtual environment before installing packages.
+    upgrade_pip = true,
+
+    ---@since 1.0.0
+    -- These args will be added to `pip install` calls. Note that setting extra args might impact intended behavior
+    -- and is not recommended.
+    install_args = {},
+  },
 }
 
 return opts

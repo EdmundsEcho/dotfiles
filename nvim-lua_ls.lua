@@ -2,6 +2,8 @@
 -- Lua
 -- Used by lspconfig
 -- Use setup to return opts
+--
+-- NOTE: This gets overwritten by neodev when working inside the VIMRUNTIME.
 --------------------------------------------------------------------------------
 local M = {}
 
@@ -30,6 +32,7 @@ function M.setup()
                     library = {
                         vim.env.VIMRUNTIME,
                     },
+                    maxPreload = 20000,
                 },
                 telemetry = {
                     enable = false,

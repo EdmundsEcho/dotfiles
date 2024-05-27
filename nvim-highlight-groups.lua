@@ -15,6 +15,20 @@
 
 local M = {}
 
+--------------------------------------------------------------------------------
+local function hide_semantic_highlights()
+    for _, group in ipairs(vim.fn.getcompletion("@lsp", "highlight")) do
+        vim.api.nvim_set_hl(0, group, {})
+    end
+end
+
+vim.api.nvim_create_autocmd("ColorScheme", {
+    desc = "Clear LSP highlight groups",
+    callback = hide_semantic_highlights,
+})
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
 -- WIP to make brighter when the mouse is hovering over the value
 function make_brighter(hex_color, amount)
     -- Ensure amount is between 0 and 1, where 1 makes the color completely white
@@ -41,6 +55,10 @@ end
 
 local c = require("nvim-colors")
 
+local function link_highlight(from, to)
+    vim.cmd(string.format("highlight! link %s %s", from, to))
+end
+
 M.match = {
     TYPE1 = c.theme_colors.Yellows.AncientGold,
     TYPE2 = c.theme_colors.Yellows.GoldenRay,
@@ -50,7 +68,7 @@ M.match = {
     IDENTIFIER1 = c.theme_colors.Yellows.GoldenRay,
     IDENTIFIER2 = c.theme_colors.Yellows.BronzeDawn,
     IDENTIFIER3 = c.theme_colors.Yellows.GoldenRay,
-    IDENTIFIER4 = c.theme_colors.Greens.SpringGreen,
+    IDENTIFIER4 = c.theme_colors.Browns.MutedBrown,
     -- FUNCTION1 = c.theme_colors.Greens.FreshLime,
     FUNCTION2 = c.theme_colors.Blues.Turquoise,
     FUNCTION3 = c.theme_colors.Yellows.OliveTwist,
@@ -200,6 +218,9 @@ function M.update_highlights()
         "Delimiter",
         { fg = c.theme_colors.Grays.GrayCloud, bg = "NONE" }
     )
+    link_highlight("Operator", "Delimiter")
+
+    vim.api.nvim_set_hl(0, "IDENTIFIER4", { fg = M.match.IDENTIFIER4, bg = "NONE" })
     vim.api.nvim_set_hl(0, "CurSearch", c.elements.Search.CurSearch)
     vim.api.nvim_set_hl(0, "Search", c.elements.Search.Search)
     vim.api.nvim_set_hl(0, "Cursor", c.elements.Cursor.Cursor)
@@ -209,9 +230,6 @@ function M.update_highlights()
 
     --
     ----------------------------------------------------------------------------
-    local function link_highlight(from, to)
-        vim.cmd(string.format("highlight! link %s %s", from, to))
-    end
     -- unknown -> already defined
     link_highlight("@variable", "IDENTIFIER")
     link_highlight("@function.macro.vim", "MACRO")
@@ -223,6 +241,8 @@ function M.update_highlights()
     link_highlight("VARIANT", "TYPE2")
     link_highlight("@lsp.mod.attribute.rust", "NAMESPACE")
     link_highlight("@lsp.mod.constant.rust", "ORANGE")
+    link_highlight("@lsp.type.lifetime.rust", "LIFETIME")
+    link_highlight("@lsp.type.builtinType.rust", "IDENTIFIER4")
     link_highlight("@lsp.type.derive.rust", "TRAIT")
     link_highlight("@lsp.type.enumMember.rust", "VARIANT")
     link_highlight("@lsp.type.interface.rust", "TRAIT")

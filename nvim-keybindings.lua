@@ -5,30 +5,29 @@
 --
 --  See `:help vim.keymap.set()`
 -------------------------------------------------------------------------------
--- WARNING conflicting keymap exists for mode **"o"**, lhs: **"  "**
--- rhs: `<Plug>(easymotion-prefix)`
--- WARNING conflicting keymap exists for mode **"o"**, lhs: **"p"**
--- rhs: `i(`
--- WARNING conflicting keymap exists for mode **"v"**, lhs: **"  "**
--- rhs: `<Plug>(easymotion-prefix)`
--- WARNING conflicting keymap exists for mode **"n"**, lhs: **"  "**
--- rhs: `<Plug>(easymotion-prefix)`
--- WARNING conflicting keymap exists for mode **"n"**, lhs: **" r"**
--- rhs: `:redraw!<CR>`
--- WARNING conflicting keymap exists for mode **"n"**, lhs: **" x"**
--- rhs: `<Cmd>.lua<CR>`
--- WARNING conflicting keymap exists for mode **"n"**, lhs: **" f"**
--- rhs: ` `
--- WARNING conflicting keymap exists for mode **"n"**, lhs: **"gc"**
--- rhs: `<Plug>(comment_toggle_linewise)`
--- WARNING conflicting keymap exists for mode **"n"**, lhs: **"gb"**
--- rhs: `<Plug>(comment_toggle_blockwise)`
--- WARNING conflicting keymap exists for mode **"n"**, lhs: **"ys"**
--- rhs: `<Plug>Ysurround`
--- WARNING conflicting keymap exists for mode **"n"**, lhs: **"yS"**
--- rhs: `<Plug>YSurround`
+-- ------------------------------------------------------------------------------
+-- Tweaks to default mappings
+-- Capture most of the keybindings. Excludes bindings that don't often
+--
+-- Debugging tips:
+--
+-- 1. Use :verbose nmap <leader>d to see the sequence of setters
+-- 2. To use yanked content in command mode <C-R><C-O>
+-- 3. pause between key combinations to see possible bindings
+--
 -------------------------------------------------------------------------------
+-- NOTE: regarding Registers
+-------------------------------------------------------------------------------
+-- Use :registers to see the full contents of registers
+-- Redirect command output to a new window (that can then be copied)
+-- :redir @+ | silent set all | redir END
+-- <silent> <F3> :redir @+<CR>@:<CR>:redir END<CR>
+-- nnoremap <silent> <F3> :redir @a<CR>:g//<CR>:redir END<CR>:new<CR>:put! a<CR>
+-- In normal mode, hit ":p" to print the previous command (a cmd)
+-- From normal mode, yj:@<Enter> will execute the contents of the unnamed buffer
+--------------------------------------------------------------------------------
 -- local utilities
+--------------------------------------------------------------------------------
 local map = vim.keymap.set
 local opts = { noremap = true, silent = true }
 
@@ -36,7 +35,8 @@ local opts = { noremap = true, silent = true }
 -- Save a file using ctrl-a in normal, insert and visual modes
 -------------------------------------------------------------------------------
 map({ "n", "v" }, "<C-a>", ":w<CR>", opts)
-map("i", "<C-a>", "<Esc>:w<CR>a", opts)
+map("i", "<C-a>", "<Esc>:w<CR>", opts)
+-- map("i", "<C-a>", "<Esc>:w<CR>a", opts)
 
 -------------------------------------------------------------------------------
 -- Resize vim windows
@@ -47,28 +47,19 @@ map("i", "<C-a>", "<Esc>:w<CR>a", opts)
 -- Open nvim config
 -------------------------------------------------------------------------------
 map("n", "<C-c>", ":edit ~/.config/nvim/init.lua<CR>", opts)
+map("n", "<leader>cfg", ":edit ~/.config/nvim/init.lua<CR>", opts)
 
 -------------------------------------------------------------------------------
 -- execute files
 -------------------------------------------------------------------------------
-map("n", "<leader>x", "<cmd>.lua<CR>", { desc = "execute the current line" })
-map(
-    "n",
-    "<leader><leader>x",
-    "<cmd>source %<CR>",
-    { desc = "execute the current file" }
-)
+map("n", "<leader>x", "<cmd>.lua<CR>", { desc = "E[x]ecute the current line" })
+map("n", "<leader><leader>x", "<cmd>source %<CR>", { desc = "E[x]ecute the current file" })
 
 -------------------------------------------------------------------------------
 -- go to tab number, index tabs 1..n
 -------------------------------------------------------------------------------
 for i = 1, 9, 1 do
-    map(
-        "n",
-        string.format("<leader>%d", i),
-        string.format(":BufferGoto %d<CR>", i),
-        opts
-    )
+    map("n", string.format("<leader>%d", i), string.format(":BufferGoto %d<CR>", i), opts)
 end
 
 -------------------------------------------------------------------------------
@@ -78,30 +69,106 @@ end
 vim.opt.hlsearch = true
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 
+-- set the diagnostic formatting
+vim.lsp.handlers["textDocument/publishDiagnostics"] =
+    vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
+        underline = false,
+        update_in_insert = false,
+        virtual_text = true,
+    })
+
 -- Diagnostic keymaps
-vim.keymap.set(
-    "n",
-    "[d",
-    vim.diagnostic.goto_prev,
-    { desc = "Go to previous [D]iagnostic message" }
-)
+-- See `:help vim.diagnostic.*` for documentation on any of the below functions
+vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, {
+    desc = "Go to previous [D]iagnostic message",
+    noremap = true,
+    silent = true,
+})
+vim.keymap.set("n", "<leader>k", vim.diagnostic.goto_prev, {
+    desc = "Go to previous [D]iagnostic message",
+    noremap = true,
+    silent = true,
+})
 vim.keymap.set(
     "n",
     "]d",
     vim.diagnostic.goto_next,
-    { desc = "Go to next [D]iagnostic message" }
+    { desc = "Go to next [D]iagnostic message", noremap = true, silent = true }
+)
+vim.keymap.set(
+    "n",
+    "<leader>j",
+    vim.diagnostic.goto_next,
+    { desc = "Go to next [D]iagnostic message", noremap = true, silent = true }
 )
 vim.keymap.set(
     "n",
     "<leader>e",
     vim.diagnostic.open_float,
-    { desc = "Show diagnostic [E]rror messages" }
+    { desc = "Show diagnostic [E]rror messages", noremap = true, silent = true }
 )
 vim.keymap.set(
     "n",
     "<leader>q",
     vim.diagnostic.setloclist,
-    { desc = "Open diagnostic [Q]uickfix list" }
+    { desc = "Open diagnostic [Q]uickfix list", noremap = true, silent = true }
+)
+
+-- Operator-pending maps
+-- =====================
+-- the operators: d[elete] c[hange] y[ank]
+-- p -> parentheses
+-- b -> bracket
+-- e.g., change contents between () with cp
+
+vim.keymap.set(
+    "o",
+    "p",
+    "i(",
+    { noremap = true, silent = true, desc = "Operator pending map for parentheses" }
+)
+vim.keymap.set(
+    "o",
+    "b",
+    "i[",
+    { noremap = true, silent = true, desc = "Operator pending map for brackets" }
+)
+-- Include the surrounding brackets
+vim.keymap.set("o", "P", "i(<esc>i<Del>xi", {
+    noremap = true,
+    silent = true,
+    desc = "Operator pending map for surrounding parentheses",
+})
+vim.keymap.set("o", "B", "i[<esc>i<Del>xi", {
+    noremap = true,
+    silent = true,
+    desc = "Operator pending map for surrounding brackets",
+})
+
+-- Next and previous brackets
+vim.keymap.set(
+    "o",
+    "np",
+    ":<c-u>normal! f(lvi(<cr>",
+    { noremap = true, silent = true, desc = "Next parentheses" }
+)
+vim.keymap.set(
+    "o",
+    "nb",
+    ":<c-u>normal! f[lvi[<cr>",
+    { noremap = true, silent = true, desc = "Next brackets" }
+)
+vim.keymap.set(
+    "o",
+    "pp",
+    ":<c-u>normal! F(lvi(<cr>",
+    { noremap = true, silent = true, desc = "Previous parentheses" }
+)
+vim.keymap.set(
+    "o",
+    "pb",
+    ":<c-u>normal! F[lvi[<cr>",
+    { noremap = true, silent = true, desc = "Previous brackets" }
 )
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
@@ -110,7 +177,12 @@ vim.keymap.set(
 --
 -- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
 -- or just use <C-\><C-n> to exit terminal mode
-vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
+vim.keymap.set(
+    "t",
+    "<Esc><Esc>",
+    "<C-\\><C-n>",
+    { desc = "Exit terminal mode", noremap = true, silent = true }
+)
 
 -- TIP: Disable arrow keys in normal mode
 -- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
@@ -154,353 +226,502 @@ map("n", "<leader>t", function()
         vim.cmd("Neotree reveal")
         vim.g.neotree_open = true
     end
-end, opts)
+end, { desc = "[t]oggle neotree display", noremap = true, silent = true })
 
-vim.cmd([[
-" -------------------------------------------------------------------------------
-" ~/.config/nvim/nvim-bindings.vim
-" last change: March 27, 2022
-" -------------------------------------------------------------------------------
-" -------------------------------------------------------------------------------
-" Tweaks to default mappings
-" Capture most of the keybindings. Excludes bindings that don't often
-" change e.g., <leader>, esc etc. see nvim-other and nvim-deoplete
-"
-" Debugging tips:
-"
-" 1. use :verbose nmap <leader>d to see sequence of setters
-"
-" 2. to use yanked content in command mode <C-R><C-O>"
-"
-" use :registers to see the full contents of registers
-" in normal mode, hit " : p to print the previous command (a cmd)
-" from normal mode, y j : @ " <Enter> will execute the contents of the unamed
-" buffer, "
-" -------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+-- Change local working directory
+vim.keymap.set(
+    "n",
+    "<leader>cd",
+    ":lcd %:p:h<CR>:pwd<CR>",
+    { noremap = true, silent = true, desc = "Change local working directory" }
+)
 
-" File type specific bindings
-autocmd FileType json nnoremap <buffer> <C-f>:%!jq .<CR>
-autocmd FileType json syntax match Comment +\/\/.\+$+
+-- Additional options to engage cmd mode from normal-mode
+-- Default: nnoremap <leader>c :
+-- Default: nnoremap <leader>n /
+vim.keymap.set("n", "<leader>m", ":%s/", { noremap = true, desc = "Start search and replace" })
+vim.keymap.set("n", "<leader>v", ":@:<CR>", { noremap = true, desc = "Execute last command" })
+-- Note: v is next to c, v is mac pasting
+-- Recall, the `gc` postfix engages user-confirmed search and replace
 
-" change local workding directory
-nnoremap <leader>cd :lcd %:p:h<CR>:pwd<CR>
+-- Copy filename and filepath
+vim.keymap.set(
+    "n",
+    "<leader>file",
+    ':let @*=expand("%")<CR>',
+    { noremap = true, silent = true, desc = "Copy filename" }
+)
+vim.keymap.set(
+    "n",
+    "<leader>fp",
+    ':let @*=expand("%:p")<CR>',
+    { noremap = true, silent = true, desc = "Copy full filepath" }
+)
 
-" Additional options to engage cmd mode from normal-mode
-" nnoremap <leader>c :
-" nnoremap <leader>n /
-nnoremap <leader>m :%s/
-nnoremap <leader>v :@:<CR>
-" v is next to c, v is mac pasting
-" recall, the `gc` postfix engages user-confirmed search and replace
+-- Open file prompt with current path
+vim.keymap.set(
+    "n",
+    "<leader>o",
+    ":e <C-R>=expand(\"%:p:h\") . '/'<CR>",
+    { noremap = true, silent = true, desc = "Open file prompt with current path" }
+)
 
-" Copy filename and filepath
-nnoremap <leader>file :let @*=expand("%")<CR>
-nnoremap <leader>fp :let @*=expand("%:p")<CR>
+-- Inserting a line (or tab)
+-- ========================
+-- From normal mode, default: o to insert below, O to insert above
+-- From normal, without insert mode
+--
+-- Delete a line; including the line break
+-- Default: dd
+-- ... keep the line break (and delete to the right without 0)
+-- Default: 0D
+--
+vim.keymap.set("n", "<Enter>", "O<esc>j", {
+    noremap = true,
+    silent = true,
+    desc = "Insert line above and return to normal mode",
+})
+-- 🦀 The line that follows prevents use of C-I to compliment C-O
+vim.keymap.set("n", "<Tab>", "i<space><space><esc>l", {
+    noremap = true,
+    silent = true,
+    desc = "Insert two spaces and return to normal mode",
+})
 
-" Open file prompt with current path
-nnoremap <leader>o :e <C-R>=expand("%:p:h") . '/'<CR>
+-- Above the cursor
+vim.keymap.set(
+    "n",
+    "[<space>",
+    ":call append(line('.')-1,'')<CR><ESC>da",
+    { noremap = true, silent = true, desc = "Insert empty line above cursor" }
+)
 
+-- Insert mode
+-- ===========
+-- C-O generally allows you to use a single normal mode command
+-- e.g.,
+--       C-O D  delete line to the right of the cursor
+--       C-U    delete line to the left of the cursor
 
-" Ctags and Cscope (hscope for Haskell)
-" =====================================
-" Note: Haskell specific configurations of tag and csprg registers
-"       and function LoadHscope()
-"
-" place cursor over the symbol to lookup
-" :help cs for details
-" Cscope limited to hscope functionality
-noremap <C-\> :cs find 3 <C-R>=expand("<cword>")<CR><CR>
-noremap <C-_> :cs find 1 <C-R>=expand("<cword>")<CR><CR>
+-- Insert the first word from the line above (often a fn name)
+vim.keymap.set(
+    "i",
+    "<C-F>",
+    "<space><space><esc>kbywjPlli<C-V> <BS><BS>",
+    { noremap = true, silent = true, desc = "Insert first word from line above" }
+)
 
-" Ctags
-noremap <C-]> :cstag <C-R>=expand("<cword>")<CR><CR>
-" Update files: codex update -> codex.tag
-"               git-hscope -X TemplateHaskell -> hscope.out
+-- Shortcut to making arrows (note: - key maps to underscore)
+vim.keymap.set("i", "<C-_>", "-><space>", { noremap = true, silent = true, desc = "Insert ->" })
+-- vim.keymap.set(
+--     "i",
+--     "<C-m>",
+--     "=><space>",
+--     { noremap = true, silent = true, desc = "Insert [m]atch =>" }
+-- )
+vim.keymap.set(
+    "n",
+    "<leader>;",
+    "mzA;<Esc>`z",
+    { noremap = true, silent = true, desc = "Insert ; at the end of the line" }
+)
+vim.keymap.set(
+    "i",
+    "<C-k>",
+    "<Esc>0i",
+    { noremap = true, silent = true, desc = "Jump to start of line in insert mode" }
+)
+vim.keymap.set(
+    "i",
+    "<C-j>",
+    "<Esc>A;",
+    { noremap = true, silent = true, desc = "Jump to end of line and insert ;" }
+)
+vim.keymap.set(
+    "i",
+    "<C-b>",
+    "<Esc>ui",
+    { noremap = true, silent = true, desc = "Undo from insert mode" }
+)
 
+-- C-H Backspace - default (uses vim navigation)
+vim.keymap.set("i", "<C-l>", "<Del>", {
+    noremap = true,
+    silent = true,
+    desc = "Delete character under cursor in insert mode",
+})
 
-" 🚧
-" Jan 2022 NEW 🦀 WIP
-" command! Fix lua require'lsp_fixcurrent'()
-" command! FixAll mF:%!eslint_d --stdin --fix-to-stdout<CR>`F
-" nnoremap <leader>f mF:%!eslint_d --stdin --fix-to-stdout<CR>`F
+-- Related defaults
+-- Default: C-[ Esc
+-- Default: C-T Tab between line start and first char (uses spaces :)
+-- Default: C-M Enter
+-- Default: C-H Backspace
+-- Default: C-W Backspace word
+-- Default: C-U Backspace to beginning of the line
 
-" Operator-pending maps
-" =====================
-" the operators: d[elete] c[hange] y[ank]
-" p -> parentheses
-" b -> bracket
-" e.g., change contents between () with cp
-onoremap p i(
-onoremap b i[
-" Include the surrounding brackets
-onoremap P i(<esc><Del>xi
-onoremap B i[<esc><Del>xi
+-- Zoom a vim pane, <C-w>= to re-balance
+vim.keymap.set(
+    "n",
+    "<leader>z",
+    ":wincmd _<CR>:wincmd \\|<CR>",
+    { noremap = true, silent = true, desc = "[Z]oom vim pane" }
+)
+vim.keymap.set(
+    "n",
+    "<leader>Z",
+    ":wincmd =<CR>",
+    { noremap = true, silent = true, desc = "Rebalance vim panes" }
+)
+-- Close a buffer without changing the window splits
+vim.keymap.set("n", "<leader>q", ":bp<bar>vsp<bar>bn<bar>bd<CR>", {
+    noremap = true,
+    silent = true,
+    desc = "[Q]uit buffer without changing window splits",
+})
+vim.keymap.set("n", "<leader>bd", ":bp<bar>vsp<bar>bn<bar>bd<CR>", {
+    noremap = true,
+    silent = true,
+    desc = "[D]elete buffer without changing window splits",
+})
 
-" Next and previous brackets
-onoremap np :<c-u>normal! f(lvi(<cr>
-onoremap nb :<c-u>normal! f[lvi[<cr>
-onoremap pp :<c-u>normal! F(lvi(<cr>
-onoremap pb :<c-u>normal! F[lvi[<cr>
+-- Options to engage cmd mode from normal-mode
+-- ===========================
 
-" Inserting a line (or tab)
-" ========================
-" From normal mode, default
-" o  to insert below, O to insert above
-"
-" From normal, without insert mode
-noremap <Enter> O<esc>j
-" The line that follows prevents use of C-I to compliment C-O
-" noremap <Tab> i<space><space><esc>l
+-- Change local working directory
+vim.keymap.set(
+    "n",
+    "<leader>cd",
+    ":lcd %:p:h<CR>:pwd<CR>",
+    { noremap = true, silent = true, desc = "Change local working directory" }
+)
 
-" above the cursor
-nnoremap [<space> :call append(line('.')-1,'')<cr>
+-- Uncommented options for engaging cmd mode
+-- vim.keymap.set('n', '<leader>c', ':', { noremap = true, desc = 'Enter command mode' })
+-- vim.keymap.set('n', '<leader>n', '/', { noremap = true, desc = 'Enter search mode' })
 
-" Delete a line; including the line break
-" dd
-" ... keep the line break (and delete to the right without 0)
-" 0D
+vim.keymap.set("n", "<leader>m", ":%s/", { noremap = true, desc = "Start search and replace" })
+vim.keymap.set(
+    "n",
+    "<leader>v",
+    ":@:<CR>",
+    { noremap = true, silent = true, desc = "Execute last command" }
+)
+-- v is next to c, v is mac pasting
+-- Recall, the `gc` postfix engages user-confirmed search and replace
 
-" Insert mode
-" ===========
-" C-O generally allows you to use a single normal mode command
-" e.g.,
-"       C-O D  delete line to the right of the cursor
-"       C-U    delete line to the left  of the cursor
-"
-" Note: <C-I> seems to point to Tab.  When I remap it, deoplete
-" stops working with <Tab>.
+-- Copy filename and filepath
+vim.keymap.set(
+    "n",
+    "<leader>file",
+    ':let @*=expand("%")<CR>',
+    { noremap = true, silent = true, desc = "Copy filename" }
+)
+vim.keymap.set(
+    "n",
+    "<leader>fp",
+    ':let @*=expand("%:p")<CR>',
+    { noremap = true, silent = true, desc = "Copy full filepath" }
+)
 
-" Registers:
-" Use :reg to see them all!
-" In insert-mode accessed with <C-R> aka `"`
-" In cmd-mode no need for `"` e.g., :so %
-" paste most recent typed text with <C-R>. while in insert mode
+-- Open file prompt with current path
+vim.keymap.set(
+    "n",
+    "<leader>o",
+    ":e <C-R>=expand(\"%:p:h\") . '/'<CR>",
+    { noremap = true, silent = true, desc = "Open file prompt with current path" }
+)
 
-" Insert the first word from the line above (often a fn name)
-inoremap <C-F> <space><space><esc>kbywjPlli<C-V> <BS><BS>
+--------------------------------------------------------------------------------
+-- buffers vim-bby
+--------------------------------------------------------------------------------
+-- Close buffers, not windows
+vim.keymap.set(
+    "n",
+    "<Leader>q",
+    ":Bdelete<CR>",
+    { noremap = true, silent = true, desc = "[Q] buffer" }
+)
+vim.keymap.set(
+    "n",
+    "<leader>bd",
+    ":Bdelete<CR>",
+    { noremap = true, silent = true, desc = "buffer [D]elete buffer" }
+)
+-- vim.keymap.set('n', '<leader>bd', ':bp<bar>sp<bar>bn<bar>bd<CR>', { noremap = true, silent = true, desc = 'Close buffer and switch to next' })
 
-" shortcut to making arrows (note: - key maps to underscore)
-inoremap <C-_> -><space>
-inoremap <C-=> =><space>
+-- Next, previous buffer
+vim.keymap.set(
+    "n",
+    "<leader>bp",
+    ":bp<CR>",
+    { noremap = true, silent = true, desc = "buffer [P]revious buffer" }
+)
+vim.keymap.set(
+    "n",
+    "<leader>bn",
+    ":bn<CR>",
+    { noremap = true, silent = true, desc = "buffer [N]ext buffer" }
+)
 
-" Place `;` at the end of the line
-" Note: . and ; cannot be mapped.
-" inoremap <C-;> <Esc>A;<CR>
+-- Close every window except the current (o = other)
+vim.keymap.set(
+    "n",
+    "<leader>bo",
+    "<C-W>o",
+    { noremap = true, silent = true, desc = "buffer close [O]thers" }
+)
 
-" jump to start and end of the line
-inoremap <C-J> <Esc>0i
-inoremap <C-K> <Esc>A;
+-- List buffers and option to jump
+vim.keymap.set(
+    "n",
+    "<leader>bb",
+    ":buffers<CR>:buffer<Space>",
+    { noremap = true, silent = true, desc = "buffer List and jump to buffer" }
+)
 
-" Undo from insertmode
-inoremap <C-B> <Esc>ui
+-- Select all text in current buffer
+vim.keymap.set(
+    "n",
+    "<leader>aa",
+    "ggVG",
+    { noremap = true, silent = true, desc = "Select all text in current buffer" }
+)
 
-" C-H Backspace - default (uses vim navigation)
-inoremap <C-L> <Del>
+-- Jump to previous edit point (default mappings)
+-- vim.keymap.set('n', 'g;', '', { noremap = true, silent = true, desc = 'Jump to previous edit point' })
+-- vim.keymap.set('n', 'g,', '', { noremap = true, silent = true, desc = 'Jump to previous edit point' })
 
-" Related defaults
-" C-[ Esc
-" C-T Tab between line start and first char (uses spaces :)
-" C-M Enter
-" C-H Backspace
-" C-W Backspace word
-" C-U Backspace to beginning of the line
+--------------------------------------------------------------------------------
+-- Tabularize
+--------------------------------------------------------------------------------
+-- Formats text to align in a table format
+vim.g.haskell_tabular = 1
 
-" TODO
-" Insert spaces until lined up with a search term in the line above
-" nnoremap <C-G> <esc>kf...
+-- Visual mode mappings for tabularizing
+vim.keymap.set(
+    "v",
+    "a=",
+    ":Tabularize /=/l1r1<CR>",
+    { noremap = true, silent = true, desc = "Align by =" }
+)
+vim.keymap.set(
+    "v",
+    "a;",
+    ":Tabularize /:/l1r0l0r1<CR>",
+    { noremap = true, silent = true, desc = "Align by :" }
+)
+vim.keymap.set(
+    "v",
+    "a-",
+    ":Tabularize /->/l1r0l0r1<CR>",
+    { noremap = true, silent = true, desc = "Align by ->" }
+)
+vim.keymap.set(
+    "v",
+    "a{",
+    ":Tabularize /{><CR>",
+    { noremap = true, silent = true, desc = "Align by {" }
+)
 
-" zoom a vim pane, <C-w>= to re-balance
-nnoremap <leader>z :wincmd _<cr>:wincmd \|<cr>
-nnoremap <leader>Z :wincmd =<cr><Paste>
+-- Normal mode mappings for tabularizing
+vim.keymap.set(
+    "n",
+    "<leader>ta",
+    ":Tabularize /<space>/",
+    { noremap = true, silent = true, desc = "Align by space" }
+)
+-- Align records in Haskell
+vim.keymap.set(
+    "n",
+    "<leader>tr",
+    ":Tabularize /[:,{}]/l1l1l1r0l0l1l1<CR>",
+    { noremap = true, silent = true, desc = "Align Haskell records" }
+)
 
-" close a buffer without changing the window splits
-noremap <leader>q :bp<bar>vsp<bar>bn<bar>bd<CR>
-"
-"" BUFFERS vim-bby & fugitive
-" ===========================
-" close buffers, not windows
-nnoremap <Leader>q  :Bdelete<CR>
-nnoremap <leader>bd :Bdelete<CR>
-" nnoremap <leader>bd :bp<bar>sp<bar>bn<bar>bd<CR>
-"
-" Rename a buffer
-" and in git, add if missing with write
-nnoremap <Leader>br :Gmove<space>
-nnoremap <Leader>bw :Gwrite<space>
+-- ------------------------------------------------------------------------------
+-- 🪟 Pane resizing coordinated with tmux
+-- vim-tmux-navigator
+-- ------------------------------------------------------------------------------
+vim.g.tmux_navigator_no_mappings = 1
 
-" next, prev
-nnoremap <leader>bp :bp<cr>
-nnoremap <leader>bn :bn<cr>
+-- Default pane navigation in Vim
+vim.keymap.set("n", "<C-j>", "<C-w>j", { noremap = true, desc = "Move to pane below" })
+vim.keymap.set("n", "<C-k>", "<C-w>k", { noremap = true, desc = "Move to pane above" })
+vim.keymap.set("n", "<C-h>", "<C-w>h", { noremap = true, desc = "Move to left pane" })
+vim.keymap.set("n", "<C-l>", "<C-w>l", { noremap = true, desc = "Move to right pane" })
 
-" explore in a split
-nnoremap <leader>be :Sex<CR>
+-- Pass the same information onto tmux
+vim.keymap.set(
+    "n",
+    "<C-j>",
+    ":TmuxNavigateDown<CR>",
+    { noremap = true, silent = true, desc = "Navigate down in tmux" }
+)
+vim.keymap.set(
+    "n",
+    "<C-k>",
+    ":TmuxNavigateUp<CR>",
+    { noremap = true, silent = true, desc = "Navigate up in tmux" }
+)
+vim.keymap.set(
+    "n",
+    "<C-h>",
+    ":TmuxNavigateLeft<CR>",
+    { noremap = true, silent = true, desc = "Navigate left in tmux" }
+)
+vim.keymap.set(
+    "n",
+    "<C-l>",
+    ":TmuxNavigateRight<CR>",
+    { noremap = true, silent = true, desc = "Navigate right in tmux" }
+)
 
-" switch to the window with the buffer if exists
-" DEBUGGING
-set switchbuf=useopen
+-- Pass-through from tmux (WIP)
+-- Issue: does not pass the event to tmux
+vim.keymap.set(
+    "n",
+    "<M-j>",
+    ":resize -2<CR>",
+    { noremap = true, silent = true, desc = "Resize pane down" }
+)
+vim.keymap.set(
+    "n",
+    "<M-k>",
+    ":resize +2<CR>",
+    { noremap = true, silent = true, desc = "Resize pane up" }
+)
+vim.keymap.set(
+    "n",
+    "<M-h>",
+    ":vertical resize -2<CR>",
+    { noremap = true, silent = true, desc = "Resize pane left" }
+)
+vim.keymap.set(
+    "n",
+    "<M-l>",
+    ":vertical resize +2<CR>",
+    { noremap = true, silent = true, desc = "Resize pane right" }
+)
 
-" close every window except the current (o = other)
-nnoremap <leader>bo <c-w>o
+-- 🦀 Split {n}vim window
+vim.keymap.set(
+    "n",
+    "<leader>-",
+    ":sp<CR>",
+    { noremap = true, silent = true, desc = "Horizontal split" }
+)
+vim.keymap.set(
+    "n",
+    "<leader>/",
+    ":vsp<CR>",
+    { noremap = true, silent = true, desc = "Vertical split" }
+)
+vim.keymap.set(
+    "n",
+    "<leader>\\",
+    ":vsp<CR>",
+    { noremap = true, silent = true, desc = "Vertical split" }
+)
 
-" list files and option to jump (not buffers)
-nnoremap<leader>bb :buffers<CR>:buffer<Space>
+-- Open window splits in various places
+vim.keymap.set(
+    "n",
+    "<leader>sh",
+    ":leftabove vnew<CR>",
+    { noremap = true, silent = true, desc = "Open split on the left" }
+)
+vim.keymap.set(
+    "n",
+    "<leader>sl",
+    ":rightbelow vnew<CR>",
+    { noremap = true, silent = true, desc = "Open split on the right" }
+)
+vim.keymap.set(
+    "n",
+    "<leader>sk",
+    ":leftabove new<CR>",
+    { noremap = true, silent = true, desc = "Open split above" }
+)
+vim.keymap.set(
+    "n",
+    "<leader>sj",
+    ":rightbelow new<CR>",
+    { noremap = true, silent = true, desc = "Open split below" }
+)
 
-" Jump to previous edit point g; g,
+-- Copy/Paste
+-- ==========
 
-" Select all text in current buffer
-nnoremap <leader>aa ggVG
+-- Access clipboard from yank while in insert-mode
+vim.keymap.set(
+    "i",
+    "<C-p>",
+    "<C-r>*",
+    { noremap = true, silent = true, desc = "Paste from clipboard in insert mode" }
+)
 
-" Neovim Terminal
-" ===============
-" Use <Esc> to escape terminal insert mode
-tnoremap <Esc> <C-\><C-n>
-" Make terminal split moving behave like normal neovim
-tnoremap <c-h> <C-\><C-n><C-w>h
-tnoremap <c-j> <C-\><C-n><C-w>j
-tnoremap <c-k> <C-\><C-n><C-w>k
-tnoremap <c-l> <C-\><C-n><C-w>l
+-- OS Clipboard
+-- Copy and paste to OS clipboard
+-- Note: Ctrp uses <leader>p_
+vim.keymap.set(
+    "n",
+    "<leader>y",
+    '"*y',
+    { noremap = true, silent = true, desc = "Yank to OS clipboard" }
+)
+vim.keymap.set(
+    "v",
+    "<leader>y",
+    '"*y',
+    { noremap = true, silent = true, desc = "Yank to OS clipboard" }
+)
+vim.keymap.set(
+    "n",
+    "<leader>p",
+    '"*p',
+    { noremap = true, silent = true, desc = "Paste from OS clipboard" }
+)
+vim.keymap.set(
+    "v",
+    "<leader>p",
+    '"*p',
+    { noremap = true, silent = true, desc = "Paste from OS clipboard" }
+)
 
-" spell checking
-nnoremap <leader>ss :setlocal spell!<cr>
+-- Visual mode pressing * or # searches for the current selection
+-- Super useful! From an idea by Michael Naumann
+vim.keymap.set(
+    "v",
+    "*",
+    ':call VisualSelection("f", "")<CR>',
+    { noremap = true, silent = true, desc = "Search for current selection forward" }
+)
+vim.keymap.set(
+    "v",
+    "#",
+    ':call VisualSelection("b", "")<CR>',
+    { noremap = true, silent = true, desc = "Search for current selection backward" }
+)
 
-" Force redraw
-nnoremap <silent> <leader>r :redraw!<CR>
+-- Treat long lines as break lines (useful when moving around in them)
+vim.keymap.set("n", "j", "gj", { noremap = true, silent = true, desc = "Move down by screen line" })
+vim.keymap.set("n", "k", "gk", { noremap = true, silent = true, desc = "Move up by screen line" })
 
-" TAGS
-" Notes:
-" 1. use of `;` makes it recursive
-" 2. the `.` will be substituted with a directory
-" 3. May not set once NVIM is open
-" 4. Haskell uses hscope
-" 5. Plugins that require tags like have their own
-"    settings.  Writing to this may prevent ctag-dependent
-"    plugins from working.
-"set tags=./tags,tags;
-"" :set tags=./tags,tags,/home/user/commontags
+-- Return to last edit position when opening files
+vim.api.nvim_create_augroup("last_edit", { clear = true })
+vim.api.nvim_create_autocmd("BufReadPost", {
+    group = "last_edit",
+    callback = function()
+        local line = vim.fn.line
+        if line("'\"") > 0 and line("'\"") <= line("$") then vim.cmd('normal! g`"') end
+    end,
+    desc = "Return to last edit position when opening files",
+})
 
-" Copy/Paste
-" ==========
-" Access clipboard from yank while in insert-mode
-" 🔖 <C-p> in normal mode activates Ctrp
-inoremap <C-p> <C-r>*
-
-" OS Clipboard
-" Copy and paste to os clipboard
-" Note: Ctrp uses <leader>p_
-nnoremap <leader>y "*y
-vnoremap <leader>y "*y
-nnoremap <leader>p "*p
-vnoremap <leader>p "*p
-
-" Prettier
-nnoremap <leader>P :Prettier<CR>
-
-" Visual mode pressing * or # searches for the current selection
-" Super useful! From an idea by Michael Naumann
-vnoremap <silent> * :call VisualSelection('f', '')<CR>
-vnoremap <silent> # :call VisualSelection('b', '')<CR>
-
-" Redirect command output to a new window (that can then be copied)
-" :redir @+ | silent set all | redir END
-nnoremap <silent> <F3> :redir @+<CR>@:<CR>:redir END<CR>
-" nnoremap <silent> <F3> :redir @a<CR>:g//<CR>:redir END<CR>:new<CR>:put! a<CR>
-
-" Treat long lines as break lines (useful when moving around in them)
-nnoremap j gj
-nnoremap k gk
-
-" --------------------------------------
-" 🪟 Pane resizing coordinated with tmux
-" vim-tmux-navigator
-" ======================================
-let g:tmux_navigator_no_mappings = 1
-nnoremap <C-j> <C-w>j
-nnoremap <C-k> <C-w>k
-nnoremap <C-h> <C-w>h
-nnoremap <C-l> <C-w>l
-" pass the same information onto tmux
-nnoremap <silent> <C-j> :TmuxNavigateDown<CR>
-nnoremap <silent> <C-k> :TmuxNavigateUp<CR>
-nnoremap <silent> <C-h> :TmuxNavigateLeft<CR>
-nnoremap <silent> <C-l> :TmuxNavigateRight<CR>
-
-" 🚧 WIP pass-through from tmux ?
-" issue: does not pass the event to tmux
-nnoremap <M-j> :resize -2<CR>
-nnoremap <M-k> :resize +2<CR>
-nnoremap <M-h> :vertical resize -2<CR>
-nnoremap <M-l> :vertical resize +2<CR>
-
-" 🦀 ? split {n}vim window
-nnoremap <leader>- :sp<CR>
-nnoremap <leader>/ :vsp<CR>
-nnoremap <leader>\ :vsp<CR>
-
-" Open window splits in various places
-nnoremap <leader>sh :leftabove  vnew<CR>
-nnoremap <leader>sl :rightbelow vnew<CR>
-nnoremap <leader>sk :leftabove  new<CR>
-nnoremap <leader>sj :rightbelow new<CR>
-" --------------------------------------
-
-" Return to last edit position when opening files
-augroup last_edit
-  autocmd!
-  autocmd BufReadPost *
-        \ if line("'\"") > 0 && line("'\"") <= line("$") |
-        \   exe "normal! g`\"" |
-        \ endif
-augroup END
-" Remember info about open buffers on close
-set viminfo^=%
-
-" settings for fish
-augroup fish
-  autocmd!
-  autocmd FileType fish
-        \ set textwidth=79 |
-        \ set foldmethod=expr
-augroup END
-
-
-" tabularize
-" ===========
-" formats text to align in a table format
-let g:haskell_tabular = 1
-vnoremap a= :Tabularize /=/l1r1<CR>
-vnoremap a; :Tabularize /:/l1r0l0r1<CR>
-vnoremap a- :Tabularize /->/l1r0l0r1<CR>
-vnoremap a{ :Tabularize /{><CR>
-nnoremap <leader>ta :Tabularize<space>/
-" Align records in Hask
-nnoremap <leader>tr :Tabularize<space>/[:,{}]/l1l1l1r0l0l1l1<CR>
-
-
-" hlint-refactor-vim keybindings
-nnoremap <silent> <leader>hr :call ApplyOneSuggestion()<CR>
-nnoremap <silent> <leader>hR :call ApplyOneSuggestion()<CR>
-
-" ghc-mod - type checker
-nnoremap <silent> <leader>ht :GhcModType<CR>
-nnoremap <silent> <leader>hT :GhcModTypeInsert<CR>
-nnoremap <silent> <leader>hs :GhcModSplitFunCase<CR>
-nnoremap <silent> <leader>hc :GhcModTypeClear<CR>
-" haskell aucmd TypeClear is also mapped to <leader><CR>
-
-" Hoogle
-" ======
-nnoremap <silent> <leader>hh :Hoogle<CR>
-" prompt for input
-nnoremap <leader>hH :Hoogle
-" detailed documentation (e.g. "Functor")
-nnoremap <silent> <leader>hi :HoogleInfo<CR>
-" detailed documentation and prompt for input
-nnoremap <leader>hI :HoogleInfo
-" close the Hoogle window
-
-" Haskell specific TODO: fix the bindings
-vnoremap <silent> <leader>h. :call Pointfree()<CR>
-vnoremap <silent> <leader>h> :call Pointful()<CR>
-
-
-]])
+-- Remember info about open buffers on close
+vim.opt.viminfo:append("%")
+-- ------------------------------------------------------------------------------
+--
+--
+-- END

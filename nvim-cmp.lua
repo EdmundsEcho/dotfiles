@@ -17,11 +17,7 @@ function M.setup()
     local ok, err = pcall(require, module_name)
     if not ok then
       vim.notify(
-        string.format(
-          "👎 %s not found. cmp error: %s",
-          module_name,
-          err
-        ),
+        string.format("👎 %s not found. cmp error: %s", module_name, err),
         vim.log.levels.ERROR
       )
     end
@@ -42,33 +38,42 @@ function M.setup()
   cmp.setup({
     -- Enable LSP snippets
     snippet = {
-      expand = function(args)
-        vim.fn["vsnip#anonymous"](args.body)
-      end,
+      expand = function(args) vim.fn["vsnip#anonymous"](args.body) end,
     },
-
-    -- Note: Separate keybindings to toggle cmp
-    --
+    sorting = {
+      priority_weight = 2,
+      comparators = {
+        require("copilot_cmp.comparators").prioritize,
+        -- Note: Separate keybindings to toggle cmp
+        cmp.config.compare.offset,
+        -- cmp.config.compare.scopes, --this is commented in nvim-cmp too
+        cmp.config.compare.exact,
+        cmp.config.compare.score,
+        cmp.config.compare.recently_used,
+        cmp.config.compare.locality,
+        cmp.config.compare.kind,
+        cmp.config.compare.sort_text,
+        cmp.config.compare.length,
+        cmp.config.compare.order,
+      },
+    },
     experimental = { ghost_text = false },     -- this feature conflict with copilot.vim's preview.
     mapping = {
 
       -- for the options to appear
       ["<C-Space>"] = cmp.mapping(cmp.mapping.complete(), { "i", "c" }),
 
-      ["<C-g>"] = cmp.mapping(function(fallback)
-        vim.api.nvim_feedkeys(
-          vim.fn["copilot#Accept"](
-            vim.api.nvim_replace_termcodes(
-              "<Tab>",
-              true,
-              true,
-              true
-            )
-          ),
-          "n",
-          true
-        )
-      end),
+      ["<C-g>"] = cmp.mapping(
+        function(fallback)
+          vim.api.nvim_feedkeys(
+            vim.fn["copilot#Accept"](
+              vim.api.nvim_replace_termcodes("<Tab>", true, true, true)
+            ),
+            "n",
+            true
+          )
+        end
+      ),
 
       -- Confirm the selection
       -- Set `select` to `false` to only confirm explicitly selected items.
@@ -102,18 +107,13 @@ function M.setup()
       }),
 
       -- tab support
-      ["<Tab>"] = cmp.mapping(
-        cmp.mapping.select_next_item(),
-        { "i", "s" }
-      ),
-      ["<S-Tab>"] = cmp.mapping(
-        cmp.mapping.select_prev_item(),
-        { "i", "s" }
-      ),
+      ["<Tab>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "s" }),
+      ["<S-Tab>"] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "s" }),
     },
 
     -- Installed sources
     sources = cmp.config.sources({
+      { name = "copilot",                group_index = 2 },
       { name = "nvim_lsp" },
       { name = "nvim_lsp_signature_help" },
       { name = "path" },
@@ -161,20 +161,16 @@ function M.setup()
           vim_item.abbr = truncated_label .. "…"
         end
         if vim.tbl_contains({ "path" }, entry.source.name) then
-          local icon, hl_group =
-              require("nvim-web-devicons").get_icon(
-                entry:get_completion_item().label
-              )
+          local icon, hl_group = require("nvim-web-devicons").get_icon(
+            entry:get_completion_item().label
+          )
           if icon then
             vim_item.kind = icon
             vim_item.kind_hl_group = hl_group
             return vim_item
           end
         end
-        return lspkind.cmp_format({ with_text = false })(
-          entry,
-          vim_item
-        )
+        return lspkind.cmp_format({ with_text = false })(entry, vim_item)
       end,
     },
     --[[

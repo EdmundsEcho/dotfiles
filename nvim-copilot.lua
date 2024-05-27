@@ -6,6 +6,8 @@ local plugin = require("copilot")
 local M = {}
 
 local opts = {
+    event = { "InsertEnter", "LspAttach" },
+    fix_pairs = true,
     suggestion = {
         auto_trigger = true,
         debounce = 300,
@@ -31,12 +33,9 @@ local opts = {
         sql = true,
         lua = true,
     },
-    copilot_node_command = vim.fn.expand("$HOME") .. "/.asdf/shims/node",
 }
 
-function M.setup()
-    plugin.setup(opts)
-end
+function M.setup() plugin.setup(opts) end
 
 return M
 

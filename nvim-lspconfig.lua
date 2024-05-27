@@ -31,6 +31,7 @@ local required_modules = {
 local lspattach_au_group = "kickstart-lsp-attach"
 local servers = {
     ruff_lsp = require("nvim-ruff_lsp"),
+    pyright = require("nvim-pyright"),
     yamlls = require("nvim-yamlls"),
     lua_ls = require("nvim-lua_ls"),
     json_ls = require("nvim-json_ls"),

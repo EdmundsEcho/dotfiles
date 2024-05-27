@@ -5,19 +5,7 @@
 --------------------------------------------------------------------------------
 local M = {}
 
-local required_modules = {}
-
 function M.setup()
-    for _, module_name in ipairs(required_modules) do
-        local ok, err = pcall(require, module_name)
-        if not ok then
-            vim.notify(
-                string.format("x %s not found. nvim-notify error: %s", module_name, err),
-                vim.log.levels.ERROR
-            )
-        end
-    end
-
     --[[
     require("nvim-notify").setup({
         -- Animation style (see below for details)
@@ -41,35 +29,35 @@ function M.setup()
         --         filter = { event = "msg_showmode" },
         --     },
         -- },
-        views = {
-            notify = {
-                replace = true,
-            },
-        },
-        lsp = {
-            progress = {
-                enabled = false,
-                format = "lsp_progress",
-                format_done = "lsp_progress_done",
-                -- throttle = 1000 / 30,
-                view = "notify",
-            },
+        -- views = {
+        --     notify = {
+        --         replace = true,
+        --     },
+        -- },
+        -- lsp = {
+        --     progress = {
+        --         enabled = false,
+        --         format = "lsp_progress",
+        --         format_done = "lsp_progress_done",
+        --         -- throttle = 1000 / 30,
+        --         view = "notify",
+        --     },
 
-            -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
-            override = {
-                ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-                ["vim.lsp.util.stylize_markdown"] = true,
-                ["cmp.entry.get_documentation"] = true, -- requires hrsh7th/nvim-cmp
-            },
-            -- hover = { enabled = false },
-            --     signature = { enabled = false },
-        },
-        cmdline = {
-            opts = {
-                relative = "cursor",
-                position = { row = -2, col = 0 },
-            },
-        },
+        --     -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
+        --     override = {
+        --         ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+        --         ["vim.lsp.util.stylize_markdown"] = true,
+        --         ["cmp.entry.get_documentation"] = true, -- requires hrsh7th/nvim-cmp
+        --     },
+        --     -- hover = { enabled = false },
+        --     -- signature = { enabled = false },
+        -- },
+        -- cmdline = {
+        --     opts = {
+        --         relative = "cursor",
+        --         position = { row = -2, col = 0 },
+        --     },
+        -- },
     }
 end
 

@@ -15,17 +15,6 @@ logger.log("🔗 Lua package path: " .. package.path, vim.log.levels.DEBUG)
 logger.log("📋 Logging to: " .. logger.get_logfile())
 
 --------------------------------------------------------------------------------
-local function hide_semantic_highlights()
-    for _, group in ipairs(vim.fn.getcompletion("@lsp", "highlight")) do
-        vim.api.nvim_set_hl(0, group, {})
-    end
-end
-
-vim.api.nvim_create_autocmd("ColorScheme", {
-    desc = "Clear LSP highlight groups",
-    callback = hide_semantic_highlights,
-})
---------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Track the log
 -- :echo stdpath('log')

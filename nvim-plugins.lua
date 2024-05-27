@@ -31,15 +31,24 @@ return require("lazy").setup(
 -- Plugins
   {
     "tpope/vim-sleuth",     -- detects tabstop and shiftwidth
-    "tpope/vim-surround",
     "tpope/vim-repeat",
-    -- "tpope/vim-commentary",
     { "numToStr/Comment.nvim",              opts = {} },
     "kana/vim-submode",
     "michaeljsmith/vim-indent-object",
-    "moll/vim-bbye",
+    "famiu/bufdelete.nvim",
     "jiangmiao/auto-pairs",
     "windwp/nvim-ts-autotag",
+    {
+      -- "tpope/vim-surround",
+      "kylechui/nvim-surround",
+      version = "*",       -- Use for stability; omit to use `main` branch for the latest features
+      event = "VeryLazy",
+      config = function()
+        require("nvim-surround").setup({
+          -- Configuration here, or leave empty to use defaults
+        })
+      end,
+    },
     {
       "echasnovski/mini.nvim",
       config = function()
@@ -60,25 +69,23 @@ return require("lazy").setup(
       end,
     },
     {     -- nextgen easymotion
+
       "smoka7/hop.nvim",
       version = "*",
       opts = {
         keys = "etovxqpdygfblzhckisuran",
       },
     },
-    {                           -- Useful plugin to show you pending keybinds.
+    {     -- Show you pending keybinds
       "folke/which-key.nvim",
-      event = "VimEnter",       -- Sets the loading event to 'VimEnter'
-      config = function()       -- This is the function that runs, AFTER loading
-        require("which-key").setup()
-
+      event = "VimEnter",
+      config = function()
+        local plugin = require("which-key")
+        plugin.setup()
         -- Document existing key chains
-        require("which-key").register({
+        plugin.register({
           ["<leader><leader>c"] = { name = "[C]ode", _ = "which_key_ignore" },
-          ["<leader><leader>d"] = {
-            name = "[D]ocument",
-            _ = "which_key_ignore",
-          },
+          ["<leader><leader>d"] = { name = "[D]ocument", _ = "which_key_ignore" },
           ["<leader><leader>r"] = {
             name = "[R]ename",
             _ = "which_key_ignore",
@@ -141,44 +148,25 @@ return require("lazy").setup(
     "tmhedberg/SimpylFold",
     -- Functional
     "dag/vim-fish",
-    -- Oil filename manager
-    -- {
-    --   "stevearc/oil.nvim",
-    --   lazy = true,
-    --   config = function() require("nvim-oil") end,
-    --   dependencies = { "nvim-tree/nvim-web-devicons" },
-    --   -- markdown preview
-    --   {
-    --     "iamcco/markdown-preview.nvim",
-    --     cmd = {
-    --       "MarkdownPreviewToggle",
-    --       "MarkdownPreview",
-    --       "MarkdownPreviewStop",
-    --     },
-    --     build = "cd app && yarn install",
-    --     init = function() vim.g.mkdp_filetypes = { "markdown" } end,
-    --     ft = { "markdown" },
-    --   },
-    -- },
 
     -- Noice - v. pretty
     -- see: https://github.com/folke/noice.nvim/wiki/Configuration-Recipes
-    {
-      "folke/noice.nvim",
-      event = "VeryLazy",
-      opts = require("nvim-noice-cfg"),
-      dependencies = {
-        "MunifTanjim/nui.nvim",
-        "hrsh7th/nvim-cmp",
-        {
-          "rcarriga/nvim-notify",
-          enabled = false,
-          opts = {
-            timeout = 10000,
-          },
-        },
-      },
-    },
+    --{
+    --  "folke/noice.nvim",
+    --  event = "VeryLazy",
+    --  opts = require("nvim-noice-cfg"),
+    --  dependencies = {
+    --    "MunifTanjim/nui.nvim",
+    --    "hrsh7th/nvim-cmp",
+    --    {
+    --      "rcarriga/nvim-notify",
+    --      enabled = false,
+    --      opts = {
+    --        timeout = 10000,
+    --      },
+    --    },
+    --  },
+    --},
 
     -- Tmux integration
     { "benmills/vimux",                     lazy = false },
@@ -373,6 +361,10 @@ return require("lazy").setup(
               snippet_placeholder = "..",
             })
           end,
+        },
+        {
+          "zbirenbaum/copilot-cmp",
+          config = function() require("copilot_cmp").setup() end,
         },
       },
     },

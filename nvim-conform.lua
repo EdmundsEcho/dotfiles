@@ -96,7 +96,11 @@ else
             if logger then logger.log(msg) end
             vim.notify(msg)
         end
-    end, { noremap = true, silent = true })
+    end, {
+        desc = "[F]ormat [c]onfig - current formatter",
+        noremap = true,
+        silent = true,
+    })
 
     --------------------------------------------------------------------------------
     -- 💢 set opts for the plugin

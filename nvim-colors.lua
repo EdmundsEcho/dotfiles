@@ -69,7 +69,7 @@ M.theme_colors = {
         GoldenRay = "#DBd263",
         HarvestGold = "#D0C050",
         OliveTwist = "#B9BA1E",
-        BronzeDawn = "#B79632",
+        BronzeDawn = "#CBAA46",
         AncientGold = "#bc990c",
         MutedYellow = "#A79414",
     },
