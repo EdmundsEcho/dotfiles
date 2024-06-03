@@ -4,13 +4,22 @@
 --------------------------------------------------------------------------------
 -- Reads files located in ~/dotfiles as the root
 --------------------------------------------------------------------------------
-local home = vim.fn.expand("~")
-local cfg_path = home .. "/dotfiles/?.lua"
-package.path = package.path .. ";" .. cfg_path
+local home = vim.fn.expand("$HOME")
+local root = home .. "/dotfiles"
+-- Add the dotfiles directory to package.path
+package.path = package.path .. ";" .. root .. "/?.lua"
+package.path = package.path .. ";" .. root .. "/?/init.lua"
+-- Update runtimepath to include dotfiles
+-- vim.opt.runtimepath:append(root .. "/lua")
 
-local logger = require("nvim-logging")
-logger.log("🎉 configuration started", vim.log.levels.INFO)
+local logger = require("cape.core.nvim-logging")
+
+logger.log("🟢 configuration started", vim.log.levels.INFO)
 logger.log("🔗 Lua package path: " .. package.path, vim.log.levels.DEBUG)
+logger.log(
+    "🧮 Vim runtime path: " .. vim.inspect(vim.opt.runtimepath:get()),
+    vim.log.levels.DEBUG
+)
 
 logger.log("📋 Logging to: " .. logger.get_logfile())
 
@@ -22,15 +31,9 @@ logger.log("📋 Logging to: " .. logger.get_logfile())
 -- or vim -V3vimlog
 --------------------------------------------------------------------------------
 
-require("nvim-settings")
-require("nvim-plugins")
-require("nvim-other")
-require("nvim-lua-functions")  -- this deprecates nvim-functions.lua
-require("nvim-keybindings")    -- this has legacy vim WIP update
-require("nvim-emoji-abbr").setup()
-require("nvim-highlights-vim") -- legacy hi WIP deprecate
-require("nvim-pmenu-highlights")
-require("nvim-noice-highlights")
-require("nvim-highlight-groups").update_highlights()
+require("cape.core")
+require("cape.lazy")
+require("cape.core.nvim-lua-functions")
 
 -- END
+--

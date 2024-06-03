@@ -3,9 +3,20 @@
 -- https://github.com/rest-nvim/rest.nvim
 -- usage: lua require(rest-nvim).run()
 --------------------------------------------------------------------------------
-local plugin = require("rest-nvim")
---------------------------------------------------------------------------------
-plugin.setup({
+return {
+  "rest-nvim/rest.nvim",
+  ft = "http",
+  dependencies = { 
+{
+  "vhyrro/luarocks.nvim",
+  priority = 1000,
+  config = true,
+  opts = {
+    rocks = { "lua-curl", "nvim-nio", "mimetypes", "xml2lua" }
+  }
+},
+},
+opts = {
     -- Open request results in a horizontal split
     result_split_horizontal = false,
     -- Keep the http file buffer above|left when split horizontal|vertical
@@ -47,4 +58,6 @@ plugin.setup({
     custom_dynamic_variables = {},
     yank_dry_run = true,
     search_back = true,
-})
+},
+
+}
