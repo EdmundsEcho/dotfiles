@@ -1,6 +1,6 @@
 return { -- Show you pending keybinds
     "folke/which-key.nvim",
-    event = "VimEnter",
+    lazy = false,
     config = function()
         local plugin = require("which-key")
         plugin.setup()

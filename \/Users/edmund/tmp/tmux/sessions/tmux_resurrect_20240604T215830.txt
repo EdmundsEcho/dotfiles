@@ -1,0 +1,15 @@
+pane	2	1	0	:	0	yarn start ~/P/e/ui_v2	:/Users/edmund/Programming-Local/etl/ui_v2	0	node	:node /opt/homebrew/bin/yarn start
+pane	2	1	0	:	1	~/P/e/ui_v2	:/Users/edmund/Programming-Local/etl/ui_v2	1	fish	:
+pane	2	1	0	:	2	~/P/e/ui_v2	:/Users/edmund/Programming-Local/etl/ui_v2	0	fish	:
+pane	2	2	0	:-	0	~	:/Users/edmund	0	fish	:
+pane	2	2	0	:-	1	~	:/Users/edmund	1	fish	:
+pane	2	3	1	:*	0	[Edmunds-De] ~/a/tnc-dev	:/Volumes/active-etl/tnc-dev	0	ssh	:ssh do-desktop
+pane	2	3	1	:*	1	/V/a/deployment	:/Volumes/active-etl/deployment	1	fish	:
+pane	2	3	1	:*	2	vim db/init.sql /V/a/tnc-py	:/Volumes/active-etl/tnc-py	0	nvim	:nvim db/init.sql
+pane	4	1	1	:*Z	0	vim ~/dotfiles	:/Users/edmund/dotfiles	1	nvim	:nvim
+pane	4	1	1	:*Z	1	~/dotfiles	:/Users/edmund/dotfiles	0	fish	:
+window	2	1	:REACT	0	:	4c0d,214x52,0,0[214x13,0,0,6,214x38,0,14{140x38,0,14,14,73x38,141,14,29}]	off
+window	2	2	:SERVER-DOCKER	0	:-	9fb0,214x52,0,0[214x37,0,0,15,214x14,0,38,17]	off
+window	2	3	:RUST	1	:*	17a3,214x52,0,0{114x52,0,0[114x25,0,0,28,114x26,0,26,27],99x52,115,0,19}	off
+window	4	1	:nvim	1	:*Z	1efe,84x36,0,0{55x36,0,0,30,28x36,56,0,31}	:
+state	2	

@@ -11,8 +11,8 @@ return {
             -- when to install
             cond = function() return vim.fn.executable("make") == 1 end,
         },
+        { "jonarrien/telescope-cmdline.nvim" },
         { "nvim-telescope/telescope-ui-select.nvim" },
-        -- Useful for getting pretty icons, but requires a Nerd Font.
         {
             "nvim-tree/nvim-web-devicons",
             enabled = vim.g.have_nerd_font,
@@ -21,6 +21,7 @@ return {
         -- Project root directory
         {
             "ahmedkhalf/project.nvim",
+            enabled = false,
             config = function()
                 require("project_nvim").setup({
                     detection_methods = { "lsp", "pattern" },
@@ -45,8 +46,32 @@ return {
         },
         "sharkdp/fd",
     },
+    keys = {
+        -- { ":", "<cmd>Telescope cmdline<cr>", desc = "[:] Cmdline" },
+    },
+    opts = {
+        extensions = {
+            cmdline = {
+                output_pane = {
+                    enabled = true,
+                },
+                picker = {
+                    layout_config = {
+                        width = 120,
+                        height = 25,
+                    },
+                },
+                mappings = {
+                    complete = "<Tab>",
+                    run_selection = "<C-CR>",
+                    run_input = "<CR>",
+                },
+            },
+        },
+    },
     config = function()
         local telescope = require("telescope")
+        telescope.load_extension("cmdline")
         local actions = require("telescope.actions")
         -- local transform_mod = require("telescope.actions.mt").transform_mod
 

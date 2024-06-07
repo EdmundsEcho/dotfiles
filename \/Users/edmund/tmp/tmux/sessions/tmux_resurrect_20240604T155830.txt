@@ -1,0 +1,15 @@
+pane	2	1	0	:-Z	0	yarn start ~/P/e/ui_v2	:/Users/edmund/Programming-Local/etl/ui_v2	0	node	:node /opt/homebrew/bin/yarn start
+pane	2	1	0	:-Z	1	~/P/e/ui_v2	:/Users/edmund/Programming-Local/etl/ui_v2	1	fish	:
+pane	2	1	0	:-Z	2	~/P/e/ui_v2	:/Users/edmund/Programming-Local/etl/ui_v2	0	fish	:
+pane	2	2	0	:	0	~	:/Users/edmund	0	fish	:
+pane	2	2	0	:	1	~	:/Users/edmund	1	fish	:
+pane	2	3	1	:*Z	0	/V/a/tnc-py	:/Volumes/active-etl/tnc-py	0	fish	:
+pane	2	3	1	:*Z	1	[Edmunds-De] ~/a/tnc-py	:/Users/edmund	1	ssh	:ssh do-desktop
+pane	2	3	1	:*Z	2	vim Dockerfile.kube. /V/a/tnc-py	:/Volumes/active-etl/tnc-py	0	nvim	:nvim Dockerfile.kube.v2
+pane	4	1	1	:*Z	0	vim ~/dotfiles	:/Users/edmund/dotfiles	1	nvim	:nvim
+pane	4	1	1	:*Z	1	~/dotfiles	:/Users/edmund/dotfiles	0	fish	:
+window	2	1	:REACT	0	:-Z	4675,158x52,0,0[158x13,0,0,6,158x38,0,14{112x38,0,14,14,45x38,113,14,29}]	off
+window	2	2	:SERVER-DOCKER	0	:	cf78,158x52,0,0[158x37,0,0,15,158x14,0,38,17]	off
+window	2	3	:RUST	1	:*Z	3c59,158x52,0,0{82x52,0,0[82x31,0,0,28,82x20,0,32,27],75x52,83,0,19}	off
+window	4	1	:nvim	1	:*Z	f676,102x36,0,0{68x36,0,0,30,33x36,69,0,31}	:
+state	2	

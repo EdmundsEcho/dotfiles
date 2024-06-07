@@ -519,91 +519,6 @@ vim.keymap.set(
     { noremap = true, silent = true, desc = "Align Haskell records" }
 )
 
--- ------------------------------------------------------------------------------
--- 🪟 Pane resizing coordinated with tmux
--- vim-tmux-navigator
--- ------------------------------------------------------------------------------
-vim.g.tmux_navigator_no_mappings = 1
-
--- Default pane navigation in Vim
-vim.keymap.set("n", "<C-j>", "<C-w>j", { noremap = true, desc = "Move to pane below" })
-vim.keymap.set("n", "<C-k>", "<C-w>k", { noremap = true, desc = "Move to pane above" })
-vim.keymap.set("n", "<C-h>", "<C-w>h", { noremap = true, desc = "Move to left pane" })
-vim.keymap.set("n", "<C-l>", "<C-w>l", { noremap = true, desc = "Move to right pane" })
-
--- Pass the same information onto tmux
-vim.keymap.set(
-    "n",
-    "<C-j>",
-    ":TmuxNavigateDown<CR>",
-    { noremap = true, silent = true, desc = "Navigate down in tmux" }
-)
-vim.keymap.set(
-    "n",
-    "<C-k>",
-    ":TmuxNavigateUp<CR>",
-    { noremap = true, silent = true, desc = "Navigate up in tmux" }
-)
-vim.keymap.set(
-    "n",
-    "<C-h>",
-    ":TmuxNavigateLeft<CR>",
-    { noremap = true, silent = true, desc = "Navigate left in tmux" }
-)
-vim.keymap.set(
-    "n",
-    "<C-l>",
-    ":TmuxNavigateRight<CR>",
-    { noremap = true, silent = true, desc = "Navigate right in tmux" }
-)
-
--- Pass-through from tmux (WIP)
--- Issue: does not pass the event to tmux
-vim.keymap.set(
-    "n",
-    "<M-j>",
-    ":resize -2<CR>",
-    { noremap = true, silent = true, desc = "Resize pane down" }
-)
-vim.keymap.set(
-    "n",
-    "<M-k>",
-    ":resize +2<CR>",
-    { noremap = true, silent = true, desc = "Resize pane up" }
-)
-vim.keymap.set(
-    "n",
-    "<M-h>",
-    ":vertical resize -2<CR>",
-    { noremap = true, silent = true, desc = "Resize pane left" }
-)
-vim.keymap.set(
-    "n",
-    "<M-l>",
-    ":vertical resize +2<CR>",
-    { noremap = true, silent = true, desc = "Resize pane right" }
-)
-
--- 🦀 Split {n}vim window
-vim.keymap.set(
-    "n",
-    "<leader>-",
-    ":sp<CR>",
-    { noremap = true, silent = true, desc = "Horizontal split" }
-)
-vim.keymap.set(
-    "n",
-    "<leader>/",
-    ":vsp<CR>",
-    { noremap = true, silent = true, desc = "Vertical split" }
-)
-vim.keymap.set(
-    "n",
-    "<leader>\\",
-    ":vsp<CR>",
-    { noremap = true, silent = true, desc = "Vertical split" }
-)
-
 -- Open window splits in various places
 vim.keymap.set(
     "n",
@@ -710,8 +625,69 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 })
 
 -- Remember info about open buffers on close
+---@diagnostic disable-next-line: undefined-field
 vim.opt.viminfo:append("%")
--- ------------------------------------------------------------------------------
---
---
+
+--------------------------------------------------------------------------------
+-- Lspsaga
+--------------------------------------------------------------------------------
+--wk.register({
+--    l = {
+--        name = "Lspsaga",
+--        c = { "<cmd>Lspsaga code_action<cr>", "Code Action" },
+--        o = { "<cmd>Lspsaga outline<cr>", "Outline" },
+--        r = { "<cmd>Lspsaga rename<cr>", "Rename" },
+--        d = { "<cmd>Lspsaga goto_definition<cr>", "Lsp GoTo Definition" },
+--        f = { "<cmd>Lspsaga finder<cr>", "Lsp Finder" },
+--        p = { "<cmd>Lspsaga preview_definition<cr>", "Preview Definition" },
+--        s = { "<cmd>Lspsaga signature_help<cr>", "Signature Help" },
+--        w = { "<cmd>Lspsaga show_workspace_diagnostics<cr>", "Show Workspace Diagnostics" },
+--    },
+--}, { prefix = "<leader>" })
+
+--------------------------------------------------------------------------------
+-- Vim-visual-multi
+-- Perhaps a substitute for failing tabularize
+--------------------------------------------------------------------------------
+local function visual_cursors_with_delay()
+    -- Execute the vm-visual-cursors command.
+    vim.cmd('silent! execute "normal! \\<Plug>(VM-Visual-Cursors)"')
+    -- Introduce delay via VimScript's 'sleep' (set to 500 milliseconds here).
+    vim.cmd("sleep 200m")
+    -- Press 'A' in normal mode after the delay.
+    vim.cmd('silent! execute "normal! A"')
+end
+
+vim.keymap.set(
+    "n",
+    "<leader>ma",
+    "<Plug>(VM-Select-All)<Tab>",
+    { noremap = true, silent = true, desc = "[M]ulti-cursor Select [A]ll" }
+)
+vim.keymap.set(
+    "n",
+    "<leader>mr",
+    "<Plug>(VM-Start-Regex-Search)",
+    { noremap = true, silent = true, desc = "[M]ulti-cursor Start-[R]egex-Search" }
+)
+vim.keymap.set(
+    "n",
+    "<leader>mp",
+    "<Plug>(VM-Add-Cursor-At-Pos)",
+    { noremap = true, silent = true, desc = "[M]ulti-cursor app cursor at [P]osition" }
+)
+vim.keymap.set(
+    "n",
+    "<leader>mo",
+    "<Plug>(VM-Toggle-Mappings)",
+    { noremap = true, silent = true, desc = "[M]ulti-cursor toggle [O]n [O]ff mappings" }
+)
+-- Visual mode mappings
+vim.keymap.set(
+    "v",
+    "<leader>mv",
+    visual_cursors_with_delay,
+    { noremap = true, silent = true, desc = "[M]ulti-cursor [V]isual cursors" }
+)
+
 -- END

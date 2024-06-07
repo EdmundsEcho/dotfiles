@@ -29,25 +29,26 @@ vim.opt.rtp:prepend(lazypath)
 local custom_path = vim.fn.expand("$HOME") .. "/dotfiles/lua"
 vim.opt.rtp:prepend(custom_path)
 
-require("lazy").setup( { 
-      { import = "cape.plugins" }, 
-      { import = "cape.plugins.lsp" } 
-    }, { 
+require("lazy").setup({
+    { import = "cape.plugins" },
+    { import = "cape.plugins.lsp" },
+}, {
     checker = {
         enabled = true,
         notify = false,
         frequency = 3600,
     },
     change_detection = {
-      enabled = true,
-        notify = true,
+        enabled = true,
+        notify = false,
     },
     rtp = {
-      reset = true, -- reset the runtime path to $VIMRUNTIME and your config directory
-      ---@type string[]
-      paths = {
-        vim.fn.expand("$HOME") .. "/dotfiles"
-      }, -- add any custom paths here that you want to includes in the rtp
+        -- 🦀 this does not work (I use a symlink instead)
+        reset = true, -- reset the runtime path to $VIMRUNTIME and your config directory
+        ---@type string[]
+        paths = {
+            vim.fn.expand("$HOME") .. "/dotfiles",
+        }, -- add any custom paths here that you want to includes in the rtp
     },
 })
 

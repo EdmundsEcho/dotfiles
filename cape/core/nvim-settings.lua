@@ -159,8 +159,8 @@ set.ttyfast = true
 -- Folding settings
 -- see: https://neovim.io/doc/user/fold.html
 set.foldmethod = "indent"
-set.foldlevel = 4
-set.foldnestmax = 15
+set.foldlevel = 7
+set.foldnestmax = 20
 set.foldenable = true
 set.viewoptions = "folds,cursor"
 set.sessionoptions = "folds"

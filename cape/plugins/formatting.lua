@@ -16,11 +16,11 @@ return {
     "stevearc/conform.nvim",
     event = { "BufReadPre", "BufNewFile" },
     cmd = { "ConformInfo" },
-    dependencies = { "nvim-lua/plenary.nvim", },
-    config = function() 
-
+    dependencies = { "nvim-lua/plenary.nvim" },
+    config = function()
         local logger = require("cape.core.nvim-logging")
-        
+        local conform = require("conform")
+
         --------------------------------------------------------------------------------
         -- formatting configuration file location
         -- Note: Generally, useful to provide a global version as a fallback for when a
@@ -31,17 +31,19 @@ return {
         local rust_cfg_file = vim.fn.expand("~/.rustfmt.toml")
         local taplo_cfg_file = vim.fn.expand("~/.taplo.toml")
         -- prettierd uses PRETTIERD_DEFAULT_CONFIG
-        -- jq and ruff-lsp do not have configuration files
+        -- jq do not have configuration files
+        -- ruff-lsp is not a built-in formatter.  Set it up as a lsp and conform will
+        -- use it as "fallback" OR use ruff.
         -- ruff configuration is set in a project. I'm not confident that specifying in
         -- call ruff will not override the project.
-        
+
         --------------------------------------------------------------------------------
         -- A custom status report regarding the active formatter used to help identify
         -- the loaded settings.
         --------------------------------------------------------------------------------
         local function rpt(formatter)
             if type(formatter) ~= "table" then return "Invalid formatter data provided." end
-        
+
             local report = (formatter.name or "Non-name") .. "\n"
             -- Command
             report = report .. "Command: " .. (formatter.command or "N/A") .. "\n"
@@ -50,10 +52,10 @@ return {
             -- Availability
             local availability = formatter.available and "Yes" or "No"
             report = report .. "Available: " .. availability .. "\n"
-        
+
             return report
         end
-        
+
         --------------------------------------------------------------------------------
         -- Start loading and configuring the plugin
         --------------------------------------------------------------------------------
@@ -74,7 +76,7 @@ return {
         --------------------------------------------------------------------------------
         vim.keymap.set(
             { "n", "v" },
-            "<leader>f",
+            "<leader>F",
             function()
                 conform.format({
                     lsp_fallback = true,
@@ -178,12 +180,6 @@ return {
                 yaml = { { "prettierd", "prettier" } },
             },
         })
-
-  end,
+    end,
 }
 -- END
-
-
-
-
-

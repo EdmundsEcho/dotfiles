@@ -3,6 +3,13 @@ return {
     "tpope/vim-repeat",
     "kana/vim-submode",
     "famiu/bufdelete.nvim",
+    "godlygeek/tabular",
+    { "algmyr/vim-wombat-lua" },
+    {
+        "windwp/nvim-autopairs",
+        event = "InsertEnter",
+        config = true,
+    },
     {
         "rcarriga/nvim-dap-ui",
         dependencies = {
@@ -10,8 +17,7 @@ return {
             "nvim-neotest/nvim-nio",
         },
     },
-    -- Theme
-    { "algmyr/vim-wombat-lua" },
+    { "mg979/vim-visual-multi" },
 }
 
 -- The line beneath this is called `modeline`. See `:help modeline`

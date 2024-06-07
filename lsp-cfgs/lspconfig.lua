@@ -39,7 +39,7 @@ M.setup = function()
         yamlls = require("lsp-cfgs/nvim-yamlls").setup(),
         lua_ls = require("lsp-cfgs/nvim-lua_ls").setup(),
         jsonls = require("lsp-cfgs/nvim-json_ls").setup(),
-        tsserver = require("lsp-cfgs/nvim-tsserver").setup(lspattach_au_group),
+        -- tsserver = require("lsp-cfgs/nvim-tsserver").setup(lspattach_au_group),
     }
     --------------------------------------------------------------------------------
     -- 💢 mutate lspconfig.<lsp_name> table

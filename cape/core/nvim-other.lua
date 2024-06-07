@@ -8,11 +8,20 @@
 -- 3. diagnostics popup settings
 --
 --------------------------------------------------------------------------------
-local logger = require("cape.core.nvim-logging")
-
+-- local logger = require("cape.core.nvim-logging")
 -- Spelling
 vim.o.spelllang = "en"
 vim.o.spellfile = os.getenv("HOME") .. "/dotfiles/en.utf-8.add"
+
+--------------------------------------------------------------------------------
+-- Map Ctrl-i away from Tab, match this with alacritty key_binding
+--------------------------------------------------------------------------------
+vim.api.nvim_set_keymap(
+    "n",
+    "<Esc>[27;5;73~",
+    '<CMD>lua vim.api.nvim_command("normal! <C-i>")<CR>',
+    { noremap = true, silent = true }
+)
 
 --------------------------------------------------------------------------------
 -- Open quickfix window after grep

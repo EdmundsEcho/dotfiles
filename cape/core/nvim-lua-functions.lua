@@ -112,33 +112,4 @@ vim.api.nvim_create_autocmd({ "BufWritePre" }, {
     end,
 })
 
--- Function: LoadHscope
--- Description: Automatically sets up cscope connections for Haskell projects using hscope.out.
-function M.LoadHscope()
-    -- Configuration Options
-    vim.opt_local.csto = 1 -- Keep ctags as first in search order, call cscope separately.
-    vim.opt_local.cst = true -- Enable cscope.
-    vim.opt_local.csverb = false -- Disable verbose cscope messages (initially).
-
-    -- Find hscope.out
-    local db_path = vim.fn.findfile("hscope.out", ".;")
-
-    if db_path ~= "" then
-        -- Extract the path to the project root from the hscope.out path
-        local project_root = db_path:match("(.*)/hscope%.out$")
-
-        -- Add the hscope database and project root to cscope
-        vim.cmd("cs add " .. db_path .. " " .. project_root)
-    else
-        vim.api.nvim_err_writeln("Failed to load hscope.out")
-    end
-
-    vim.opt_local.csverb = true -- Re-enable verbose cscope messages for manual additions.
-end
-
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = "haskell",
-    callback = function() M.LoadHscope() end, -- Call LoadHscope using a callback
-})
-
 return M
