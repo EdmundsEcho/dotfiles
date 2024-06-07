@@ -5,3 +5,4 @@ OLD/
 nvim-gemini.lua
 nvim-chatGpt.lua
 tmp.*
+*.log
