@@ -88,8 +88,10 @@ return {
             },
             experimental = { ghost_text = false }, -- this feature conflict with copilot.vim's preview.
             mapping = {
-
-                -- for the options to appear
+                -- NOTE: Be sure to avoid setting pumvisible dependent bindings in other
+                -- keybinding settings (grep pumvisible)
+                --
+                -- force options to appear
                 ["<C-Space>"] = cmp.mapping(cmp.mapping.complete(), { "i", "c" }),
 
                 -- Confirm the selection
@@ -97,11 +99,11 @@ return {
                 ["<CR>"] = cmp.mapping.confirm({ select = false }),
                 ["<C-y>"] = cmp.mapping.confirm({ select = false }),
 
-                -- navigate the choices
+                -- navigate documentation
                 ["<C-d>"] = cmp.mapping(cmp.mapping.scroll_docs(-4), { "i", "c" }),
                 ["<C-u>"] = cmp.mapping(cmp.mapping.scroll_docs(4), { "i", "c" }),
 
-                -- select an options use h/l when cmp.visible()
+                -- navigate options when cmp.visible()
                 ["<C-h>"] = cmp.mapping(function(fallback)
                     if cmp.visible() then
                         cmp.select_prev_item()
@@ -118,38 +120,29 @@ return {
                     end
                 end, { "i", "s" }),
 
+                -- abort and close
                 ["<C-e>"] = cmp.mapping({
                     i = cmp.mapping.abort(),
                     c = cmp.mapping.close(),
                 }),
-
-                -- <c-l> will move you to the right of each of the expansion locations.
-                -- <c-h> is similar, except moving you backwards.
-                -- ['<C-l>'] = cmp.mapping(function()
-                --   if luasnip.expand_or_locally_jumpable() then
-                --     luasnip.expand_or_jump()
-                --   end
-                -- end, { 'i', 's' }),
-                -- ['<C-h>'] = cmp.mapping(function()
-                --   if luasnip.locally_jumpable(-1) then
-                --     luasnip.jump(-1)
-                --   end
-                -- end, { 'i', 's' }),
-
-                -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
-                --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
-                -- tab support
-                ["<Tab>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "s" }),
-                ["<S-Tab>"] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "s" }),
-
                 -- Toggle on or off
                 ["<C-t>"] = cmp.mapping(function() toggle_cmp_from_insert_mode() end, { "i", "s" }),
+
+                -- ["<Tab>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "s" }),
+                -- ["<S-Tab>"] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "s" }),
             },
 
             -- Installed sources
             sources = cmp.config.sources({
                 { name = "copilot", group_index = 2 },
-                { name = "nvim_lsp" },
+                {
+                    name = "nvim_lsp",
+                    option = {
+                        markdown_oxide = {
+                            keyword_pattern = [[\(\k\| \|\/\|#\)\+]],
+                        },
+                    },
+                },
                 { name = "nvim_lsp_signature_help" },
                 { name = "path" },
                 { name = "treesitter" },

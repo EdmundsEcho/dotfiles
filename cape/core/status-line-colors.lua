@@ -16,11 +16,11 @@ M.get_mode_color = function()
         n = M.colors.red,
         i = M.colors.green,
         v = M.colors.dark_blue,
-        [''] = M.colors.dark_blue,
+        [""] = M.colors.dark_blue,
         V = M.colors.dark_blue,
         c = M.colors.magenta,
     }
-    return mode_color[mode] or M.colors.fg  -- default to fg if mode not found
+    return mode_color[mode] or M.colors.fg -- default to fg if mode not found
 end
 
 return M

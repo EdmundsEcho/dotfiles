@@ -67,13 +67,14 @@ M.theme_colors = {
     Yellows = {
         SolarFlare = "#ffff00",
         LemonChiffon = "#f5e77d",
-        -- GoldenRay = "#DBd263",
+        Lemon = "#DBd263",
         GoldenRay = "#A07A2F",
         HarvestGold = "#D0C050",
         OliveTwist = "#B9BA1E",
         BronzeDawn = "#CBAA46",
         AncientGold = "#bc990c",
         MutedYellow = "#A79414",
+        Orange = "#D4AC0D",
     },
     Browns = {
         Orange = "#D4AC0D",

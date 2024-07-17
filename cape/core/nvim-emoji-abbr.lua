@@ -1,5 +1,4 @@
 -- File: nvim-emoji-abbr.lua
-M = {}
 
 local emoji_abbr = {
     { abbr = ":person:", emoji = "🙂" },
@@ -97,11 +96,7 @@ local emoji_abbr = {
     { abbr = ":global:", emoji = "🌍" },
 }
 
--- Function to create abbreviations from the table
-function M.setup()
-    for _, item in ipairs(emoji_abbr) do
-        vim.api.nvim_command("ab " .. item.abbr .. " " .. item.emoji)
-    end
+-- Register the abbr
+for _, item in ipairs(emoji_abbr) do
+    vim.api.nvim_command("ab " .. item.abbr .. " " .. item.emoji)
 end
-
-return M

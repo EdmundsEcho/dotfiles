@@ -60,12 +60,12 @@ local function link_highlight(from, to) vim.cmd(string.format("highlight! link %
 M.match = {
     TYPE1 = c.theme_colors.Yellows.AncientGold,
     TYPE2 = c.theme_colors.Yellows.GoldenRay,
-    TYPE3 = c.theme_colors.Browns.VibrantOrange,
+    TYPE3 = c.theme_colors.Yellows.Lemon,
     TYPE4 = c.theme_colors.Yellows.OliveTwist,
     TYPE5 = c.theme_colors.Purples.MutedPurple,
     IDENTIFIER1 = c.theme_colors.Yellows.GoldenRay,
     IDENTIFIER2 = c.theme_colors.Yellows.BronzeDawn,
-    IDENTIFIER3 = c.theme_colors.Yellows.GoldenRay,
+    IDENTIFIER3 = c.theme_colors.Yellows.Lemon,
     IDENTIFIER4 = c.theme_colors.Browns.MutedBrown,
     IDENTIFIER5 = c.theme_colors.Purples.DeepPurple,
     -- FUNCTION1 = c.theme_colors.Greens.FreshLime,
@@ -137,13 +137,16 @@ local barbar_hi_cfg = {
     BufferVisibleIndex = { fg = white, bg = barbar.visible },
     -- all state groups
     BufferScrollArrow = { fg = c.theme_colors.Luci.SecondaryMain, bg = "NONE" },
-}
 
-local inactive_grps = {
+    -- Innactive
     BufferInactive = { fg = dim, bg = barbar.inactive },
     BufferInactiveIndex = { fg = dim, bg = barbar.inactive },
     BufferInactiveMod = { fg = dim_accent, bg = barbar.inactive },
     BufferInactiveTarget = { fg = fg, bg = barbar.inactive },
+}
+
+local todo_comments = {
+    TodoBgTODO = { bg = barbar.inactive },
 }
 
 --------------------------------------------------------------------------------
@@ -152,7 +155,7 @@ function M.update_highlights()
     for group, props in pairs(barbar_hi_cfg) do
         vim.api.nvim_set_hl(0, group, props)
     end
-    for group, props in pairs(inactive_grps) do
+    for group, props in pairs(todo_comments) do
         vim.api.nvim_set_hl(0, group, props)
     end
 
@@ -164,6 +167,7 @@ function M.update_highlights()
         fg = c.theme_colors.Grays.White,
         bg = c.theme_colors.Luci.PrimaryMainDark,
     })
+
     -- Special is used too generically across languages
     vim.api.nvim_set_hl(0, "Special", { fg = c.theme_colors.Grays.DarkGray, bg = "NONE" })
     vim.api.nvim_set_hl(

@@ -171,19 +171,6 @@ vim.keymap.set(
     { noremap = true, silent = true, desc = "Previous brackets" }
 )
 
--- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
--- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
--- is not what someone will guess without a bit more experience.
---
--- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
--- or just use <C-\><C-n> to exit terminal mode
-vim.keymap.set(
-    "t",
-    "<Esc><Esc>",
-    "<C-\\><C-n>",
-    { desc = "Exit terminal mode", noremap = true, silent = true }
-)
-
 -- TIP: Disable arrow keys in normal mode
 -- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
 -- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
@@ -285,11 +272,12 @@ vim.keymap.set("n", "<Enter>", "O<esc>j", {
     desc = "Insert line above and return to normal mode",
 })
 -- 🦀 The line that follows prevents use of C-I to compliment C-O
-vim.keymap.set("n", "<Tab>", "i<space><space><esc>l", {
-    noremap = true,
-    silent = true,
-    desc = "Insert two spaces and return to normal mode",
-})
+-- :bad: 👎 use Tab or C-I to move up the jump list (cannot use tab separate from C-I)
+-- vim.keymap.set("n", "<Tab>", "i<space><space><esc>l", {
+--     noremap = true,
+--     silent = true,
+--     desc = "Insert two spaces and return to normal mode",
+-- })
 
 -- Above the cursor
 vim.keymap.set(
@@ -375,17 +363,6 @@ vim.keymap.set(
     ":wincmd =<CR>",
     { noremap = true, silent = true, desc = "Rebalance vim panes" }
 )
--- Close a buffer without changing the window splits
-vim.keymap.set("n", "<leader>q", ":bp<bar>vsp<bar>bn<bar>bd<CR>", {
-    noremap = true,
-    silent = true,
-    desc = "[Q]uit buffer without changing window splits",
-})
-vim.keymap.set("n", "<leader>bd", ":bp<bar>vsp<bar>bn<bar>bd<CR>", {
-    noremap = true,
-    silent = true,
-    desc = "[D]elete buffer without changing window splits",
-})
 
 -- Options to engage cmd mode from normal-mode
 -- ===========================
@@ -416,47 +393,65 @@ vim.keymap.set(
 -- buffers vim-bby
 --------------------------------------------------------------------------------
 -- Close buffers, not windows
-vim.keymap.set(
-    "n",
-    "<Leader>q",
-    ":Bdelete<CR>",
-    { noremap = true, silent = true, desc = "[Q] buffer" }
-)
-vim.keymap.set(
-    "n",
-    "<leader>bd",
-    ":Bdelete<CR>",
-    { noremap = true, silent = true, desc = "buffer [D]elete buffer" }
-)
--- vim.keymap.set('n', '<leader>bd', ':bp<bar>sp<bar>bn<bar>bd<CR>', { noremap = true, silent = true, desc = 'Close buffer and switch to next' })
-
+--vim.keymap.set(
+--    "n",
+--    "<Leader>q",
+--    ":Bdelete<CR>",
+--    { noremap = true, silent = true, desc = "[Q]uit buffer" }
+--)
+--vim.keymap.set(
+--    "n",
+--    "<leader>bd",
+--    ":Bdelete<CR>",
+--    { noremap = true, silent = true, desc = "[B]uffer [D]elete" }
+--)
+--------------------------------------------------------------------------------
+-- Close a buffer without changing the window splits
+vim.keymap.set("n", "<leader>q", "<cmd>BufferClose<bar>vsp<bar>bn<bar>bd<CR>", {
+    noremap = true,
+    silent = true,
+    desc = "[Q]uit buffer without changing window splits",
+})
+--vim.keymap.set("n", ":bd", "<cmd>BufferClose<CR>", {
+--    noremap = true,
+--    silent = true,
+--    desc = "[B]uffer [D]elete without changing window splits",
+--})
+vim.keymap.set("n", "<leader>bd", "<cmd>BufferClose<bar>vsp<bar>bn<bar>bd<CR>", {
+    noremap = true,
+    silent = true,
+    desc = "[B]uffer [D]elete without changing window splits",
+})
+--------------------------------------------------------------------------------
 -- Next, previous buffer
-vim.keymap.set(
-    "n",
-    "<leader>bp",
-    ":bp<CR>",
-    { noremap = true, silent = true, desc = "buffer [P]revious buffer" }
-)
-vim.keymap.set(
-    "n",
-    "<leader>bn",
-    ":bn<CR>",
-    { noremap = true, silent = true, desc = "buffer [N]ext buffer" }
-)
+--vim.keymap.set(
+--    "n",
+--    ":bp",
+--    ":BufferPrevious",
+--    { noremap = true, silent = true, desc = "[B]uffer [P]revious" }
+--)
+--vim.keymap.set(
+--    "n",
+--    ":bn",
+--    ":BufferNext",
+--    { noremap = true, silent = true, desc = "[B]uffer [N]ext" }
+--)
 
+--------------------------------------------------------------------------------
 -- Close every window except the current (o = other)
-vim.keymap.set(
-    "n",
-    "<leader>bo",
-    "<C-W>o",
-    { noremap = true, silent = true, desc = "buffer close [O]thers" }
-)
+--vim.keymap.set(
+--    "n",
+--    ":bco",
+--    ":BufferCloseAllButCurrent<CR>",
+--    { noremap = true, silent = true, desc = "[B]uffer [C]lose [O]ther" }
+--)
 
 -- List buffers and option to jump
+-- 🦀 broken because mess are hidden before can make selection
 vim.keymap.set(
     "n",
     "<leader>bb",
-    ":buffers<CR>:buffer<Space>",
+    "<CMD>buffers<CR><CMD>buffer<Space>",
     { noremap = true, silent = true, desc = "buffer List and jump to buffer" }
 )
 
@@ -482,25 +477,25 @@ vim.g.haskell_tabular = 1
 vim.keymap.set(
     "v",
     "a=",
-    ":Tabularize /=/l1r1<CR>",
+    "<CMD>Tabularize /=/l1r1<CR>",
     { noremap = true, silent = true, desc = "Align by =" }
 )
 vim.keymap.set(
     "v",
     "a;",
-    ":Tabularize /:/l1r0l0r1<CR>",
+    "<CMD>Tabularize /:/l1r0l0r1<CR>",
     { noremap = true, silent = true, desc = "Align by :" }
 )
 vim.keymap.set(
     "v",
     "a-",
-    ":Tabularize /->/l1r0l0r1<CR>",
+    "<CMD>Tabularize /->/l1r0l0r1<CR>",
     { noremap = true, silent = true, desc = "Align by ->" }
 )
 vim.keymap.set(
     "v",
     "a{",
-    ":Tabularize /{><CR>",
+    "<CMD>Tabularize /{><CR>",
     { noremap = true, silent = true, desc = "Align by {" }
 )
 
@@ -508,14 +503,14 @@ vim.keymap.set(
 vim.keymap.set(
     "n",
     "<leader>ta",
-    ":Tabularize /<space>/",
+    "<CMD>Tabularize /<space>/",
     { noremap = true, silent = true, desc = "Align by space" }
 )
 -- Align records in Haskell
 vim.keymap.set(
     "n",
     "<leader>tr",
-    ":Tabularize /[:,{}]/l1l1l1r0l0l1l1<CR>",
+    "<CMD>Tabularize /[:,{}]/l1l1l1r0l0l1l1<CR>",
     { noremap = true, silent = true, desc = "Align Haskell records" }
 )
 
@@ -523,25 +518,25 @@ vim.keymap.set(
 vim.keymap.set(
     "n",
     "<leader>sh",
-    ":leftabove vnew<CR>",
+    "<CMD>leftabove vnew<CR>",
     { noremap = true, silent = true, desc = "Open split on the left" }
 )
 vim.keymap.set(
     "n",
     "<leader>sl",
-    ":rightbelow vnew<CR>",
+    "<CMD>rightbelow vnew<CR>",
     { noremap = true, silent = true, desc = "Open split on the right" }
 )
 vim.keymap.set(
     "n",
     "<leader>sk",
-    ":leftabove new<CR>",
+    "<CMD>leftabove new<CR>",
     { noremap = true, silent = true, desc = "Open split above" }
 )
 vim.keymap.set(
     "n",
     "<leader>sj",
-    ":rightbelow new<CR>",
+    "<CMD>rightbelow new<CR>",
     { noremap = true, silent = true, desc = "Open split below" }
 )
 
@@ -549,6 +544,7 @@ vim.keymap.set(
 -- ==========
 
 -- Access clipboard from yank while in insert-mode
+-- Note: <C-p> in normal mode does a file search a la <Ctrl-p>
 vim.keymap.set(
     "i",
     "<C-p>",

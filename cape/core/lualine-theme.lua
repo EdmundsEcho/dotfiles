@@ -3,7 +3,7 @@
 --
 -- Theme for lualine
 -- Linking the colors to nvim-colors is WIP
--- 
+--
 -- M.setup() returns a theme table
 -- return a theme that extends lualine.themes.material
 --------------------------------------------------------------------------------
@@ -11,20 +11,19 @@
 local M = {}
 
 M.setup = function()
+    -- Custom theme based on material theme
+    local material = require("lualine.themes.material")
+    local theme = vim.deepcopy(material)
+    local colors = require("cape.core.nvim-colors")
 
--- Custom theme based on material theme
-local material = require("lualine.themes.material")
-local theme = vim.deepcopy(material)
+    -- Change the background color of lualine_a to match lualine_b for all modes
+    theme.normal.a.bg = material.normal.b.bg
+    theme.insert.a.bg = material.insert.b.bg
+    theme.visual.a.bg = material.visual.b.bg
+    theme.replace.a.bg = material.replace.b.bg
+    theme.inactive.a.bg = material.inactive.b.bg
 
--- Change the background color of lualine_a to match lualine_b for all modes
-theme.normal.a.bg = material.normal.b.bg
-theme.insert.a.bg = material.insert.b.bg
-theme.visual.a.bg = material.visual.b.bg
-theme.replace.a.bg = material.replace.b.bg
-theme.inactive.a.bg = material.inactive.b.bg
-
-return theme
-
+    return theme
 end
 
 return M

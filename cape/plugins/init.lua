@@ -4,7 +4,6 @@ return {
     "kana/vim-submode",
     "famiu/bufdelete.nvim",
     "godlygeek/tabular",
-    { "algmyr/vim-wombat-lua" },
     {
         "windwp/nvim-autopairs",
         event = "InsertEnter",
@@ -17,8 +16,9 @@ return {
             "nvim-neotest/nvim-nio",
         },
     },
-    { "mg979/vim-visual-multi" },
+    { "mg979/vim-visual-multi", enabled = false },
+    { "algmyr/vim-wombat-lua" },
 }
 
--- The line beneath this is called `modeline`. See `:help modeline`
+-- The `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

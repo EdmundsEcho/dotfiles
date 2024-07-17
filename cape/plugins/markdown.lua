@@ -1,3 +1,4 @@
+---@diagnostic disable: inject-field
 return {
     "iamcco/markdown-preview.nvim",
     event = "BufRead",

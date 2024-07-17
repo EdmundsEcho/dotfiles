@@ -34,12 +34,11 @@ M.setup = function()
 
     -- lsp's managed by mason (see Mason installed lsp's)
     local servers = {
-        ruff_lsp = require("lsp-cfgs/nvim-ruff_lsp").setup(),
+        ruff = require("lsp-cfgs/nvim-ruff").setup(),
         pyright = require("lsp-cfgs/nvim-pyright").setup(),
         yamlls = require("lsp-cfgs/nvim-yamlls").setup(),
         lua_ls = require("lsp-cfgs/nvim-lua_ls").setup(),
         jsonls = require("lsp-cfgs/nvim-json_ls").setup(),
-        -- tsserver = require("lsp-cfgs/nvim-tsserver").setup(lspattach_au_group),
     }
     --------------------------------------------------------------------------------
     -- 💢 mutate lspconfig.<lsp_name> table
@@ -83,7 +82,7 @@ M.setup = function()
         ensure_installed = {
             "prettierd",
             "stylua",
-            "ruff_lsp",
+            "ruff",
         },
     })
 end

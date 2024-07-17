@@ -7,7 +7,7 @@ return {
     config = function()
         local lualine = require("lualine")
         local lazy_status = require("lazy.status")
-        local status_colors = require("cape.core.status-line-colors")
+        local c = require("cape.core.status-line-colors")
         local theme = require("cape.core.lualine-theme").setup()
         --------------------------------------------------------------------------------
         local function search_result()
@@ -45,6 +45,9 @@ return {
             return msg
         end
 
+        local fg = c.colors.theme_colors.Greens.Turquoise
+        local fg_white = c.colors.theme_colors.Grays.WhiteYellow
+
         lualine.setup({
             options = {
                 component_separators = "",
@@ -57,10 +60,10 @@ return {
                         mode_icon,
                         padding = { left = 1, right = 0 },
                         -- TODO: how know fg takes a function?
-                        color = { fg = status_colors.get_mode_color() }, -- Dynamically set color based on mode
+                        color = { fg = c.get_mode_color() }, -- Dynamically set color based on mode
                     },
                 },
-                lualine_b = { "branch" },
+                lualine_b = { { "branch", color = { fg = fg_white } } },
                 lualine_c = {
                     {
                         "filename",
@@ -71,6 +74,7 @@ return {
                             readonly = "[-]",
                             unnamed = "[No Name]",
                         },
+                        color = { fg = fg_white },
                     },
                 },
                 lualine_x = {
@@ -89,23 +93,34 @@ return {
                         cond = lazy_status.has_updates,
                         color = { fg = "#ff9e64" },
                     },
-                    "encoding",
+                    { "encoding", color = { fg = fg_white } },
                     {
                         "fileformat",
                         symbols = {
-                            unix = "", -- Linux icon
+                            -- unix = "", -- Linux icon
+                            unix = "", -- MacOS icon
                             dos = "", -- Windows icon
                             mac = "", -- MacOS icon
                         },
+                        color = { fg = fg_white },
                     },
-                    "filetype",
+                    {
+                        "filetype",
+                        color = { fg = fg_white },
+                    },
                 },
                 lualine_y = {
-                    { lsp_server_name, icon = " " },
-                    { search_result },
+                    { lsp_server_name, icon = " ", color = { fg = fg } },
+                    { search_result, color = { fg = fg_white } },
                     {
                         "progress",
-                        color = { fg = status_colors.fg, gui = "bold" },
+                        color = { fg = fg },
+                    },
+                },
+                lualine_z = {
+                    {
+                        "location",
+                        color = { fg = fg },
                     },
                 },
             },
@@ -113,8 +128,8 @@ return {
             inactive_sections = {
                 lualine_a = {},
                 lualine_b = {},
-                lualine_c = { "filename" },
-                lualine_x = { "location" },
+                lualine_c = { { "filename" } },
+                lualine_x = { { "location" } },
                 lualine_y = {},
                 lualine_z = {},
             },

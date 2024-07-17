@@ -4,17 +4,21 @@
 --
 -- Configures cmp with the lsp servers.
 --------------------------------------------------------------------------------
+---@diagnostic disable: inject-field
+--------------------------------------------------------------------------------
 local M = {}
 M.setup = function()
+    local capabilities = vim.lsp.protocol.make_client_capabilities()
+    capabilities =
+        vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
 
-  local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = vim.tbl_deep_extend(
-    "force",
-    capabilities,
-    require("cmp_nvim_lsp").default_capabilities()
-)
+    capabilities.workspace = {
+        didChangeWatchedFiles = {
+            dynamicRegistration = true,
+        },
+    }
 
-return capabilities
+    return capabilities
 end
 
 return M

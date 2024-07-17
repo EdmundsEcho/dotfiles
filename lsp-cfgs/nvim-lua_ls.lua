@@ -4,11 +4,14 @@
 -- Use setup to return opts
 --
 -- NOTE: This gets overwritten by neodev when working inside the VIMRUNTIME.
+--
+-- "$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
+--- https://luals.github.io/wiki/diagnostics/
 --------------------------------------------------------------------------------
 local M = {}
 
 M.setup = function()
-local logger = require("cape.core.nvim-logging")
+    local logger = require("cape.core.nvim-logging")
     logger.log("Injecting opts into lua_ls ", vim.log.levels.INFO)
 
     return {

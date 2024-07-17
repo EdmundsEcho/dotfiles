@@ -6,16 +6,51 @@ return {
     dependencies = {
         {
             "windwp/nvim-ts-autotag",
+            opts = {
+                enable_close = true, -- Auto close tags
+                enable_rename = true, -- Auto rename pairs of tags
+                enable_close_on_slash = false, -- Auto close on trailing </
+            },
         },
         {
             "nvim-treesitter/playground",
             lazy = true,
         },
+
+        "folke/which-key.nvim",
     },
+    config = function(_, opts)
+        -- Overwrite fold setting in core/nvim-settings.lua
+        vim.opt.foldmethod = "expr"
+        vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+        vim.opt.foldenable = true
+
+        require("nvim-treesitter.install").prefer_git = true
+        ---@diagnostic disable-next-line: missing-fields
+        require("nvim-treesitter.configs").setup(opts)
+
+        -- Custom keybindings for Treesitter incremental selection
+        vim.keymap.set(
+            "n",
+            "snn",
+            function() require("nvim-treesitter.incremental_selection").node_initial() end,
+            { silent = true, desc = "[S]elect [N]ode [N]ew" }
+        )
+        vim.keymap.set(
+            "n",
+            "snm",
+            function() require("nvim-treesitter.incremental_selection").node_decremental() end,
+            { silent = true, desc = "[S]elect [N]ode [M].. less" }
+        )
+        vim.keymap.set(
+            "n",
+            "snc",
+            function() require("nvim-treesitter.incremental_selection").scope_incremental() end,
+            { silent = true, desc = "[S]elect [N]ew [C]ontext" }
+        )
+    end,
     opts = {
         sync_install = true,
-        ignore_install = { "" },
-        modules = {},
         ensure_installed = {
             "bash",
             "c",
@@ -38,53 +73,26 @@ return {
             "vimdoc",
             "yaml",
         },
-        auto_install = true,
         highlight = {
             enable = true,
+            disable = {},
+            additional_vim_regex_highlighting = { "ruby" },
         },
         indent = {
             enable = true,
-            disable = { "yaml" },
+            disable = { "yaml", "ruby" },
         },
-        autotag = {
-            enable = true,
-        },
-
         incremental_selection = {
             enable = true,
             keymaps = {
-                init_selection = "<C-space>",
-                node_incremental = "<C-space>",
-                scope_incremental = false,
-                node_decremental = "<bs>",
+                init_selection = "snn", -- set to `false` to disable one of the mappings
+                node_incremental = "snn",
+                node_decremental = "snm",
+                scope_incremental = "snc",
             },
         },
-
-        textobjects = {
-            move = {
-                enable = true,
-                goto_next_start = {
-                    ["]f"] = "@function.outer",
-                    ["]c"] = "@class.outer",
-                },
-                goto_next_end = {
-                    ["]F"] = "@function.outer",
-                    ["]C"] = "@class.outer",
-                },
-                goto_previous_start = {
-                    ["[f"] = "@function.outer",
-                    ["[c"] = "@class.outer",
-                },
-                goto_previous_end = {
-                    ["[F"] = "@function.outer",
-                    ["[C"] = "@class.outer",
-                },
-            },
-        },
-
         playground = {
             enable = true,
-            disable = {},
             updatetime = 25,
             persist_queries = false,
             keybindings = {
