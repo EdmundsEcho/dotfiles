@@ -12,6 +12,23 @@
 -- <leader>Fc to print out the active formatter
 --
 --------------------------------------------------------------------------------
+---
+local function get_rustfmt_config()
+    local cwd = vim.fn.getcwd()
+    local root = vim.fs.find("Cargo.toml", { upward = true, path = cwd })[1]
+    if root then
+        local project_dir = vim.fs.dirname(root)
+        local local_cfg = project_dir .. "/.rustfmt.toml"
+        if vim.uv.fs_stat(local_cfg) then
+            vim.notify("Using project rustfmt config: " .. local_cfg, vim.log.levels.INFO)
+            return local_cfg
+        end
+    end
+    local global_cfg = vim.fn.expand("~/.rustfmt.toml")
+    vim.notify("Using global rustfmt config: " .. global_cfg, vim.log.levels.INFO)
+    return global_cfg
+end
+
 return {
     "stevearc/conform.nvim",
     event = { "BufReadPre", "BufNewFile" },
@@ -28,7 +45,7 @@ return {
         --------------------------------------------------------------------------------
         -- Build out the list of configuration files
         local stylua_cfg_file = vim.fn.expand("~/.stylua.toml")
-        local rust_cfg_file = vim.fn.expand("~/.rustfmt.toml")
+        local rust_cfg_file = get_rustfmt_config()
         local taplo_cfg_file = vim.fn.expand("~/.taplo.toml")
         -- prettierd uses PRETTIERD_DEFAULT_CONFIG
         -- jq do not have configuration files
@@ -159,25 +176,37 @@ return {
                     prepend_args = { "--config-path", stylua_cfg_file },
                 },
                 taplo = {
-                    autosave = 1,
+                    autosave = 0,
                     command = "taplo",
-                    args = { "format", "-", "--config", taplo_cfg_file },
+                    args = { "fmt", "--config", taplo_cfg_file },
+                },
+                rust = {
+                    autosave = 1,
+                    command = "cargo",
+                    args = {
+                        "+nightly",
+                        "fmt",
+                        "--",
+                        "--config-path",
+                        rust_cfg_file,
+                    },
                 },
             },
             formatters_by_ft = {
-                css = { { "prettierd", "prettier" } },
-                graphql = { { "prettierd", "prettier" } },
+                css = { "prettierd" },
+                graphql = { "prettierd" },
                 fish = { "fish_indent" },
-                haskell = { "ormolu" },
-                html = { { "prettierd", "prettier" } },
-                javascript = { { "prettierd", "prettier" } }, -- first available
+                -- haskell = { "ormolu" },
+                html = { "prettierd" },
+                javascript = { "prettierd" },
                 json = { "jq", "prettierd" },
                 lua = { "stylua" },
-                markdown = { { "prettierd", "prettier" } },
+                markdown = { "prettierd", "prettier" },
                 python = { "ruff" }, -- in sequence
+                rust = { "rust" },
                 toml = { "taplo" },
-                typescript = { { "prettierd", "prettier" } },
-                yaml = { { "prettierd", "prettier" } },
+                typescript = { "prettierd" },
+                yaml = { "prettierd" },
             },
         })
     end,

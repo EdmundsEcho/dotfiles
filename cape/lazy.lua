@@ -1,11 +1,12 @@
 --------------------------------------------------------------------------------
 -- nvim-lazy.lua
+-- Refs cape.plugins that will be lazy loaded
 --------------------------------------------------------------------------------
 -- Uses lazy.nvim to load plugins as needed.  This said, there are several
 -- that need to be eagerly loaded.  They are those plugins with lazy = false.
 --
--- The trickiest part has to do with making sure mason, mason-lspconfig and
--- lspconfig work in sequence (one after the other in that sequence).
+-- plugins/mason.lua points to lsp-cfgs/init.lua
+-- load: mason -> mason-lspconfig -> lspconfig
 --------------------------------------------------------------------------------
 -- bootstrap lazy
 -- check status of plugin
@@ -31,7 +32,6 @@ vim.opt.rtp:prepend(custom_path)
 
 require("lazy").setup({
     { import = "cape.plugins" },
-    { import = "cape.plugins.lsp" },
 }, {
     checker = {
         enabled = true,

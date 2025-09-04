@@ -19,6 +19,15 @@ return {
             group = lint_augroup,
             callback = function() lint.try_lint() end,
         })
+        require("lint").linters.pylint.args = {
+            "-m",
+            "pylint",
+            "-f",
+            "json",
+        }
+        -- Set pylint to work in virtualenv
+        -- require("lint").linters.pylint.cmd = "python"
+        -- require("lint").linters.pylint.args = { "-m", "pylint", "-f", "json" }
 
         vim.keymap.set(
             "n",

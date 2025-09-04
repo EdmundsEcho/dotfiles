@@ -1,7 +1,5 @@
 -- User-defined functions
 --------------------------------------------------------------------------------
----@diagnostic disable: inject-field, undefined-field
---------------------------------------------------------------------------------
 -- Function used in autocommands
 --------------------------------------------------------------------------------
 local M = {}
@@ -171,64 +169,84 @@ vim.keymap.set(
 )
 
 --------------------------------------------------------------------------------
--- Change the opacity of alacritty
+-- Change the opacity of alacritty and ghostty
 --------------------------------------------------------------------------------
 local function update_opacity(increment)
-    -- Define the path to your alacritty.toml file
-    local alacritty_config_path = os.getenv("XDG_CONFIG_HOME") .. "/alacritty/alacritty.toml"
-    if not alacritty_config_path then
-        print("Environment variable XDG_CONFIG_HOME is not set.")
-        return
-    end
-
-    -- Read the contents of the file
-    local file = io.open(alacritty_config_path, "r")
-    if not file then
-        print("Failed to open alacritty.toml")
-        return
-    end
-
-    local lines = {}
-    for line in file:lines() do
-        table.insert(lines, line)
-    end
-    file:close()
-
-    -- Update the opacity value
-    local new_opacity = nil
-    for i, line in ipairs(lines) do
-        if line:match("^%s*opacity%s*=%s*") then
-            local current_opacity = tonumber(line:match("%d+%.?%d*"))
-            if current_opacity then
-                new_opacity = current_opacity + increment
-                new_opacity = math.max(0, math.min(1, new_opacity)) -- Clamp between 0 and 1
-                lines[i] = line:gsub("%d+%.?%d*", string.format("%.3f", new_opacity))
-                print("Updated line: " .. lines[i])
-            else
-                print("Failed to parse current opacity value.")
-            end
-            break
+    -- Helper function to update a configuration file
+    local function update_config_file(config_path, pattern, key_name)
+        if not config_path then
+            print("Configuration path is not set.")
+            return
         end
+
+        -- Read the contents of the file
+        local file = io.open(config_path, "r")
+        if not file then
+            print("Failed to open " .. config_path)
+            return
+        end
+
+        local lines = {}
+        for line in file:lines() do
+            table.insert(lines, line)
+        end
+        file:close()
+
+        -- Update the opacity value
+        local new_opacity = nil
+        for i, line in ipairs(lines) do
+            if line:match(pattern) then
+                local current_opacity = tonumber(line:match("%d+%.?%d*"))
+                if current_opacity then
+                    new_opacity = current_opacity + increment
+                    new_opacity = math.max(0, math.min(1, new_opacity)) -- Clamp between 0 and 1
+                    lines[i] = line:gsub("%d+%.?%d*", string.format("%.3f", new_opacity))
+                    print("Updated line in " .. config_path .. ": " .. lines[i])
+                else
+                    print("Failed to parse current opacity value in " .. config_path)
+                end
+                break
+            end
+        end
+
+        if not new_opacity then
+            print(
+                "Failed to update opacity in " .. config_path .. ". No valid opacity value found."
+            )
+            return
+        end
+
+        -- Write the updated contents back to the file
+        file = io.open(config_path, "w")
+        if not file then
+            print("Failed to open " .. config_path .. " for writing")
+            return
+        end
+
+        for _, line in ipairs(lines) do
+            file:write(line, "\n")
+        end
+        file:close()
+
+        print("Updated opacity in " .. key_name .. " to " .. string.format("%.3f", new_opacity))
     end
 
-    if not new_opacity then
-        print("Failed to update opacity. No valid opacity value found.")
-        return
-    end
+    -- Paths to configuration files
+    local alacritty_config_path = os.getenv("XDG_CONFIG_HOME") .. "/alacritty/alacritty.toml"
+    local ghostty_config_path = os.getenv("XDG_CONFIG_HOME") .. "/ghostty/config"
 
-    -- Write the updated contents back to the file
-    file = io.open(alacritty_config_path, "w")
-    if not file then
-        print("Failed to open alacritty.toml for writing")
-        return
-    end
+    -- Patterns for identifying opacity keys
+    local alacritty_pattern = "^%s*opacity%s*=%s*"
+    local ghostty_pattern = "^%s*background%-opacity%s*=%s*"
 
-    for _, line in ipairs(lines) do
-        file:write(line, "\n")
-    end
-    file:close()
+    -- Update both configuration files
+    update_config_file(alacritty_config_path, alacritty_pattern, "Alacritty")
+    update_config_file(ghostty_config_path, ghostty_pattern, "Ghostty")
 
-    print("Updated opacity to " .. string.format("%.3f", new_opacity))
+    -- Force Ghostty to reload the configuration using osascript
+    local reload_command =
+        [[osascript -e 'tell application "Ghostty" to activate' -e 'tell application "System Events" to keystroke "," using {command down, shift down}']]
+    os.execute(reload_command)
 end
 
 -- Create commands and keybindings to increment and decrement opacity

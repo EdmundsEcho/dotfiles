@@ -65,8 +65,10 @@ return {
             "json",
             "lua",
             "markdown",
+            "nu",
             "python",
             "rust",
+            "svelte",
             "toml",
             "typescript",
             "vim",
@@ -76,7 +78,6 @@ return {
         highlight = {
             enable = true,
             disable = {},
-            additional_vim_regex_highlighting = { "ruby" },
         },
         indent = {
             enable = true,

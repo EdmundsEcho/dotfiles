@@ -1,3 +1,4 @@
+-- Load settings (not plugins)
 require("cape.core.nvim-settings")
 require("cape.core.nvim-emoji-abbr")
 require("cape.core.nvim-keybindings")

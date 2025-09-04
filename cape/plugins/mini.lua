@@ -1,6 +1,11 @@
+-- See snacks for another bundle of plugins
 return {
     "echasnovski/mini.nvim",
+    version = false,
     config = function()
+        local logger = require("cape.core.nvim-logging")
+        logger.log("👉 👉 Loading mini.lua", vim.log.levels.INFO)
+
         -- Better Around/Inside textobjects
         --
         -- Examples:
@@ -15,5 +20,7 @@ return {
         -- - sd'   - [S]urround [D]elete [']quotes
         -- - sr)'  - [S]urround [R]eplace [)] [']
         require("mini.surround").setup()
+
+        require("mini.visits").setup()
     end,
 }

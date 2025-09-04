@@ -4,6 +4,7 @@
 -- Last updated: May 14th, 2024
 --
 --  See `:help vim.keymap.set()`
+--  See also: `nvim-lua-functions.lua`
 -------------------------------------------------------------------------------
 -- ------------------------------------------------------------------------------
 -- Tweaks to default mappings
@@ -215,11 +216,6 @@ map("n", "<leader>te", function()
     end
 end, { desc = "[T]oggle [E]xplorer with neotree", noremap = true, silent = true })
 
--- Additional options to engage cmd mode from normal-mode
--- Default: nnoremap <leader>c :
--- Default: nnoremap <leader>n /
-vim.keymap.set("n", "<leader>m", ":%s/", { noremap = true, desc = "Start search and replace" })
-vim.keymap.set("n", "<leader>v", ":@:<CR>", { noremap = true, desc = "Execute last command" })
 -- Note: v is next to c, v is mac pasting
 -- Recall, the `gc` postfix engages user-confirmed search and replace
 
@@ -314,17 +310,21 @@ vim.keymap.set(
     "n",
     "<leader>;",
     "mzA;<Esc>`z",
-    { noremap = true, silent = true, desc = "Insert ; at the end of the line" }
+    { noremap = true, silent = true, desc = "Insert ';' at the end of the line" }
 )
+-- avoid messing with popup navigation
+-- Conflicts with cmp
+-- vim.keymap.set(
+--     "i",
+--     "<C-h>",
+--     "<Esc>0i",
+--     { noremap = true, silent = true, desc = "Jump to start of line in insert mode" }
+-- )
+
+-- Only works when the popup is off.
 vim.keymap.set(
     "i",
-    "<C-k>",
-    "<Esc>0i",
-    { noremap = true, silent = true, desc = "Jump to start of line in insert mode" }
-)
-vim.keymap.set(
-    "i",
-    "<C-j>",
+    "<C-l>",
     "<Esc>A;",
     { noremap = true, silent = true, desc = "Jump to end of line and insert ;" }
 )
@@ -336,11 +336,11 @@ vim.keymap.set(
 )
 
 -- C-H Backspace - default (uses vim navigation)
-vim.keymap.set("i", "<C-l>", "<Del>", {
-    noremap = true,
-    silent = true,
-    desc = "Delete character under cursor in insert mode",
-})
+-- vim.keymap.set("i", "<C-l>", "<Del>", {
+--     noremap = true,
+--     silent = true,
+--     desc = "Delete character under cursor in insert mode",
+-- })
 
 -- Related defaults
 -- Default: C-[ Esc
@@ -378,7 +378,6 @@ vim.keymap.set(
 -- Uncommented options for engaging cmd mode
 -- vim.keymap.set('n', '<leader>c', ':', { noremap = true, desc = 'Enter command mode' })
 -- vim.keymap.set('n', '<leader>n', '/', { noremap = true, desc = 'Enter search mode' })
-
 vim.keymap.set("n", "<leader>m", ":%s/", { noremap = true, desc = "Start search and replace" })
 vim.keymap.set(
     "n",

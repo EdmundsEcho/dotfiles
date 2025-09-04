@@ -3,6 +3,7 @@
 -- Symlink located in ~/.config/nvim/init.lua to ~/dotfiles/init.lua
 --------------------------------------------------------------------------------
 -- Reads files located in ~/dotfiles as the root
+-- Sets what modules are loaded/accessible
 --------------------------------------------------------------------------------
 local home = vim.fn.expand("$HOME")
 local root = home .. "/dotfiles"
@@ -31,9 +32,11 @@ logger.log("📋 Logging to: " .. logger.get_logfile())
 -- or vim -V3vimlog
 --------------------------------------------------------------------------------
 
-require("cape.core")
+require("cape.core") -- settings, not plugins
 require("cape.lazy")
+require("cape.lsp-cfgs")
 require("cape.core.nvim-lua-functions")
+-- NOTE: cape.plugins are loaded using lazy.nvim
 
 -- END
 --

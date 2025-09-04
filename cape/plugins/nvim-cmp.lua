@@ -27,10 +27,10 @@ return {
         "saadparwaiz1/cmp_luasnip", -- for autocompletion
         "rafamadriz/friendly-snippets", -- useful snippets
         "onsails/lspkind.nvim", -- vs-code like pictograms
-        {
-            "zbirenbaum/copilot-cmp",
-            config = function() require("copilot_cmp").setup() end,
-        },
+        -- {
+        --     "zbirenbaum/copilot-cmp",
+        --     config = function() require("copilot_cmp").setup() end,
+        -- },
     }, --
     config = function()
         -- omnifunc setup (a meta service)
@@ -72,7 +72,7 @@ return {
             sorting = {
                 priority_weight = 2,
                 comparators = {
-                    require("copilot_cmp.comparators").prioritize,
+                    -- require("copilot_cmp.comparators").prioritize,
                     -- Note: Separate keybindings to toggle cmp
                     cmp.config.compare.offset,
                     -- cmp.config.compare.scopes, --this is commented in nvim-cmp too
@@ -86,7 +86,7 @@ return {
                     cmp.config.compare.order,
                 },
             },
-            experimental = { ghost_text = false }, -- this feature conflict with copilot.vim's preview.
+            experimental = { ghost_text = false }, -- set to false when using copilot
             mapping = {
                 -- NOTE: Be sure to avoid setting pumvisible dependent bindings in other
                 -- keybinding settings (grep pumvisible)
@@ -134,7 +134,8 @@ return {
 
             -- Installed sources
             sources = cmp.config.sources({
-                { name = "copilot", group_index = 2 },
+                { name = "supermaven", group_index = 2 },
+                -- { name = "copilot", group_index = 2 },
                 {
                     name = "nvim_lsp",
                     option = {

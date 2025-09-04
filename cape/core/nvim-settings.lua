@@ -4,14 +4,12 @@
 -- Last updated June 23, 2024
 --
 -- see :help vim.opt
----@diagnostic disable: inject-field, undefined-field
 --------------------------------------------------------------------------------
 local set = vim.opt -- Shortcut to set options
 --------------------------------------------------------------------------------
--- Set shell if the current shell is fish
+-- Set shell
 --------------------------------------------------------------------------------
-local shell = os.getenv("SHELL")
-if shell and string.match(shell, "bin/fish") then set.shell = "/bin/sh" end
+set.shell = "/bin/sh"
 
 -- 🦀 fix to avoid ml_get error - does not work
 -- vim.g.netrw_use_noswf = 0
@@ -152,7 +150,7 @@ set.foldlevel = 8
 set.foldnestmax = 20
 set.foldenable = true
 set.viewoptions = "folds,cursor"
-set.sessionoptions = "folds"
+set.sessionoptions = "blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
 -- Assuming you have moved the fold expression setup to a separate Lua config
 -- vim.opt.foldexpr = vim.api.nvim_get_var('nvim_treesitter#foldexpr()')
 --------------------------------------------------------------------------------
@@ -172,11 +170,11 @@ set.smarttab = true
 -- Uncomment below if you want to extend wildmode behavior
 -- vim.opt.wildmode = 'list:longest,full'
 -- Configure patterns to ignore during file completion
-set.wildignore = ".hg,.svn,*~,*.png,*.jpg,*.gif,*.settings,Thumbs.db"
-set.wildignore:append("*.min.js,*.swp,publish/*,intermediate/*,*.o")
-set.wildignore:append("build,cache,dist,coverage,node_modules")
-set.wildignore:append("release,rls,debug")
-set.wildignore:append("*\\tmp\\*,*.swp,*.swo,*.zip,.git,.cabal-sandbox")
+vim.opt.wildignore = { ".hg,.svn,*~,*.png,*.jpg,*.gif,*.settings,Thumbs.db" }
+vim.opt.wildignore:append({ "*.min.js,*.swp,publish/*,intermediate/*,*.o" })
+vim.opt.wildignore:append({ "build,cache,dist,coverage,node_modules" })
+vim.opt.wildignore:append({ "release,rls,debug" })
+vim.opt.wildignore:append({ "*\\tmp\\*,*.swp,*.swo,*.zip,.git,.cabal-sandbox" })
 
 --------------------------------------------------------------------------------
 -- Other settings
@@ -189,7 +187,6 @@ set.wildignore:append("*\\tmp\\*,*.swp,*.swo,*.zip,.git,.cabal-sandbox")
 -- 2. global settings for various plugins
 -- 3. diagnostics popup settings
 --
----@diagnostic disable: inject-field
 --------------------------------------------------------------------------------
 -- local logger = require("cape.core.nvim-logging")
 -- Spelling

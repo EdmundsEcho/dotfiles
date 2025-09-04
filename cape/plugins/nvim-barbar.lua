@@ -9,7 +9,12 @@ return {
         "lewis6991/gitsigns.nvim", -- OPTIONAL: for git status
         "nvim-tree/nvim-web-devicons", -- OPTIONAL: for file icons
     },
-    init = function() vim.g.barbar_auto_setup = false end,
+    init = function()
+        vim.g.barbar_auto_setup = false
+        vim.api.nvim_create_autocmd({ "BufAdd", "BufDelete" }, {
+            callback = vim.schedule_wrap(function() vim.cmd.BufferOrderByBufferNumber() end),
+        })
+    end,
     opts = {
         icons = {
             -- Configure the base icons on the bufferline.
